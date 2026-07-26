@@ -19,16 +19,7 @@ description: >-
 4. **Update the checklist in-place** as work progresses (`gh issue edit … --body-file`).
 5. **Work item by item.** Mark the current line `(IN PROGRESS)`, implement, prove, then `(DONE)` with proof (or `(BLOCKED)` with a reason).
 6. **Assign yourself** at the start. Open the PR with `create-pr` when ready (that skill also assigns `@joaovictornsv`).
-7. **Use issue-linked commit messages** when the user asks for a commit (never commit unprompted):
-
-```text
-#<number> <short subject>
-
-- <change in this commit>
-- <change in this commit>
-```
-
-Example: `#4 Add espresso machine passive income` then `- ` bullets for what that commit actually changed.
+7. **Use issue-linked commit messages** when the user asks for a commit (never commit unprompted). Full rules: `git-workflow` skill. Subject is `#<number> <issue title>` from GitHub (`gh issue view <number> --json title -q .title`), then `- ` bullets for what that commit actually changed. Do not require quality checks before committing.
 
 ## Checklist format
 
@@ -47,7 +38,7 @@ Append if missing (derive items from acceptance criteria; keep lines concrete + 
 - [ ] (TODO) (PR) Open PR with `create-pr` and link it here.
 ```
 
-Status rules (match CommitSwimming-style tags):
+Status rules:
 
 | State             | Line form                            |
 | ----------------- | ------------------------------------ |
@@ -98,7 +89,7 @@ If a checklist already exists, reuse it; refine only when vague or stale.
 
 For each item: mark `(IN PROGRESS)` in the body → implement → focused proof → mark `(DONE)` with proof (or `(BLOCKED)`). Do not wait until the end to sync the body.
 
-When committing (only if the user asks), use `#<number> <short subject>` on the first line, then `- ` bullets for the changes in that commit.
+When committing (only if the user asks), follow the `git-workflow` skill: `#<number> <issue title>` from GitHub, then `- ` bullets for the changes in that commit. No quality gates required before the commit.
 
 ### 4. Closeout
 

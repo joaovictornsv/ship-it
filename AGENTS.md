@@ -44,10 +44,17 @@ Lefthook runs format + lint (staged) + typecheck on pre-commit (`pnpm exec lefth
 - Invent GitHub labels beyond those listed in `docs/ISSUES.md`.
 - Ship GitHub Releases / tags / a real `create-release` skill while the roadmap says not to.
 
+## Git
+
+Follow `.cursor/skills/git-workflow/SKILL.md`: no force push, no rebase, no
+squash, no amend after push, PR-only to `main`, issue-linked commit subjects.
+**No exceptions.** Commits are not gated on lint/typecheck/test/build.
+
 ## Skills & commands
 
 | Skill / command                             | Status                                                 |
 | ------------------------------------------- | ------------------------------------------------------ |
+| `git-workflow`                              | **Usable** — git rules + issue-linked commit format    |
 | `create-issue`                              | **Usable** — open roadmap issues from `docs/ISSUES.md` |
 | `implement-issue`                           | Stub until #13                                         |
 | `create-pr`                                 | Stub until #13                                         |

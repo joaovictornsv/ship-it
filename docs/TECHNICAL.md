@@ -16,7 +16,7 @@ Working document for stack, architecture, tooling, and DevOps for **Ship It** (`
 - Keep the codebase small, typed, and easy for agents/humans to extend.
 - Ship with basic quality gates (lint, format, typecheck, hooks, CI).
 - Deploy to **Quave Cloud** (same pattern as other personal apps: `zcloud-ws/zcloud-deploy-action`).
-- Be **agent-pragmatic**: skills + commands + module docs for the full delivery loop (issues → impl → tests → quality checks → PR → release → docs), inspired by CommitSwimming + cards-cli/books-cli.
+- Be **agent-pragmatic**: skills + commands + module docs for the full delivery loop (issues → impl → tests → quality checks → PR → release → docs).
 
 ### Non-goals (v1)
 
@@ -120,7 +120,7 @@ clicker-game/   # repo folder; npm package / title: ship-it / "Ship It"
 ├── .cursor/
 │   ├── rules/
 │   ├── commands/                 # slash-style quality / flow entrypoints
-│   ├── skills/                   # CommitSwimming-style delivery skills
+│   ├── skills/                   # delivery + domain skills
 │   └── check-quality-reference.md
 ├── Dockerfile                    # lipanski/docker-static-website (blog-html style)
 ├── httpd.conf                    # SPA fallback → index.html if needed
@@ -225,12 +225,12 @@ On PR + `main`:
 | `staging`             | Quave ONE                      | Only hosted env for now; default Quave hostname |
 | `production`          | —                              | **Out of scope for now** (add Quave prod later) |
 
-## 5. Agent / Cursor setup (CommitSwimming-inspired)
+## 5. Agent / Cursor setup
 
-Be pragmatic: **skills for the whole delivery loop**, not only game-domain tasks. Pattern mix:
+Be pragmatic: **skills for the whole delivery loop**, not only game-domain tasks.
 
-- **CommitSwimming:** `create-issue`, `create-pr`, `implement-issue`, multi-tier **check-quality** commands + reference
-- **cards-cli / books-cli:** thin always-on rules + focused `SKILL.md` (+ `reference.md` / `examples.md` when useful)
+- Delivery: `create-issue`, `create-pr`, `implement-issue`, `git-workflow`, multi-tier **check-quality** commands + reference
+- Always-on rules + focused `SKILL.md` (+ `reference.md` / `examples.md` when useful)
 
 ### 5.1 Core files
 
@@ -264,12 +264,13 @@ Stub these during scaffold; fill as the module lands. Prefer updating the module
 
 ### 5.3 Skills catalog (plan)
 
-Ship skills early (scaffold / first issues), then deepen them. Adapt CommitSwimming flows to this single-package SPA (no Meteor boards; simpler project routing).
+Ship skills early (scaffold / first issues), then deepen them for this single-package SPA.
 
 #### Delivery / process
 
 | Skill             | Use when                                                                             |
 | ----------------- | ------------------------------------------------------------------------------------ |
+| `git-workflow`    | Commits, push, amend/reset, PR merge rules; issue-linked commit message format       |
 | `create-issue`    | Create/update GitHub issues for phases and bugs (labels, templates)                  |
 | `implement-issue` | Implement an issue: execution checklist in issue body → item-by-item proof → PR link |
 | `create-pr`       | Open PRs after check-quality; structured body + agent/human test plans               |
@@ -279,8 +280,6 @@ Ship skills early (scaffold / first issues), then deepen them. Adapt CommitSwimm
 | `check-quality`   | Full pre-ship pipeline (orchestrator)                                                |
 
 #### Check-quality tiers (commands + shared reference)
-
-Mirror CommitSwimming’s split:
 
 | Command / tier  | Focus                                                                        |
 | --------------- | ---------------------------------------------------------------------------- |
@@ -298,7 +297,7 @@ Mirror CommitSwimming’s split:
 | `balance-pass`    | Adjust costs/CPS with checklist + economy doc + tests           |
 | `prestige-change` | Soft-reset rule changes + prestige doc + migration if needed    |
 
-**Self-heal rule (from CommitSwimming):** if implementation proves a skill/doc stale, update the canonical doc in the same change or file a follow-up issue — do not leave agents lying.
+**Self-heal rule:** if implementation proves a skill/doc stale, update the canonical doc in the same change or file a follow-up issue — do not leave agents lying.
 
 ### 5.4 Issue → PR loop (expected)
 
@@ -353,7 +352,7 @@ Mirror CommitSwimming’s split:
 - [x] Migrations for renames/split IDs: **yes**
 - [x] Contributors: **static** + fallbacks
 - [x] Backend/leaderboards: **client-only**
-- [x] Agents: **AGENTS.md + rules + skills + check-quality + module docs** (CommitSwimming + CLI pattern)
+- [x] Agents: **AGENTS.md + rules + skills + check-quality + module docs**
 - [x] Language: **English only**
 
 _(Exact `K` and % values are balance constants — tune in playtests, not product open questions.)_
