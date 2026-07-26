@@ -1,6 +1,8 @@
 import { ESPRESSO_MACHINE, type UpgradeId, upgrades } from '../data/upgrades';
 import type { OwnedUpgrades, Tokens } from './types';
 
+export { formatTokensCompact } from './format';
+
 /** Cookie Clicker–style building cost growth per owned unit. */
 export const COST_GROWTH = 1.15;
 
