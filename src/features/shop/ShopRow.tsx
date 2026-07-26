@@ -6,7 +6,6 @@ import { formatTokensCompact } from '../../game/format';
 import { useGameStore } from '../../game/state';
 import { onUpgradeOwnedChanged } from '../scene';
 import { ShopUpgradeIcon } from './ShopUpgradeIcon';
-import { upgradeColorVar } from './upgradeColors';
 
 type ShopRowProps = {
   upgrade: UpgradeDef;
@@ -22,7 +21,7 @@ export function ShopRow({ upgrade }: ShopRowProps) {
   const buyUpgrade = useGameStore((s) => s.buyUpgrade);
   const cost = nextUpgradeCost(upgrade.id, owned);
   const canAfford = tokens >= cost;
-  const colorVar = upgradeColorVar(upgrade.id);
+  const colorVar = upgrade.colorVar;
   const detailsId = useId();
   const detailsRef = useRef<HTMLDivElement>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);

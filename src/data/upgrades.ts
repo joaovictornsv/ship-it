@@ -14,9 +14,17 @@ export type UpgradeId =
   | typeof CI_CD_ID
   | typeof ON_CALL_ID;
 
-/** Free-license emoji keys for shop rows / scene (see `upgradeEmoji`). */
+/** Free-license emoji keys for shop rows / scene. */
 export type UpgradeIconId =
   'coffee' | 'dev' | 'code-review' | 'ci-cd' | 'on-call';
+
+/** CSS custom-property name for a shop/scene upgrade accent. */
+export type UpgradeColorVar =
+  | '--ship-upgrade-espresso'
+  | '--ship-upgrade-dev'
+  | '--ship-upgrade-code-review'
+  | '--ship-upgrade-ci-cd'
+  | '--ship-upgrade-on-call';
 
 export type UpgradeDef = {
   id: UpgradeId;
@@ -28,6 +36,10 @@ export type UpgradeDef = {
   /** Passive tokens/s contributed per owned unit. */
   tokensPerSecond: number;
   icon: UpgradeIconId;
+  /** Shop / scene glyph — owned by the catalog entry, not a parallel map. */
+  emoji: string;
+  /** Accent CSS var — owned by the catalog entry. */
+  colorVar: UpgradeColorVar;
 };
 
 /**
@@ -41,6 +53,8 @@ export const ESPRESSO_MACHINE: UpgradeDef = {
   baseCost: 15,
   tokensPerSecond: 0.1,
   icon: 'coffee',
+  emoji: '☕',
+  colorVar: '--ship-upgrade-espresso',
 };
 
 export const DEV: UpgradeDef = {
@@ -50,6 +64,8 @@ export const DEV: UpgradeDef = {
   baseCost: 100,
   tokensPerSecond: 1,
   icon: 'dev',
+  emoji: '🧑‍💻',
+  colorVar: '--ship-upgrade-dev',
 };
 
 export const CODE_REVIEW: UpgradeDef = {
@@ -59,6 +75,8 @@ export const CODE_REVIEW: UpgradeDef = {
   baseCost: 1_100,
   tokensPerSecond: 8,
   icon: 'code-review',
+  emoji: '👀',
+  colorVar: '--ship-upgrade-code-review',
 };
 
 export const CI_CD: UpgradeDef = {
@@ -68,6 +86,8 @@ export const CI_CD: UpgradeDef = {
   baseCost: 12_000,
   tokensPerSecond: 47,
   icon: 'ci-cd',
+  emoji: '🚦',
+  colorVar: '--ship-upgrade-ci-cd',
 };
 
 export const ON_CALL: UpgradeDef = {
@@ -77,6 +97,8 @@ export const ON_CALL: UpgradeDef = {
   baseCost: 130_000,
   tokensPerSecond: 260,
   icon: 'on-call',
+  emoji: '📟',
+  colorVar: '--ship-upgrade-on-call',
 };
 
 /** Shop order: early → late (cost ladder). */
@@ -92,6 +114,15 @@ export function getUpgrade(id: UpgradeId): UpgradeDef {
   const found = upgrades.find((u) => u.id === id);
   if (!found) {
     throw new Error(`Unknown upgrade id: ${id}`);
+  }
+  return found;
+}
+
+/** Lookup producer by icon key (shop / scene glyphs). */
+export function getUpgradeByIcon(icon: UpgradeIconId): UpgradeDef {
+  const found = upgrades.find((u) => u.icon === icon);
+  if (!found) {
+    throw new Error(`Unknown upgrade icon: ${icon}`);
   }
   return found;
 }

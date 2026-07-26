@@ -66,15 +66,15 @@ describe('lodBadgeCount', () => {
 
 describe('sceneStageForOwned', () => {
   it('maps milestone thresholds from SCENE_STAGES', () => {
-    expect(sceneStageForOwned(0).id).toBe('empty');
-    expect(sceneStageForOwned(1).id).toBe('solo');
-    expect(sceneStageForOwned(9).id).toBe('solo');
-    expect(sceneStageForOwned(10).id).toBe('small-team');
-    expect(sceneStageForOwned(24).id).toBe('small-team');
-    expect(sceneStageForOwned(25).id).toBe('open-plan');
-    expect(sceneStageForOwned(49).id).toBe('open-plan');
-    expect(sceneStageForOwned(50).id).toBe('crowded');
-    expect(sceneStageForOwned(100).id).toBe('crowded');
+    expect(sceneStageForOwned(0).name).toBe('empty');
+    expect(sceneStageForOwned(1).name).toBe('solo');
+    expect(sceneStageForOwned(9).name).toBe('solo');
+    expect(sceneStageForOwned(10).name).toBe('small-team');
+    expect(sceneStageForOwned(24).name).toBe('small-team');
+    expect(sceneStageForOwned(25).name).toBe('open-plan');
+    expect(sceneStageForOwned(49).name).toBe('open-plan');
+    expect(sceneStageForOwned(50).name).toBe('crowded');
+    expect(sceneStageForOwned(100).name).toBe('crowded');
   });
 
   it('keeps thresholds data-driven (0 / 1 / 10 / 25 / 50)', () => {

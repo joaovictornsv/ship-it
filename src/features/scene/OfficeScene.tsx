@@ -2,27 +2,18 @@ import { useEffect, useRef, useState } from 'react';
 import { DESKTOP_MEDIA_QUERY } from '../../app/breakpoints';
 import { useMediaQuery } from '../../app/useMediaQuery';
 import {
-  CI_CD_ID,
-  CODE_REVIEW_ID,
+  CI_CD,
+  CODE_REVIEW,
   DEV_ID,
-  ESPRESSO_MACHINE_ID,
-  ON_CALL_ID,
+  ESPRESSO_MACHINE,
+  ON_CALL,
 } from '../../data/upgrades';
 import { useGameStore } from '../../game/state';
-import { UPGRADE_EMOJI } from '../shop/upgradeEmoji';
 import { DevSprite } from './DevSprite';
 import { lodBadgeCount, sceneSpriteCap, visibleDevCount } from './lod';
 import { OfficeTalkBubbles } from './OfficeTalkBubbles';
 import { isDevSpawnEvent, subscribeUpgradeOwnedChanged } from './sceneEvents';
-import { sceneStageForOwned, type SceneStageId } from './stages';
-
-const STAGE_EMPTY_DESKS: Record<SceneStageId, number> = {
-  empty: 1,
-  solo: 2,
-  'small-team': 6,
-  'open-plan': 10,
-  crowded: 12,
-};
+import { sceneStageForOwned } from './stages';
 
 type PropChip = {
   emoji: string;
@@ -39,16 +30,16 @@ export function OfficeScene() {
   const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);
   const cap = sceneSpriteCap(isDesktop);
   const devOwned = useGameStore((s) => s.owned[DEV_ID] ?? 0);
-  const espressoOwned = useGameStore((s) => s.owned[ESPRESSO_MACHINE_ID] ?? 0);
-  const codeReviewOwned = useGameStore((s) => s.owned[CODE_REVIEW_ID] ?? 0);
-  const ciOwned = useGameStore((s) => s.owned[CI_CD_ID] ?? 0);
-  const onCallOwned = useGameStore((s) => s.owned[ON_CALL_ID] ?? 0);
+  const espressoOwned = useGameStore((s) => s.owned[ESPRESSO_MACHINE.id] ?? 0);
+  const codeReviewOwned = useGameStore((s) => s.owned[CODE_REVIEW.id] ?? 0);
+  const ciOwned = useGameStore((s) => s.owned[CI_CD.id] ?? 0);
+  const onCallOwned = useGameStore((s) => s.owned[ON_CALL.id] ?? 0);
   const stage = sceneStageForOwned(devOwned);
   const visible = visibleDevCount(devOwned, cap);
   const badge = lodBadgeCount(devOwned, cap);
   const [spawnIndex, setSpawnIndex] = useState<number | null>(null);
   const [stageFlash, setStageFlash] = useState(false);
-  const prevStageRef = useRef(stage.id);
+  const prevStageRef = useRef(stage.name);
   const bootedRef = useRef(false);
 
   useEffect(() => {
@@ -67,38 +58,38 @@ export function OfficeScene() {
   useEffect(() => {
     if (!bootedRef.current) {
       bootedRef.current = true;
-      prevStageRef.current = stage.id;
+      prevStageRef.current = stage.name;
       return;
     }
-    if (prevStageRef.current === stage.id) {
+    if (prevStageRef.current === stage.name) {
       return;
     }
-    prevStageRef.current = stage.id;
+    prevStageRef.current = stage.name;
     setStageFlash(false);
     requestAnimationFrame(() => {
       setStageFlash(true);
     });
-  }, [stage.id]);
+  }, [stage.name]);
 
-  const deskCount = Math.max(visible, STAGE_EMPTY_DESKS[stage.id]);
+  const deskCount = Math.max(visible, stage.emptyDesks);
   const props: PropChip[] = [
     {
-      emoji: UPGRADE_EMOJI.coffee,
+      emoji: ESPRESSO_MACHINE.emoji,
       owned: espressoOwned,
       label: 'Espresso',
     },
     {
-      emoji: UPGRADE_EMOJI['code-review'],
+      emoji: CODE_REVIEW.emoji,
       owned: codeReviewOwned,
       label: 'Code review',
     },
     {
-      emoji: UPGRADE_EMOJI['ci-cd'],
+      emoji: CI_CD.emoji,
       owned: ciOwned,
       label: 'CI / CD',
     },
     {
-      emoji: UPGRADE_EMOJI['on-call'],
+      emoji: ON_CALL.emoji,
       owned: onCallOwned,
       label: 'On-call',
     },
@@ -110,11 +101,11 @@ export function OfficeScene() {
         'office-scene relative w-full max-w-xl overflow-hidden rounded-2xl sm:max-w-2xl',
         'border border-[var(--ship-line)]',
         'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_92%,transparent)]',
-        `office-stage-${stage.id}`,
+        `office-stage-${stage.name}`,
         stageFlash ? 'office-stage-flash' : '',
       ].join(' ')}
       aria-label={`Office — ${stage.label}, ${devOwned} Dev${devOwned === 1 ? '' : 's'}`}
-      data-stage={stage.id}
+      data-stage={stage.name}
       data-dev-owned={devOwned}
       onAnimationEnd={(event) => {
         if (event.animationName === 'office-stage-flash') {

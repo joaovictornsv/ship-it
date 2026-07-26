@@ -6,7 +6,6 @@ import { shipUpgradeCost } from '../../game/economy';
 import { formatTokensCompact } from '../../game/format';
 import { useGameStore } from '../../game/state';
 import { ShopShipUpgradeIcon } from './ShopShipUpgradeIcon';
-import { shipUpgradeColorVar } from './shipUpgradeColors';
 
 type ShopShipTileProps = {
   upgrade: ShipUpgradeDef;
@@ -24,7 +23,7 @@ export function ShopShipTile({ upgrade }: ShopShipTileProps) {
   const buyShipUpgrade = useGameStore((s) => s.buyShipUpgrade);
   const cost = shipUpgradeCost(upgrade.id);
   const canBuy = tokens >= cost;
-  const colorVar = shipUpgradeColorVar(upgrade.id);
+  const colorVar = upgrade.colorVar;
   const tipId = useId();
   const anchorRef = useRef<HTMLDivElement>(null);
   const tipPanelRef = useRef<HTMLDivElement>(null);

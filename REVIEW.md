@@ -15,6 +15,7 @@ Lightweight coding and review standards. Grow when pain appears.
 - Small PRs aligned to one `docs/ISSUES.md` item.
 - Named exports for components and pure helpers.
 - Clear acceptance criteria checked off in the issue / PR.
+- **Enum / catalog centralization:** per-value fields and behavior live on `createEnum` entries (`src/lib/createEnum.ts`) or on catalog defs (`src/data/*`) — not parallel `Record` maps, if-chains, or UI-only builders keyed by the same ids. See `.cursor/commands/review.md` (enum logic step).
 
 ## Avoid
 
@@ -29,3 +30,4 @@ Lightweight coding and review standards. Grow when pain appears.
 2. Related module doc touched if behavior changed
 3. No secrets in client or CI logs
 4. Issue linked; acceptance criteria addressed
+5. No new per-value branching / parallel id maps that belong on an enum or catalog entry

@@ -1,12 +1,13 @@
 ---
 name: check-quality
 description: >-
-  Full pre-ship quality pipeline orchestrator. Stub until roadmap #13.
+  Full pre-ship quality pipeline orchestrator. Verify + review (incl. enum
+  logic) + audit. Deepen remaining stubs in roadmap issue #13.
 ---
 
-# check-quality (stub)
+# check-quality
 
-**Status:** thin stub — deepen in issue #13.
+**Status:** verify solid; review tier includes **enum logic centralization** (see `.cursor/commands/review.md`). Audit / full orchestration deepen in #13.
 
 Minimum verify (always):
 

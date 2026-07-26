@@ -95,15 +95,25 @@ export function shipItCta(shipOwned: OwnedShipUpgrades): {
   label: string;
   icon: (typeof shipUpgrades)[number]['icon'] | null;
   upgradeId: (typeof shipUpgrades)[number]['id'] | null;
+  emoji: string | null;
+  colorVar: (typeof shipUpgrades)[number]['colorVar'] | null;
 } {
   const highest = highestShipUpgrade(shipOwned);
   if (!highest) {
-    return { label: 'Ship It', icon: null, upgradeId: null };
+    return {
+      label: 'Ship It',
+      icon: null,
+      upgradeId: null,
+      emoji: null,
+      colorVar: null,
+    };
   }
   return {
     label: highest.ctaLabel,
     icon: highest.icon,
     upgradeId: highest.id,
+    emoji: highest.emoji,
+    colorVar: highest.colorVar,
   };
 }
 

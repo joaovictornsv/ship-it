@@ -43,6 +43,21 @@ export type ShipUpgradeIconId =
   | 'readme-driven'
   | 'ship-it-friday';
 
+/** CSS custom-property name for a Ship upgrade accent. */
+export type ShipUpgradeColorVar =
+  | '--ship-upgrade-rubber-duck'
+  | '--ship-upgrade-keyboard'
+  | '--ship-upgrade-standup'
+  | '--ship-upgrade-stack-overflow'
+  | '--ship-upgrade-sticky-notes'
+  | '--ship-upgrade-dark-mode'
+  | '--ship-upgrade-pair'
+  | '--ship-upgrade-lgtm'
+  | '--ship-upgrade-pomodoro'
+  | '--ship-upgrade-green-build'
+  | '--ship-upgrade-readme'
+  | '--ship-upgrade-friday';
+
 /** Flat add to base click power, or multiply after flats. */
 export type ShipUpgradeEffect =
   { kind: 'flat'; amount: number } | { kind: 'mult'; factor: number };
@@ -56,6 +71,10 @@ export type ShipUpgradeDef = {
   cost: Tokens;
   effect: ShipUpgradeEffect;
   icon: ShipUpgradeIconId;
+  /** Shop / CTA glyph — owned by the catalog entry. */
+  emoji: string;
+  /** Accent CSS var — owned by the catalog entry. */
+  colorVar: ShipUpgradeColorVar;
   /**
    * Ship It CTA label when this is the highest owned upgrade.
    * English only; no emoji (glyph is separate).
@@ -74,6 +93,8 @@ export const RUBBER_DUCK: ShipUpgradeDef = {
   cost: 100,
   effect: { kind: 'flat', amount: 1 },
   icon: 'rubber-duck',
+  emoji: '🦆',
+  colorVar: '--ship-upgrade-rubber-duck',
   ctaLabel: 'Duck ship',
 };
 
@@ -84,6 +105,8 @@ export const MECHANICAL_KEYBOARD: ShipUpgradeDef = {
   cost: 750,
   effect: { kind: 'flat', amount: 2 },
   icon: 'mechanical-keyboard',
+  emoji: '⌨️',
+  colorVar: '--ship-upgrade-keyboard',
   ctaLabel: 'Type & ship',
 };
 
@@ -94,6 +117,8 @@ export const STANDUP: ShipUpgradeDef = {
   cost: 2_000,
   effect: { kind: 'flat', amount: 3 },
   icon: 'standup',
+  emoji: '🗣️',
+  colorVar: '--ship-upgrade-standup',
   ctaLabel: 'Stand & ship',
 };
 
@@ -104,6 +129,8 @@ export const STACK_OVERFLOW_TAB: ShipUpgradeDef = {
   cost: 5_000,
   effect: { kind: 'flat', amount: 5 },
   icon: 'stack-overflow-tab',
+  emoji: '📚',
+  colorVar: '--ship-upgrade-stack-overflow',
   ctaLabel: 'Ship from SO',
 };
 
@@ -114,6 +141,8 @@ export const STICKY_NOTES: ShipUpgradeDef = {
   cost: 12_000,
   effect: { kind: 'flat', amount: 8 },
   icon: 'sticky-notes',
+  emoji: '🗒️',
+  colorVar: '--ship-upgrade-sticky-notes',
   ctaLabel: 'Note & ship',
 };
 
@@ -124,6 +153,8 @@ export const DARK_MODE: ShipUpgradeDef = {
   cost: 35_000,
   effect: { kind: 'mult', factor: 2 },
   icon: 'dark-mode',
+  emoji: '🌙',
+  colorVar: '--ship-upgrade-dark-mode',
   ctaLabel: 'Ship after dark',
 };
 
@@ -134,6 +165,8 @@ export const PAIR_PROGRAMMING: ShipUpgradeDef = {
   cost: 90_000,
   effect: { kind: 'flat', amount: 15 },
   icon: 'pair-programming',
+  emoji: '👯',
+  colorVar: '--ship-upgrade-pair',
   ctaLabel: 'Pair & ship',
 };
 
@@ -144,6 +177,8 @@ export const LGTM_STAMP: ShipUpgradeDef = {
   cost: 220_000,
   effect: { kind: 'mult', factor: 2 },
   icon: 'lgtm-stamp',
+  emoji: '✅',
+  colorVar: '--ship-upgrade-lgtm',
   ctaLabel: 'LGTM ship',
 };
 
@@ -154,6 +189,8 @@ export const POMODORO: ShipUpgradeDef = {
   cost: 600_000,
   effect: { kind: 'flat', amount: 25 },
   icon: 'pomodoro',
+  emoji: '🍅',
+  colorVar: '--ship-upgrade-pomodoro',
   ctaLabel: 'Focus ship',
 };
 
@@ -164,6 +201,8 @@ export const GREEN_BUILD: ShipUpgradeDef = {
   cost: 1_800_000,
   effect: { kind: 'mult', factor: 2 },
   icon: 'green-build',
+  emoji: '🟢',
+  colorVar: '--ship-upgrade-green-build',
   ctaLabel: 'Green ship',
 };
 
@@ -174,6 +213,8 @@ export const README_DRIVEN: ShipUpgradeDef = {
   cost: 5_000_000,
   effect: { kind: 'flat', amount: 50 },
   icon: 'readme-driven',
+  emoji: '📄',
+  colorVar: '--ship-upgrade-readme',
   ctaLabel: 'Docs & ship',
 };
 
@@ -184,6 +225,8 @@ export const SHIP_IT_FRIDAY: ShipUpgradeDef = {
   cost: 15_000_000,
   effect: { kind: 'mult', factor: 3 },
   icon: 'ship-it-friday',
+  emoji: '🚀',
+  colorVar: '--ship-upgrade-friday',
   ctaLabel: 'Friday ship',
 };
 
@@ -207,6 +250,15 @@ export function getShipUpgrade(id: ShipUpgradeId): ShipUpgradeDef {
   const found = shipUpgrades.find((u) => u.id === id);
   if (!found) {
     throw new Error(`Unknown ship upgrade id: ${id}`);
+  }
+  return found;
+}
+
+/** Lookup Ship upgrade by icon key. */
+export function getShipUpgradeByIcon(icon: ShipUpgradeIconId): ShipUpgradeDef {
+  const found = shipUpgrades.find((u) => u.icon === icon);
+  if (!found) {
+    throw new Error(`Unknown ship upgrade icon: ${icon}`);
   }
   return found;
 }

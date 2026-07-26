@@ -47,7 +47,7 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold shifts the office (empty desk count / floor tint), not only +1 sprite. Stage changes briefly flash the panel (`.office-stage-flash`).
 
-| Owned Devs | Stage id     | Feel                                    |
+| Owned Devs | Stage name   | Feel                                    |
 | ---------- | ------------ | --------------------------------------- |
 | 0          | `empty`      | Sparse office — faint empty desk        |
 | 1          | `solo`       | Solo hacker — first desk occupied       |
@@ -55,7 +55,7 @@ Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold sh
 | 25         | `open-plan`  | Open-plan densification — full desk set |
 | 50+        | `crowded`    | Crowded office; LOD + badge carry count |
 
-- Data-driven: `SCENE_STAGES` / `sceneStageForOwned` in `src/features/scene/stages.ts`.
+- Data-driven: `SceneStages` / `SCENE_STAGES` / `sceneStageForOwned` in `src/features/scene/stages.ts` (`createEnum`; per-stage fields like `emptyDesks` live on the entry).
 - Cheap CSS variants (`.office-stage-*`) — no art pipeline in #7 / #28.
 - Stages are **not** Dev tier promotion (junior → mid → senior).
 

@@ -21,6 +21,7 @@ Lefthook runs format + lint (staged) + typecheck on pre-commit (`pnpm exec lefth
 | Features       | `src/features/{click,shop,scene,save}/`                      |
 | Pure game      | `src/game/` (`economy`, `tick`, `state`, `types`)            |
 | Static data    | `src/data/`                                                  |
+| Shared lib     | `src/lib/` (`createEnum`, …)                                 |
 | Styles         | `src/styles/` + [`docs/modules/ui.md`](./docs/modules/ui.md) |
 | Module docs    | `docs/modules/*.md`                                          |
 | Product / tech | `docs/PRODUCT.md`, `docs/TECHNICAL.md`                       |
