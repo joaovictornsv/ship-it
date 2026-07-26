@@ -153,3 +153,30 @@ describe('storage', () => {
     expect(await readSaveFromStorage(storage)).toBeNull();
   });
 });
+
+describe('reload restore contract', () => {
+  it('empty boot snapshot must not replace a good slot once hydrated state is written', async () => {
+    const storage = memoryStorage();
+    const good = sampleState({
+      tokens: 88,
+      owned: { [ESPRESSO_MACHINE_ID]: 3 },
+    });
+    await writeSaveToStorage(good, storage, 1);
+
+    // Simulate a buggy boot flush of the pre-hydrate store.
+    const emptyBoot = sampleState({
+      tokens: 0,
+      owned: {},
+      lastTickAt: Date.now(),
+    });
+    await writeSaveToStorage(emptyBoot, storage, 2);
+    const wiped = await readSaveFromStorage(storage);
+    expect(wiped!.file.state.tokens).toBe(0);
+
+    // After hydrate, persisting the restored slice must bring progress back.
+    await writeSaveToStorage(good, storage, 3);
+    const restored = await readSaveFromStorage(storage);
+    expect(restored!.file.state.tokens).toBe(88);
+    expect(restored!.file.state.owned[ESPRESSO_MACHINE_ID]).toBe(3);
+  });
+});

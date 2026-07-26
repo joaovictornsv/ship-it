@@ -9,8 +9,8 @@ import { EspressoBuyRow, useProductionTick } from '../features/shop';
 
 export function App() {
   const { ready, error } = useHydrateSave();
-  useAutosave();
-  useProductionTick();
+  useAutosave(ready);
+  useProductionTick(ready);
 
   if (!ready) {
     return (

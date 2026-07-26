@@ -31,8 +31,9 @@ type SaveFile = {
 
 ## Autosave
 
-- Debounced ~1.5s after tokens / owned / `lastTickAt` changes.
-- Flush on `visibilitychange` → `hidden` and on `pagehide`.
+- Trailing ~1.5s window after **tokens / owned** changes (`lastTickAt`-only tick noise does not schedule; an already-pending timer is not reset).
+- Autosave + production tick stay **disabled until hydrate finishes** (avoids writing an empty store over a good slot).
+- Flush on `visibilitychange` → `hidden` and on `pagehide`; prefers a warmed base64 blob for a **sync** `localStorage` write.
 - On hydrate: restore tokens + owned; set `lastTickAt` to now (**no offline accrual**).
 
 ## Migrations
