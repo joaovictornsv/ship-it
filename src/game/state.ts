@@ -1,27 +1,27 @@
 import { create } from 'zustand';
 import { ESPRESSO_MACHINE_ID, type UpgradeId } from '../data/upgrades';
-import { beansPerSecond, clickPower, nextUpgradeCost } from './economy';
+import { clickPower, nextUpgradeCost, tokensPerSecond } from './economy';
 import { applyProductionTick, resumeWithoutAccrual } from './tick';
-import type { Beans, GameState } from './types';
+import type { GameState, Tokens } from './types';
 
 export const initialGameState: GameState = {
-  beans: 0,
+  tokens: 0,
   owned: {},
   lastTickAt: 0,
 };
 
 type GameActions = {
-  /** Earn beans from a Ship It click; returns amount granted (for UI FX). */
-  shipIt: () => Beans;
+  /** Earn tokens from a Ship It click; returns amount granted (for UI FX). */
+  shipIt: () => Tokens;
   /**
    * Buy one unit of an upgrade if affordable.
    * Returns true when the purchase succeeded.
    */
   buyUpgrade: (id: UpgradeId) => boolean;
   /** Apply a production tick using `nowMs` (injectable clock). */
-  tick: (nowMs: number) => Beans;
+  tick: (nowMs: number) => Tokens;
   /**
-   * Tab became visible again: reset tick cursor without offline beans.
+   * Tab became visible again: reset tick cursor without offline tokens.
    */
   resumeFromHidden: (nowMs: number) => void;
   /** Seed `lastTickAt` on first mount / when still 0. */
@@ -34,18 +34,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
   ...initialGameState,
   shipIt: () => {
     const earned = clickPower();
-    set((state) => ({ beans: state.beans + earned }));
+    set((state) => ({ tokens: state.tokens + earned }));
     return earned;
   },
   buyUpgrade: (id) => {
     const state = get();
     const ownedCount = state.owned[id] ?? 0;
     const cost = nextUpgradeCost(id, ownedCount);
-    if (state.beans < cost) {
+    if (state.tokens < cost) {
       return false;
     }
     set({
-      beans: state.beans - cost,
+      tokens: state.tokens - cost,
       owned: { ...state.owned, [id]: ownedCount + 1 },
     });
     return true;
@@ -56,7 +56,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (result.lastTickAt === state.lastTickAt) {
       return 0;
     }
-    set({ beans: result.beans, lastTickAt: result.lastTickAt });
+    set({ tokens: result.tokens, lastTickAt: result.lastTickAt });
     return result.earned;
   },
   resumeFromHidden: (nowMs) => {
@@ -70,8 +70,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
 }));
 
 /** Selector helpers used by UI. */
-export function selectBeansPerSecond(state: GameState): number {
-  return beansPerSecond(state.owned);
+export function selectTokensPerSecond(state: GameState): number {
+  return tokensPerSecond(state.owned);
 }
 
 export function selectEspressoOwned(state: GameState): number {

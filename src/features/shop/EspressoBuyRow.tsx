@@ -2,9 +2,9 @@ import { ESPRESSO_MACHINE, ESPRESSO_MACHINE_ID } from '../../data/upgrades';
 import { espressoMachineCost } from '../../game/economy';
 import { selectEspressoOwned, useGameStore } from '../../game/state';
 
-function formatCost(beans: number): string {
+function formatCost(tokens: number): string {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(
-    beans,
+    tokens,
   );
 }
 
@@ -12,11 +12,11 @@ function formatCost(beans: number): string {
  * Minimal single-row buy UI for the Espresso machine (full shop rail in #6).
  */
 export function EspressoBuyRow() {
-  const beans = useGameStore((s) => s.beans);
+  const tokens = useGameStore((s) => s.tokens);
   const owned = useGameStore(selectEspressoOwned);
   const buyUpgrade = useGameStore((s) => s.buyUpgrade);
   const cost = espressoMachineCost(owned);
-  const canAfford = beans >= cost;
+  const canAfford = tokens >= cost;
 
   return (
     <section
@@ -32,7 +32,7 @@ export function EspressoBuyRow() {
             {ESPRESSO_MACHINE.blurb}
           </p>
           <p className="mt-2 text-xs tabular-nums text-black/55">
-            Owned {owned} · +{ESPRESSO_MACHINE.beansPerSecond} beans/s each
+            Owned {owned} · +{ESPRESSO_MACHINE.tokensPerSecond} tokens/s each
           </p>
         </div>
         <button
@@ -45,10 +45,10 @@ export function EspressoBuyRow() {
               : 'cursor-not-allowed bg-black/10 text-black/40',
           ].join(' ')}
           disabled={!canAfford}
-          aria-label={`Buy ${ESPRESSO_MACHINE.name} for ${formatCost(cost)} beans`}
+          aria-label={`Buy ${ESPRESSO_MACHINE.name} for ${formatCost(cost)} tokens`}
           onClick={() => buyUpgrade(ESPRESSO_MACHINE_ID)}
         >
-          {formatCost(cost)} beans
+          {formatCost(cost)} tokens
         </button>
       </div>
     </section>

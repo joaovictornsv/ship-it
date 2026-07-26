@@ -4,7 +4,7 @@ Working document for game fantasy, UX, and feature ideas. Technical stack lives 
 
 ## 1. Elevator pitch
 
-A **developer-themed idle clicker**: you click to earn **coffee beans**, hire **Devs** and buy tools/infra, and watch your office densify — Cookie Clicker energy, software world flavor.
+A **developer-themed idle clicker**: you click to earn **tokens**, hire **Devs** and buy tools/infra, and watch your office densify — Cookie Clicker energy, software world flavor.
 
 | Field                   | Value                                                |
 | ----------------------- | ---------------------------------------------------- |
@@ -12,7 +12,7 @@ A **developer-themed idle clicker**: you click to earn **coffee beans**, hire **
 | **Slug / npm package**  | `ship-it`                                            |
 | **HTML `<title>`**      | `Ship It`                                            |
 | **Quave env (staging)** | `joaovictornsv-ship-it-staging`                      |
-| **Primary currency**    | Coffee beans                                         |
+| **Primary currency**    | Tokens                                               |
 | **Prestige**            | Cookie-style soft reset — **Rewrite** / **Rewrites** |
 
 ## 2. Fantasy & tone
@@ -25,8 +25,8 @@ A **developer-themed idle clicker**: you click to earn **coffee beans**, hire **
 
 ### Core fantasy loop
 
-1. Click to earn **coffee beans**.
-2. Spend beans on upgrades that produce beans over time (**beans/s**).
+1. Click to earn **tokens**.
+2. Spend tokens on upgrades that produce tokens over time (**tokens/s**).
 3. See those upgrades **appear in the world** (not only as numbers).
 4. Unlock bigger systems (CI, cloud, AI agents…) and **Rewrite** (prestige) in v1.
 
@@ -34,24 +34,24 @@ A **developer-themed idle clicker**: you click to earn **coffee beans**, hire **
 
 ### Primary currency (locked)
 
-**Coffee beans** — coin-like, spendable, cute. Shop copy reads naturally (“hire a Dev for 100 beans”).
+**Tokens** — coin-like, spendable, cute. Shop copy reads naturally (“hire a Dev for 100 tokens”).
 
-Rate label in UI: **beans/s** (not abstract “CPS”, unless used as an internal synonym).
+Rate label in UI: **tokens/s** (not abstract “CPS”, unless used as an internal synonym).
 
 Commits / deploys / LoC stay as optional flavor or click FX only — not the bank.
 
 ### Early upgrade naming (no collision)
 
-Currency is beans; the early producer is **not** named “Coffee”.
+Currency is tokens; the early producer is **not** named “Coffee”.
 
-| Role          | Name                 | Notes                                          |
-| ------------- | -------------------- | ---------------------------------------------- |
-| Currency      | Coffee beans         | Bank + costs                                   |
-| Early upgrade | **Espresso machine** | Cheap beans/s producer; scene = machine / mugs |
+| Role          | Name                 | Notes                                           |
+| ------------- | -------------------- | ----------------------------------------------- |
+| Currency      | Tokens               | Bank + costs                                    |
+| Early upgrade | **Espresso machine** | Cheap tokens/s producer; scene = machine / mugs |
 
 ### Main click target (locked lean)
 
-Giant **Ship It** button (matches the game name). Brief ship animation + floating `+N` beans.
+Giant **Ship It** button (matches the game name). Brief ship animation + floating `+N` tokens.
 
 **No audio in MVP** (sound later, optional).
 
@@ -75,7 +75,7 @@ Examples:
 
 ### Layout
 
-- **Left / center:** Ship It button + beans + beans/s
+- **Left / center:** Ship It button + tokens + tokens/s
 - **Middle / background:** living **scene** that densifies as you buy; unlockable rooms over time (office → datacenter → …)
 - **Shop:** right rail on web; bottom drawer / sheet on mobile
 
@@ -92,7 +92,7 @@ Scene starts sparse (empty office) and becomes crowded / gloriously messy.
 
 ### Behavior
 
-- Buying +1 Dev increases beans/s and **spawns one more visible character** in the scene.
+- Buying +1 Dev increases tokens/s and **spawns one more visible character** in the scene.
 - **Max rendered** sprites with LOD / `×N` badge at high counts (tech lean: 24–48).
 - Devs can have **skins / variants** so the crowd feels alive.
 
@@ -124,17 +124,17 @@ Rules (decided):
 
 Ordered roughly early → late. Names are placeholders. Non-Dev upgrades use **buildings / props** (and optional small crowds), not only numbers.
 
-| Tier | Upgrade                | Fantasy                        | Scene beat      |
-| ---- | ---------------------- | ------------------------------ | --------------- |
-| 0    | Manual click / Ship It | You                            | Big button      |
-| 1    | **Espresso machine**   | Cheap beans/s (first building) | Machine / mugs  |
-| 2    | **Dev**                | Core beans/s, skins            | Growing team    |
-| 3    | Code review            | Multiplier or beans/s          | Pair at monitor |
-| 4    | CI / CD                | Automation                     | Pipeline bots   |
-| 5    | On-call / SRE          | Spiky flavor later             | Pager lights    |
-| 6    | Microservices          | Many small producers           | Service boxes   |
-| 7    | Cloud regions          | Big beans/s                    | Map / racks     |
-| 8    | AI coding agents       | Late game flood                | Robot swarm     |
+| Tier | Upgrade                | Fantasy                         | Scene beat      |
+| ---- | ---------------------- | ------------------------------- | --------------- |
+| 0    | Manual click / Ship It | You                             | Big button      |
+| 1    | **Espresso machine**   | Cheap tokens/s (first building) | Machine / mugs  |
+| 2    | **Dev**                | Core tokens/s, skins            | Growing team    |
+| 3    | Code review            | Multiplier or tokens/s          | Pair at monitor |
+| 4    | CI / CD                | Automation                      | Pipeline bots   |
+| 5    | On-call / SRE          | Spiky flavor later              | Pager lights    |
+| 6    | Microservices          | Many small producers            | Service boxes   |
+| 7    | Cloud regions          | Big tokens/s                    | Map / racks     |
+| 8    | AI coding agents       | Late game flood                 | Robot swarm     |
 
 Also consider **multipliers** (not only producers): “Standup”, “Rubber duck”, “Stack Overflow tab”, “Dark mode”, “Mechanical keyboard”.
 
@@ -146,37 +146,37 @@ _(“Rewrite” is reserved for prestige — not a normal shop upgrade.)_
 
 Big milestone → **Rewrite** → reset run economy → keep permanent power from **Rewrites** + cosmetics + rooms.
 
-| Keep after Rewrite                                              | Reset                          |
-| --------------------------------------------------------------- | ------------------------------ |
-| Lifetime **Rewrites** bank + permanent mults from prestige shop | Coffee bean bank               |
-| Cosmetics / contributor unlocks                                 | Owned upgrade counts           |
-| **Unlocked rooms** (keep — losing the map feels punishing)      | Current beans/s from buildings |
+| Keep after Rewrite                                              | Reset                           |
+| --------------------------------------------------------------- | ------------------------------- |
+| Lifetime **Rewrites** bank + permanent mults from prestige shop | Token bank                      |
+| Cosmetics / contributor unlocks                                 | Owned upgrade counts            |
+| **Unlocked rooms** (keep — losing the map feels punishing)      | Current tokens/s from buildings |
 
 ### When Rewrite unlocks
 
-- Track **beans earned this run** (not current bank — spending must not delay prestige).
+- Track **tokens earned this run** (not current bank — spending must not delay prestige).
 - **Rewrite** becomes available when the projected gain is **≥ 1 Rewrite**.
-- UI may show a grayed preview earlier (“Earn X more beans to Rewrite”) so the goal is visible.
+- UI may show a grayed preview earlier (“Earn X more tokens to Rewrite”) so the goal is visible.
 
 ### Rewrites gained (formula lean)
 
 ```text
-rewritesGained = floor(sqrt(beansEarnedThisRun / K))
+rewritesGained = floor(sqrt(tokensEarnedThisRun / K))
 ```
 
 `K` is a balance constant (tune in playtests). Target feel: **first Rewrite ~20–40 minutes** of engaged play for a portfolio demo (shorter than classic Cookie; long enough to care).
 
-Gained Rewrites add to a **lifetime bank**. Confirm dialog must show beans lost vs Rewrites gained + new permanent power.
+Gained Rewrites add to a **lifetime bank**. Confirm dialog must show tokens lost vs Rewrites gained + new permanent power.
 
 ### What Rewrites do in v1 (hybrid, Cookie-lite)
 
-1. **Banked Rewrites** grant a passive permanent **beans/s** multiplier (power even if you never open the meta shop).
+1. **Banked Rewrites** grant a passive permanent **tokens/s** multiplier (power even if you never open the meta shop).
 2. **Small prestige shop** (spend Rewrites on permanent upgrades — agency matters):
 
 | Upgrade           | Effect (lean)                                         |
 | ----------------- | ----------------------------------------------------- |
-| **Postmortem**    | +% beans/s (repeatable / tiered cost)                 |
-| **Muscle memory** | +% beans per click                                    |
+| **Postmortem**    | +% tokens/s (repeatable / tiered cost)                |
+| **Muscle memory** | +% tokens per click                                   |
 | **Stub repo**     | Each new run starts with **1 Espresso machine** owned |
 
 No huge heavenly tree in v1 — three upgrades is enough. Expand later if needed.
@@ -185,18 +185,18 @@ No huge heavenly tree in v1 — three upgrades is enough. Expand later if needed
 
 ### Espresso machine (locked role)
 
-**Small beans/s producer** (first building on the ladder). Click-power boosts come from other multipliers / prestige (**Muscle memory**), not from this upgrade — keeps “buy building → beans/s goes up” crystal clear.
+**Small tokens/s producer** (first building on the ladder). Click-power boosts come from other multipliers / prestige (**Muscle memory**), not from this upgrade — keeps “buy building → tokens/s goes up” crystal clear.
 
 ## 8. Feature list by phase
 
 ### MVP
 
-- [ ] Click Ship It for coffee beans
+- [ ] Click Ship It for tokens
 - [ ] At least 3–5 buyable upgrades with rising **Cookie-style** cost curve (incl. Espresso machine + Dev)
-- [ ] Passive beans/s tick (**no offline accrual** while tab closed)
+- [ ] Passive tokens/s tick (**no offline accrual** while tab closed)
 - [ ] Autosave + reload persistence
 - [ ] **Save export/import**
-- [ ] Basic shop UI + beans / beans/s header (free-license icons)
+- [ ] Basic shop UI + tokens / tokens/s header (free-license icons)
 - [ ] **Scene with visible Devs** (DOM + CSS; LOD/cap at high counts)
 - [ ] Responsive layout: right shop on desktop, drawer on mobile
 - [ ] Checksum mismatch: load anyway + warn the player
@@ -228,7 +228,7 @@ No huge heavenly tree in v1 — three upgrades is enough. Expand later if needed
 ## 9. UX notes
 
 - **One primary action** on first paint: the Ship It button should dominate.
-- Shop rows: icon, name, short joke blurb, owned count, cost in beans, “buy” affordance.
+- Shop rows: icon, name, short joke blurb, owned count, cost in tokens, “buy” affordance.
 - Scene should remain readable at 0, 10, 100+ entities (cap rendered sprites, show “×N” badge, or crowd LOD).
 - Humor in copy > wall of lore. One-liners per upgrade.
 - Avoid cluttering the first viewport with stats strips; Cookie Clicker density can grow _after_ the core loop is felt.
@@ -247,13 +247,13 @@ Product identity, economy, and prestige **design** are locked. Remaining work is
 ### Locked
 
 - [x] Game name / slug / npm / `<title>` → **Ship It** / `ship-it` / `Ship It`
-- [x] Primary currency → **coffee beans** (UI rate: beans/s)
-- [x] Early upgrade → **Espresso machine** = small **beans/s** producer
+- [x] Primary currency → **tokens** (UI rate: tokens/s)
+- [x] Early upgrade → **Espresso machine** = small **tokens/s** producer
 - [x] Click target → **Ship It** button
 - [x] Art direction → **Pixel**; Audio MVP → **No**
 - [x] Prestige → Cookie-style **Rewrite**; currency **Rewrites**
-- [x] Rewrite unlock → available at ≥1 Rewrite from `floor(sqrt(beansEarnedThisRun / K))`
-- [x] Rewrites power → banked passive beans/s mult + small shop (Postmortem / Muscle memory / Stub repo)
+- [x] Rewrite unlock → available at ≥1 Rewrite from `floor(sqrt(tokensEarnedThisRun / K))`
+- [x] Rewrites power → banked passive tokens/s mult + small shop (Postmortem / Muscle memory / Stub repo)
 - [x] Rooms → **keep** after Rewrite
 - [x] Cost curve → Cookie-style exponential; no hard cap; no click combos; no offline in v1
 - [x] Devs = one tier for now; Intern removed; max rendered + LOD; opt-in skins; avatars as-is; bots OK; hover names
@@ -271,7 +271,7 @@ Product identity, economy, and prestige **design** are locked. Remaining work is
 
 The game is on the right track when:
 
-1. First 30 seconds: click Ship It → buy something with beans → see beans/s move **and** see a Dev appear.
+1. First 30 seconds: click Ship It → buy something with tokens → see tokens/s move **and** see a Dev appear.
 2. First 10 minutes: shop has meaningful choices; scene looks different from minute one.
 3. Reload: progress restored; player trusts the save.
 4. Someone who knows the repo smiles when they spot a contributor skin.

@@ -1,14 +1,14 @@
 import { ESPRESSO_MACHINE, type UpgradeId, upgrades } from '../data/upgrades';
-import type { Beans, OwnedUpgrades } from './types';
+import type { OwnedUpgrades, Tokens } from './types';
 
 /** Cookie Clicker–style building cost growth per owned unit. */
 export const COST_GROWTH = 1.15;
 
 /**
- * Beans earned per Ship It click.
+ * Tokens earned per Ship It click.
  * Base click power is 1; modifiers land with later upgrades / prestige.
  */
-export function clickPower(): Beans {
+export function clickPower(): Tokens {
   return 1;
 }
 
@@ -16,7 +16,7 @@ export function clickPower(): Beans {
  * Cookie-style rising cost for the next purchase of an upgrade.
  * `cost = ceil(baseCost * COST_GROWTH ^ owned)`.
  */
-export function upgradeCost(baseCost: Beans, owned: number): Beans {
+export function upgradeCost(baseCost: Tokens, owned: number): Tokens {
   if (owned < 0) {
     throw new Error('owned must be >= 0');
   }
@@ -24,7 +24,7 @@ export function upgradeCost(baseCost: Beans, owned: number): Beans {
 }
 
 /** Next purchase cost for a catalog upgrade given current owned count. */
-export function nextUpgradeCost(id: UpgradeId, owned: number): Beans {
+export function nextUpgradeCost(id: UpgradeId, owned: number): Tokens {
   const def = upgrades.find((u) => u.id === id);
   if (!def) {
     throw new Error(`Unknown upgrade id: ${id}`);
@@ -37,25 +37,25 @@ function ownedCount(owned: OwnedUpgrades, id: UpgradeId): number {
 }
 
 /**
- * Total passive beans/s from owned producers (no prestige mults yet).
+ * Total passive tokens/s from owned producers (no prestige mults yet).
  */
-export function beansPerSecond(owned: OwnedUpgrades): number {
+export function tokensPerSecond(owned: OwnedUpgrades): number {
   let total = 0;
   for (const def of upgrades) {
-    total += ownedCount(owned, def.id) * def.beansPerSecond;
+    total += ownedCount(owned, def.id) * def.tokensPerSecond;
   }
   return total;
 }
 
-/** Beans granted over `deltaMs` at the given beans/s rate. */
-export function beansFromDelta(bps: number, deltaMs: number): Beans {
-  if (deltaMs <= 0 || bps <= 0) {
+/** Tokens granted over `deltaMs` at the given tokens/s rate. */
+export function tokensFromDelta(tps: number, deltaMs: number): Tokens {
+  if (deltaMs <= 0 || tps <= 0) {
     return 0;
   }
-  return bps * (deltaMs / 1000);
+  return tps * (deltaMs / 1000);
 }
 
 /** Convenience: Espresso machine next cost from owned count. */
-export function espressoMachineCost(owned: number): Beans {
+export function espressoMachineCost(owned: number): Tokens {
   return upgradeCost(ESPRESSO_MACHINE.baseCost, owned);
 }

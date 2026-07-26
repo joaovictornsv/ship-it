@@ -1,4 +1,4 @@
-import { BeansBank, ShipItButton } from '../features/click';
+import { ShipItButton, TokensBank } from '../features/click';
 import { EspressoBuyRow, useProductionTick } from '../features/shop';
 
 export function App() {
@@ -9,7 +9,7 @@ export function App() {
       <header className="border-b border-black/10 px-4 py-3">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <p className="text-lg font-semibold tracking-tight">Ship It</p>
-          <BeansBank />
+          <TokensBank />
         </div>
       </header>
 
@@ -17,7 +17,7 @@ export function App() {
         <div className="flex flex-col items-center gap-2">
           <h1 className="sr-only">Ship It</h1>
           <p className="max-w-sm text-base text-black/65">
-            Click to earn coffee beans. Buy an Espresso machine for beans/s.
+            Click to earn tokens. Buy an Espresso machine for tokens/s.
           </p>
         </div>
         <ShipItButton />

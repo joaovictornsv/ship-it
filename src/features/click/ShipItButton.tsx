@@ -1,14 +1,14 @@
 import { useId, useState, type AnimationEvent } from 'react';
 import { useGameStore } from '../../game/state';
-import type { Beans } from '../../game/types';
+import type { Tokens } from '../../game/types';
 
 type Floater = {
   id: number;
-  amount: Beans;
+  amount: Tokens;
 };
 
 /**
- * Dominant Ship It click target: earns beans and shows floating +N feedback.
+ * Dominant Ship It click target: earns tokens and shows floating +N feedback.
  * No audio. Brief press animation; respects prefers-reduced-motion via CSS.
  */
 export function ShipItButton() {
@@ -51,7 +51,7 @@ export function ShipItButton() {
           'active:translate-y-1 active:shadow-[0_4px_0_#6b4423]',
           shipping ? 'ship-it-shipping' : '',
         ].join(' ')}
-        aria-label="Ship It — earn coffee beans"
+        aria-label="Ship It — earn tokens"
         onClick={handleClick}
         onAnimationEnd={handleAnimationEnd}
       >

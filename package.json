@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "type": "module",
-  "description": "Ship It — coffee-bean incremental / office fantasy clicker",
+  "description": "Ship It — token incremental / office fantasy clicker",
   "engines": {
     "node": ">=24"
   },

@@ -6,4 +6,4 @@ Soft reset, Rewrites currency, what resets vs keeps (rooms kept).
 
 ## Formula (locked intent)
 
-`floor(sqrt(beansEarnedThisRun / K))` — `K` playtest-tuned.
+`floor(sqrt(tokensEarnedThisRun / K))` — `K` playtest-tuned.

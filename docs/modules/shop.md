@@ -11,4 +11,4 @@ Shop UX: desktop right rail + mobile bottom drawer; buy affordances; joke copy.
 ## Current UI
 
 - Single buy row under the Ship It button (not a rail yet).
-- Shows name, blurb, owned count, beans/s each, and cost in beans.
+- Shows name, blurb, owned count, tokens/s each, and cost in tokens.

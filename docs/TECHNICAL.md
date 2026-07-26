@@ -7,7 +7,7 @@ Working document for stack, architecture, tooling, and DevOps for **Ship It** (`
 | Game                | **Ship It**                     |
 | Slug / package lean | `ship-it`                       |
 | Quave staging env   | `joaovictornsv-ship-it-staging` |
-| Currency (product)  | Coffee beans (`beans/s`)        |
+| Currency (product)  | Tokens (`tokens/s`)             |
 
 ## 1. Goals
 
@@ -25,7 +25,7 @@ Working document for stack, architecture, tooling, and DevOps for **Ship It** (`
 - Native apps / offline PWA as a hard requirement
 - Monetization / ads
 - E2E (Playwright) — unit tests only for v1
-- Offline beans/s while the tab is closed
+- Offline tokens/s while the tab is closed
 - Custom domain (use Quave default host for now)
 - Quave **production** env (staging only on Quave ONE for now)
 
@@ -140,9 +140,9 @@ clicker-game/   # repo folder; npm package / title: ship-it / "Ship It"
 
 ### In-memory state (canonical)
 
-- Currency (**coffee beans**), upgrade owned counts, prestige (**Rewrites**), timestamps (`lastTickAt`, `totalPlayMs`), settings.
-- Production derived from owned upgrades + modifiers (pure functions in `economy.ts`); UI rate = **beans/s**.
-- **No offline accrual** while the tab is closed (v1): on resume, update `lastTickAt` without granting away-time beans/s.
+- Currency (**tokens**), upgrade owned counts, prestige (**Rewrites**), timestamps (`lastTickAt`, `totalPlayMs`), settings.
+- Production derived from owned upgrades + modifiers (pure functions in `economy.ts`); UI rate = **tokens/s**.
+- **No offline accrual** while the tab is closed (v1): on resume, update `lastTickAt` without granting away-time tokens/s.
 
 ### Persistence contract
 
@@ -251,7 +251,7 @@ Each major game area gets a living doc. Skills that touch that area **must** rea
 
 | Doc                            | Owns                                                              |
 | ------------------------------ | ----------------------------------------------------------------- |
-| `docs/modules/economy.md`      | Formulas, cost curves, beans/s, click power, number formatting    |
+| `docs/modules/economy.md`      | Formulas, cost curves, tokens/s, click power, number formatting   |
 | `docs/modules/upgrades.md`     | Upgrade IDs (Dev, Espresso machine, …), tiers, copy, shop ↔ scene |
 | `docs/modules/saves.md`        | Save schema, migrations, export/import, checksum/base64           |
 | `docs/modules/security.md`     | Threat model (browser), deterrence limits, contributor data rules |
@@ -330,10 +330,10 @@ Mirror CommitSwimming’s split:
 ### Resolved (technical + identity + prestige design)
 
 - [x] Game name / slug / npm / `<title>` / Quave staging → **Ship It** / `ship-it` / `Ship It` / `joaovictornsv-ship-it-staging`
-- [x] Currency → coffee beans / beans/s; prestige → Rewrite / Rewrites (see PRODUCT §7)
-- [x] Rewrite unlock → ≥1 Rewrite from `floor(sqrt(beansEarnedThisRun / K))`; rooms **kept**
-- [x] Rewrites → banked beans/s mult + shop: Postmortem / Muscle memory / Stub repo
-- [x] Espresso machine → small beans/s producer
+- [x] Currency → tokens / tokens/s; prestige → Rewrite / Rewrites (see PRODUCT §7)
+- [x] Rewrite unlock → ≥1 Rewrite from `floor(sqrt(tokensEarnedThisRun / K))`; rooms **kept**
+- [x] Rewrites → banked tokens/s mult + shop: Postmortem / Muscle memory / Stub repo
+- [x] Espresso machine → small tokens/s producer
 - [x] Styling: **Tailwind**
 - [x] Scene: **DOM + CSS**
 - [x] Offline progress: **none** in v1
@@ -363,7 +363,7 @@ _(Exact `K` and % values are balance constants — tune in playtests, not produc
 Product + technical decisions are locked. Next: scaffold and issues.
 
 1. **Scaffold** — Vite + React + TS + Tailwind + pnpm, ESLint/Prettier, Lefthook, Vitest, CI (Node 24), Dockerfile stubs, README titled Ship It, `AGENTS.md`, `REVIEW.md`, Cursor rules, **skill/command stubs**, empty `docs/modules/*`
-2. **Core loop + save** — Ship It click, coffee beans, one upgrade, beans/s tick, autosave + SHA-256 + base64 + export/import + `saves.md` / `security.md`
+2. **Core loop + save** — Ship It click, tokens, one upgrade, tokens/s tick, autosave + SHA-256 + base64 + export/import + `saves.md` / `security.md`
 3. **Shop + economy** — multiple upgrades (Espresso machine, Dev, …), cost curves, tests + module docs
 4. **Scene** — DOM Devs/buildings + LOD + rooms + `scene.md`
 5. **Prestige (Rewrite)** — soft reset + Rewrites bank/shop per PRODUCT §7 + `prestige.md` + migration if needed

@@ -19,7 +19,7 @@ Use only these (plus GitHub defaults when truly needed). Do not invent new label
 | -------------- | ------------------------------------ |
 | `phase:mvp`    | MVP playable loop (#2–#8)            |
 | `phase:v1`     | Beyond MVP toward v1 (#9–#13)        |
-| `area:economy` | Beans, upgrades, formulas            |
+| `area:economy` | Tokens, upgrades, formulas           |
 | `area:scene`   | Living office / LOD / rooms          |
 | `area:save`    | Autosave / export / migrate          |
 | `area:deploy`  | Dockerfile / Quave / CI deploy       |
@@ -34,8 +34,8 @@ Use only these (plus GitHub defaults when truly needed). Do not invent new label
 Empty GitHub repo
   → Scaffold SPA + create-issue skill (and other agent stubs)
   → [create remaining issues via create-issue]
-  → Click Ship It (beans)
-  → Buy Espresso machine (beans/s)
+  → Click Ship It (tokens)
+  → Buy Espresso machine (tokens/s)
   → Trust save (autosave + export)
   → Shop + early ladder (incl. Dev)
   → Living office (visible Devs + LOD)
@@ -110,22 +110,22 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 
 ---
 
-### 3. Core click: Ship It → coffee beans
+### 3. Core click: Ship It → tokens
 
 **Why now:** First fantasy beat — one primary action on first paint.
 
 **Scope**
 
-- Dominant **Ship It** button; click earns **coffee beans**; floating `+N` feedback.
-- Beans bank in header (or equivalent); Zustand store + shared types.
+- Dominant **Ship It** button; click earns **tokens**; floating `+N` feedback.
+- Tokens bank in header (or equivalent); Zustand store + shared types.
 - **No audio.** Brief ship animation OK (respect reduced-motion later if easy).
 
 **Acceptance criteria**
 
-| Product                                    | Technical                                                                 |
-| ------------------------------------------ | ------------------------------------------------------------------------- |
-| First 30s path starts: click → beans go up | Click path is typed; state lives in Zustand; no localStorage yet required |
-| Button dominates first paint               | `click` feature module under `src/features/click/`                        |
+| Product                                     | Technical                                                                 |
+| ------------------------------------------- | ------------------------------------------------------------------------- |
+| First 30s path starts: click → tokens go up | Click path is typed; state lives in Zustand; no localStorage yet required |
+| Button dominates first paint                | `click` feature module under `src/features/click/`                        |
 
 **Depends on:** #2  
 **Module docs:** start `economy.md` (click power / bank)
@@ -134,23 +134,23 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 
 ---
 
-### 4. First producer: Espresso machine + beans/s tick
+### 4. First producer: Espresso machine + tokens/s tick
 
-**Why now:** Prove “buy → beans/s moves” before a full shop. Espresso machine is the locked early producer (not a click-power building).
+**Why now:** Prove “buy → tokens/s moves” before a full shop. Espresso machine is the locked early producer (not a click-power building).
 
 **Scope**
 
-- Buy **Espresso machine** with beans; Cookie-style rising cost for owned count.
-- Passive **beans/s** tick while tab open; **no offline accrual**.
+- Buy **Espresso machine** with tokens; Cookie-style rising cost for owned count.
+- Passive **tokens/s** tick while tab open; **no offline accrual**.
 - Minimal buy UI (even a single row) is enough; full shop rail comes later.
-- Unit tests for cost curve and beans/s total; injectable clock for tick logic.
+- Unit tests for cost curve and tokens/s total; injectable clock for tick logic.
 
 **Acceptance criteria**
 
-| Product                                                  | Technical                                                             |
-| -------------------------------------------------------- | --------------------------------------------------------------------- |
-| Buy machine → beans/s increases and bank grows over time | Pure functions in `economy.ts`; Vitest covers cost + production       |
-| Espresso copy reads naturally in beans                   | `upgrades.md` documents upgrade ID + role; no offline grant on resume |
+| Product                                                   | Technical                                                             |
+| --------------------------------------------------------- | --------------------------------------------------------------------- |
+| Buy machine → tokens/s increases and bank grows over time | Pure functions in `economy.ts`; Vitest covers cost + production       |
+| Espresso copy reads naturally in tokens                   | `upgrades.md` documents upgrade ID + role; no offline grant on resume |
 
 **Depends on:** #3  
 **Module docs:** `economy.md`, `upgrades.md`
@@ -173,10 +173,10 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 
 **Acceptance criteria**
 
-| Product                                                           | Technical                                                                         |
-| ----------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Reload restores beans / owned upgrades; export/import round-trips | Migrations hook ready (`v`); `saves.md` + `security.md` describe deterrence model |
-| Tampered save warns but still plays                               | Vitest: checksum round-trip, mismatch path, parse/export                          |
+| Product                                                            | Technical                                                                         |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| Reload restores tokens / owned upgrades; export/import round-trips | Migrations hook ready (`v`); `saves.md` + `security.md` describe deterrence model |
+| Tampered save warns but still plays                                | Vitest: checksum round-trip, mismatch path, parse/export                          |
 
 **Depends on:** #4  
 **Module docs:** `saves.md`, `security.md`
@@ -199,10 +199,10 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 
 **Acceptance criteria**
 
-| Product                                                | Technical                                                     |
-| ------------------------------------------------------ | ------------------------------------------------------------- |
-| Shop has meaningful early choices; humor in one-liners | Upgrade IDs stable; economy tests cover multi-upgrade beans/s |
-| Rate label is **beans/s**                              | `shop.md` + `upgrades.md` updated; formatting helper tested   |
+| Product                                                | Technical                                                      |
+| ------------------------------------------------------ | -------------------------------------------------------------- |
+| Shop has meaningful early choices; humor in one-liners | Upgrade IDs stable; economy tests cover multi-upgrade tokens/s |
+| Rate label is **tokens/s**                             | `shop.md` + `upgrades.md` updated; formatting helper tested    |
 
 **Depends on:** #5  
 **Module docs:** `shop.md`, `upgrades.md`, `economy.md`
@@ -227,7 +227,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 | Product                                                               | Technical                                            |
 | --------------------------------------------------------------------- | ---------------------------------------------------- |
 | Buy Dev → see a Dev appear; scene readable at 0 / 10 / 100+ (via LOD) | Scene feature under `src/features/scene/`; no Canvas |
-| First 30s path complete: click → buy → beans/s **and** presence       | `scene.md` documents LOD rules                       |
+| First 30s path complete: click → buy → tokens/s **and** presence      | `scene.md` documents LOD rules                       |
 
 **Depends on:** #6  
 **Module docs:** `scene.md`
@@ -266,11 +266,11 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 
 **Scope**
 
-- Track **beans earned this run** (not bank); unlock Rewrite when projected gain ≥ 1 Rewrite.
-- `rewritesGained = floor(sqrt(beansEarnedThisRun / K))` (`K` tunable).
-- Soft reset: clear bean bank + owned upgrades + run beans/s; **keep** Rewrites bank, prestige upgrades, cosmetics, **rooms** (when rooms exist).
-- Banked Rewrites grant passive beans/s mult; small shop: **Postmortem**, **Muscle memory**, **Stub repo**.
-- Confirm dialog: beans lost vs Rewrites gained + new power.
+- Track **tokens earned this run** (not bank); unlock Rewrite when projected gain ≥ 1 Rewrite.
+- `rewritesGained = floor(sqrt(tokensEarnedThisRun / K))` (`K` tunable).
+- Soft reset: clear token bank + owned upgrades + run tokens/s; **keep** Rewrites bank, prestige upgrades, cosmetics, **rooms** (when rooms exist).
+- Banked Rewrites grant passive tokens/s mult; small shop: **Postmortem**, **Muscle memory**, **Stub repo**.
+- Confirm dialog: tokens lost vs Rewrites gained + new power.
 - Save migration if schema needs prestige fields.
 
 **Acceptance criteria**
