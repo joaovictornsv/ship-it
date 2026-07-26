@@ -1,7 +1,8 @@
 import { ShipItButton } from '../features/click';
+import { OfficeScene } from '../features/scene';
 import { ShopRail } from '../features/shop';
 
-/** Primary clicker + shop layout (no export/import chrome). */
+/** Primary clicker + living office + shop layout (no export/import chrome). */
 export function PlayView() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-10 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
@@ -12,6 +13,7 @@ export function PlayView() {
             Click to earn tokens. Hire Devs and buy tools for tokens/s.
           </p>
         </div>
+        <OfficeScene />
         <ShipItButton />
       </div>
       <ShopRail />

@@ -2,7 +2,7 @@
 
 Upgrade IDs (Dev, Espresso machine, …), tiers, shop copy, shop ↔ scene hooks.
 
-**Status:** active — early ladder through On-call (issue #6). Scene presence in #7.
+**Status:** active — early ladder through On-call (issue #6); Dev / Espresso scene presence (issue #7).
 
 ## Owned by
 
@@ -10,7 +10,7 @@ Upgrade IDs (Dev, Espresso machine, …), tiers, shop copy, shop ↔ scene hooks
 - `src/features/shop/` — `ShopRail` / `ShopRow`
 - `src/game/economy.ts` — cost + tokens/s from owned counts
 - `src/game/state.ts` — `owned` map + `buyUpgrade`
-- `src/features/scene/hooks.ts` — stub notify on purchase until #7
+- `src/features/scene/` — `OfficeScene` from owned; `onUpgradeOwnedChanged` on buy
 
 ## Catalog
 
@@ -31,11 +31,11 @@ Shop order follows the table (early → late). Costs / rates are playtest starti
 - Buys with tokens; Cookie-style rising cost for owned count.
 - Each owned unit adds **0.1 tokens/s** (playtest starting point).
 - Shop copy should read naturally in tokens (“15 tokens”, not abstract CPS).
-- Scene presence (machine / mugs) lands with the living office (#7) — not required here.
+- Scene presence: minimal coffee prop in `OfficeScene` when owned ≥ 1.
 
 ### Dev (flagship)
 
-- Core tokens/s producer; visible characters land in #7.
+- Core tokens/s producer; visible DOM Devs + LOD / milestone stages in `OfficeScene` (#7).
 - One tier for now (no Intern; no junior→mid promote yet).
 
 ### Copy

@@ -62,6 +62,16 @@ body {
   }
 }
 
+@keyframes office-dev-bob {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -2px);
+  }
+}
+
 .ship-it-button {
   box-shadow: 0 8px 0 var(--ship-accent-deep);
 }
@@ -79,6 +89,112 @@ body {
   animation: floater-rise 700ms ease-out forwards;
 }
 
+/* Living office — local flavor vars (mugs); shell tokens stay cool slate. */
+.office-scene {
+  --office-mug: #b08968;
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-ink) 6%,
+    var(--ship-bg-elevated)
+  );
+  --office-wall: color-mix(in srgb, #c5d8ec 35%, var(--ship-bg-elevated));
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-ink) 14%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-sky {
+  background: linear-gradient(
+    180deg,
+    var(--office-wall) 0%,
+    color-mix(in srgb, var(--office-wall) 40%, transparent) 100%
+  );
+}
+
+.office-floor {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--office-floor) 55%, transparent) 0%,
+    var(--office-floor) 28%
+  );
+  border-top: 1px solid var(--ship-line);
+}
+
+.office-desk {
+  position: absolute;
+  height: 0.55rem;
+  border-radius: 0.2rem;
+  background: var(--office-desk);
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+
+.office-desk-a {
+  left: 12%;
+  top: 42%;
+  width: 22%;
+}
+
+.office-desk-b {
+  left: 42%;
+  top: 38%;
+  width: 24%;
+}
+
+.office-desk-c {
+  left: 68%;
+  top: 48%;
+  width: 20%;
+}
+
+.office-desk-d {
+  left: 28%;
+  top: 62%;
+  width: 26%;
+}
+
+.office-stage-empty .office-desk-a {
+  opacity: 0.35;
+}
+
+.office-stage-solo .office-desk-a {
+  opacity: 0.9;
+}
+
+.office-stage-solo .office-desk-b {
+  opacity: 0.4;
+}
+
+.office-stage-small-team .office-desk-a,
+.office-stage-small-team .office-desk-b,
+.office-stage-small-team .office-desk-c {
+  opacity: 0.85;
+}
+
+.office-stage-open-plan .office-desk,
+.office-stage-crowded .office-desk {
+  opacity: 0.95;
+}
+
+.office-stage-crowded .office-floor {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ship-accent) 8%, var(--office-floor)) 0%,
+    var(--office-floor) 40%
+  );
+}
+
+.office-dev {
+  transform: translate(-50%, 0);
+  animation: office-dev-bob 2.4s ease-in-out infinite;
+}
+
+.office-espresso {
+  z-index: 5;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ship-it-shipping {
     animation: none;
@@ -86,5 +202,13 @@ body {
 
   .click-floater {
     animation: floater-rise 400ms step-end forwards;
+  }
+
+  .office-dev {
+    animation: none;
+  }
+
+  .office-desk {
+    transition: none;
   }
 }

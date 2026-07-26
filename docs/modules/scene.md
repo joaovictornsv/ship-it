@@ -2,41 +2,64 @@
 
 DOM + CSS living office, LOD caps (24–48), rooms, animation / `prefers-reduced-motion`.
 
-**Status:** stub — issue #7+. Hook wired from shop buys in #6.
+**Status:** active — visible Devs + LOD + milestone stages (issue #7). Mobile sprite lean in #8.
 
 ## Owned by
 
-- `src/features/scene/` — `onUpgradeOwnedChanged` stub (no sprites yet)
+- `src/features/scene/` — `OfficeScene`, LOD / stage helpers, `onUpgradeOwnedChanged` buy notify
+- `src/styles/index.css` — `.office-*` layout, stage desk density, Dev idle bob
+- `src/app/PlayView.tsx` — mounts `OfficeScene` above Ship It
 
-## Hooks (stub)
+## Presence
 
-| API                                | Behavior                       |
-| ---------------------------------- | ------------------------------ |
-| `onUpgradeOwnedChanged(id, owned)` | No-op until living office (#7) |
+| Source                         | Behavior                                                               |
+| ------------------------------ | ---------------------------------------------------------------------- |
+| Zustand `owned[dev]`           | `OfficeScene` subscribes; hydrate / buy both update the crowd          |
+| `onUpgradeOwnedChanged(id, n)` | Still called after successful buy (extension point for spawn FX later) |
+| `owned[espresso-machine]`      | Minimal coffee prop (+ `×N` when > 1); not a full building yet         |
 
-Shop calls this after a successful `buyUpgrade` so #7 can attach presence without reshaping the buy path.
+Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap).
 
-## LOD (planned — #7)
+## LOD
 
-- Render at most ~24–48 Dev sprites; above that show a `×N` badge so the scene stays smooth.
-- Prefer light CSS motion; respect `prefers-reduced-motion`.
-- Buildings/props for non-Dev upgrades can be minimal in #7.
+| Rule            | Value                                                     |
+| --------------- | --------------------------------------------------------- |
+| Sprite cap      | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)         |
+| Visible sprites | `min(owned, 32)` via `visibleDevCount`                    |
+| Badge           | When `owned > 32`, show `×{owned}` so 100+ stays readable |
+| Slots           | Deterministic `DEV_SLOTS` positions — no Canvas           |
 
-## Milestone densification (planned — #7)
+Helpers: `src/features/scene/lod.ts` (unit-tested).
 
-Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold should shift the office (layout / props / density), not only add another sprite.
+## Milestone densification
 
-| Owned Devs | Stage feel (MVP sketch)                     |
-| ---------- | ------------------------------------------- |
-| 0          | Empty / sparse office                       |
-| 1          | Solo hacker — first desk occupied           |
-| 10         | Small team — more desks / mugs / monitors   |
-| 25         | Open-plan densification                     |
-| 50+        | Crowded office; LOD + badge carry the count |
+Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold shifts the office (desks / floor tint / density), not only +1 sprite.
 
-Implementation notes:
+| Owned Devs | Stage id     | Feel                                    |
+| ---------- | ------------ | --------------------------------------- |
+| 0          | `empty`      | Sparse office — faint empty desk        |
+| 1          | `solo`       | Solo hacker — first desk occupied       |
+| 10         | `small-team` | Small team — more desks visible         |
+| 25         | `open-plan`  | Open-plan densification — full desk set |
+| 50+        | `crowded`    | Crowded office; LOD + badge carry count |
 
-- Data-driven thresholds (constants or catalog field), not hard-coded one-offs in JSX.
-- Cheap CSS/DOM variants (stage class, prop set, idle anim) — no new art pipeline in #7.
-- Stages are **not** Dev tier promotion (junior → mid → senior); that stays post-MVP.
+- Data-driven: `SCENE_STAGES` / `sceneStageForOwned` in `src/features/scene/stages.ts`.
+- Cheap CSS variants (`.office-stage-*`) — no art pipeline in #7.
+- Stages are **not** Dev tier promotion (junior → mid → senior).
 - Other upgrades rewriting Dev visuals (e.g. CI “hard hats”) are out of scope for #7.
+
+## Motion
+
+| Name             | Where          | Notes                                                            |
+| ---------------- | -------------- | ---------------------------------------------------------------- |
+| `office-dev-bob` | `.office-dev`  | Light idle bob (~2.4s); **off** under `prefers-reduced-motion`   |
+| Desk opacity     | `.office-desk` | Short opacity ease when stage changes; none under reduced motion |
+
+Shell motion (`ship-press`, `floater-rise`) stays documented in `ui.md`. Scene mug tint (`--office-mug`) is **local** to `.office-scene` — not a global shell token.
+
+## Out of scope (here)
+
+- Mobile sprite budget / leaner scene (#8)
+- Unlockable rooms / prestige keep-list (#11)
+- Contributor skins (#10)
+- Pixel art pipeline

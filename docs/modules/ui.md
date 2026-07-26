@@ -80,12 +80,15 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 
 ## Motion
 
-| Name           | Where               | Notes                                                                   |
-| -------------- | ------------------- | ----------------------------------------------------------------------- |
-| `ship-press`   | `.ship-it-shipping` | Brief scale on Ship It click (~180ms)                                   |
-| `floater-rise` | `.click-floater`    | `+N` feedback (~700ms); shorter step-end under `prefers-reduced-motion` |
+| Name             | Where               | Notes                                                                   |
+| ---------------- | ------------------- | ----------------------------------------------------------------------- |
+| `ship-press`     | `.ship-it-shipping` | Brief scale on Ship It click (~180ms)                                   |
+| `floater-rise`   | `.click-floater`    | `+N` feedback (~700ms); shorter step-end under `prefers-reduced-motion` |
+| `office-dev-bob` | `.office-dev`       | Light Dev idle bob in the living office; off under reduced motion       |
 
 Always respect `prefers-reduced-motion` (already in `index.css`). Prefer light CSS motion; no audio in MVP.
+
+Scene-local flavor (e.g. `--office-mug` on `.office-scene`) may use warmer prop colors without promoting them to shell `--ship-*` tokens — see `scene.md`.
 
 ## Checklist for UI PRs
 
