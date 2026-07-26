@@ -13,7 +13,7 @@ description: >-
 
 Before opening:
 
-1. `pnpm lint && pnpm typecheck && pnpm test && pnpm build`
+1. Run every **Agent test plan** command (at minimum `pnpm lint && pnpm typecheck && pnpm test && pnpm build`). Fix failures before opening.
 2. Push the branch
 3. `gh pr create` with Summary + **Agent test plan** + **Human test plan**; link the issue (`Closes #N` when appropriate); assign yourself.
 
@@ -21,20 +21,29 @@ Before opening:
 
 Always split verification into two checklists. Do not mix them.
 
-### Agent test plan
+### Agent test plan — agent owns
 
-Commands an agent (or CI) can run. Examples: `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, or a chained `pnpm lint && pnpm typecheck && pnpm build`. Optionally note which suites or areas the command covers after an em dash.
+Commands an agent can run. Examples: `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, or a chained `pnpm lint && pnpm typecheck && pnpm build`. Optionally note which suites or areas the command covers after an em dash.
+
+**The opening agent must execute these commands and mark them done.** Do not leave agent items unchecked for the human reviewer.
+
+- Run each listed command successfully before (or as part of) opening/updating the PR.
+- Write the PR body with `- [x]` for every agent item that passed.
+- If a command fails, fix it and re-run; do not check the box until it passes.
+- When editing an existing PR body, keep agent boxes in sync with what you actually ran.
 
 ```markdown
 ## Agent test plan
 
-- [ ] `pnpm test` — codec round-trip, mismatch load-anyway, storage slot, hydrate
-- [ ] `pnpm lint && pnpm typecheck && pnpm build`
+- [x] `pnpm test` — codec round-trip, mismatch load-anyway, storage slot, hydrate
+- [x] `pnpm lint && pnpm typecheck && pnpm build`
 ```
 
-### Human test plan
+### Human test plan — human owns
 
 Manual UI / playthrough steps only — no shell commands. Write actions a human performs in the browser or DevTools.
+
+**Leave these unchecked (`- [ ]`).** The human reviewer marks them after manual verification. The agent never checks human items.
 
 ```markdown
 ## Human test plan
@@ -48,6 +57,7 @@ Omit a section only if it has nothing useful (rare). Prefer at least one agent c
 ## Create
 
 ```bash
+# After agent commands succeed — agent items are already checked:
 gh pr create --repo joaovictornsv/ship-it \
   --assignee joaovictornsv \
   --title "TITLE" \
@@ -56,8 +66,8 @@ gh pr create --repo joaovictornsv/ship-it \
 …
 
 ## Agent test plan
-- [ ] `pnpm test`
-- [ ] `pnpm lint && pnpm typecheck && pnpm build`
+- [x] `pnpm test`
+- [x] `pnpm lint && pnpm typecheck && pnpm build`
 
 ## Human test plan
 - [ ] …
