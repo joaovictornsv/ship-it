@@ -2,11 +2,11 @@
 
 Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke copy.
 
-**Status:** active — Buildings + Ship upgrades sections (issue #30); scan-first rows (#28); responsive shell (#8).
+**Status:** active — horizontal Ship upgrades queue above Buildings (issue #30); scan-first rows (#28); responsive shell (#8).
 
 ## Owned by
 
-- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopRow`, `ShopShipRow`, icons/colors, `useProductionTick`
+- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopRow`, `ShopShipTile`, icons/colors, `useProductionTick`
 - `src/app/breakpoints.ts` — shared `lg` breakpoint (`DESKTOP_MIN_WIDTH_PX = 1024`)
 - `src/features/scene/` — living office reads owned from store; `onUpgradeOwnedChanged` fans out spawn FX
 
@@ -21,10 +21,10 @@ Mobile first paint keeps **one primary action** (Ship It). The drawer is `aria-m
 
 ## Sections
 
-`ShopCatalog` renders two labeled blocks (rail + drawer share the list):
+`ShopCatalog` renders (rail + drawer share the list):
 
-1. **Buildings** — tokens/s producers (`ShopRow`)
-2. **Ship upgrades** — one-shot click-power ladder (`ShopShipRow`), below buildings so Espresso stays the early buy path
+1. **Ship upgrades** — Cookie-style **horizontal** one-shot queue **above** buildings (`ShopShipTile`). Owned upgrades live on Achievements, not here.
+2. **Buildings** — tokens/s producers (`ShopRow`)
 
 Do not add a second panel, floating badge cluster, or HUD strip of click meta.
 
@@ -37,23 +37,40 @@ Each producer renders as a dense interactive row (card only because it wraps buy
 | Primary scan | Emoji · **name** · **×N** · **price/buy** | Owned count is the big number only (no “Owned” label) |
 | Details      | Joke blurb + `+X tokens/s each`           | Hidden by default                                     |
 
-## Ship upgrade row
+## Ship upgrade queue
 
-| Priority     | Element                                     | Notes                                       |
-| ------------ | ------------------------------------------- | ------------------------------------------- |
-| Primary scan | Emoji · **name** · status · **price/Owned** | Status: Next / Owned / Locked               |
-| Details      | Joke blurb + flat or mult effect            | Same ⓘ / hover / focus pattern as buildings |
+Horizontal scroll of compact tiles (`visibleShipUpgradeQueue`):
 
-Soft unlock: rows stay locked until any building is owned. Ladder: only the next unpurchased step is buyable.
+| Shown                                        | Hidden                                     |
+| -------------------------------------------- | ------------------------------------------ |
+| Only the **next available** (not owned) step | Owned upgrades; locked future ladder steps |
 
-Details reveal via **hover**, **keyboard focus**, or **touch** on the ⓘ control (toggle) — never hover-only. Buy control uses deploy teal when affordable and a muted disabled state when not. Successful buy flashes the row (`buy-spend-flash`).
+Empty state copy when the queue has nothing to buy:
 
-Glyphs: `upgradeEmoji.ts` (buildings) / `shipUpgradeEmoji.ts` (Ship). Hues: `upgradeColors.ts` / `shipUpgradeColors.ts` → `--ship-upgrade-*`.
+- Soft-locked (no building yet): “Buy a building to unlock the Ship upgrades queue.”
+- Ladder complete: “No Ship upgrades available. Check Achievements for what you own.”
+
+| Tile scan | Element                                   | Notes                                                                                       |
+| --------- | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Primary   | Glyph · short name · cost                 | Whole tile is the buy control                                                               |
+| Details   | ⓘ tooltip: blurb, click effect, CTA label | Hover / keyboard focus / touch toggle; portaled to `body` so shop overflow does not clip it |
+
+Successful buy flashes the tile (`buy-spend-flash`). Glyphs: `shipUpgradeEmoji.ts`. Hues: `shipUpgradeColors.ts` → `--ship-upgrade-*`.
 
 ## Copy
 
-English only. Building rate label is always **tokens/s**. Ship rows say tokens per click / click power — never mix currencies.
+English only. Building rate label is always **tokens/s**. Ship tiles say tokens per click / click power — never mix currencies.
 
 ## Ship It CTA
 
-Highest owned Ship upgrade lightly evolves CTA **label** + glyph (emoji beside label). Press still uses `ship-press` / `floater-rise`. No larger competing chrome; Ship It stays the dominant primary action.
+Each owned Ship upgrade evolves the CTA via `shipItCta` (highest owned wins):
+
+- **Label** — every catalog entry has a distinct `ctaLabel` (never stays as base “Ship It”)
+- **Glyph** — emoji from that upgrade beside the label
+- **Accent** — button background mixes the upgrade’s `--ship-upgrade-*` hue with deploy teal
+
+Press still uses `ship-press` / `floater-rise`. Size hierarchy unchanged; Ship It stays the dominant primary action.
+
+## Related views
+
+Owned Ship upgrades also appear on the **Achievements** page (`#/achievements`) — see `achievements.md`.

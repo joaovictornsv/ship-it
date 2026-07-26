@@ -61,15 +61,22 @@ Shop order follows the table (early → late). Costs / rates are playtest starti
 
 ## Ship upgrades (click-power track)
 
-One-shot ladder in `src/data/shipUpgrades.ts`. Buy once → unlock next. Soft unlock after **any** producer is owned (`shipUpgradesUnlocked`).
+One-shot ladder in `src/data/shipUpgrades.ts`. Buy once → unlock next. Soft unlock after **any** producer is owned (`shipUpgradesUnlocked`). Shop queue (`visibleShipUpgradeQueue`) shows **only the next available (not owned)** upgrade — owned and locked stay hidden; empty when none available (see Achievements for owned).
 
-| ID                    | Name                | Effect  | cost    | CTA label (when highest) | icon key              |
-| --------------------- | ------------------- | ------- | ------- | ------------------------ | --------------------- |
-| `rubber-duck`         | Rubber duck         | +1 flat | 100     | Ship It                  | `rubber-duck`         |
-| `mechanical-keyboard` | Mechanical keyboard | +2 flat | 750     | Type & ship              | `mechanical-keyboard` |
-| `stack-overflow-tab`  | Stack Overflow tab  | +5 flat | 4_000   | Ship from SO             | `stack-overflow-tab`  |
-| `dark-mode`           | Dark mode           | ×2 mult | 25_000  | Ship after dark          | `dark-mode`           |
-| `lgtm-stamp`          | LGTM stamp          | ×2 mult | 150_000 | LGTM ship                | `lgtm-stamp`          |
+| ID                    | Name                | Effect   | cost       | CTA label (when highest) | icon key              |
+| --------------------- | ------------------- | -------- | ---------- | ------------------------ | --------------------- |
+| `rubber-duck`         | Rubber duck         | +1 flat  | 100        | Duck ship                | `rubber-duck`         |
+| `mechanical-keyboard` | Mechanical keyboard | +2 flat  | 750        | Type & ship              | `mechanical-keyboard` |
+| `standup`             | Standup             | +3 flat  | 2_000      | Stand & ship             | `standup`             |
+| `stack-overflow-tab`  | Stack Overflow tab  | +5 flat  | 5_000      | Ship from SO             | `stack-overflow-tab`  |
+| `sticky-notes`        | Sticky notes        | +8 flat  | 12_000     | Note & ship              | `sticky-notes`        |
+| `dark-mode`           | Dark mode           | ×2 mult  | 35_000     | Ship after dark          | `dark-mode`           |
+| `pair-programming`    | Pair programming    | +15 flat | 90_000     | Pair & ship              | `pair-programming`    |
+| `lgtm-stamp`          | LGTM stamp          | ×2 mult  | 220_000    | LGTM ship                | `lgtm-stamp`          |
+| `pomodoro`            | Pomodoro            | +25 flat | 600_000    | Focus ship               | `pomodoro`            |
+| `green-build`         | Green build         | ×2 mult  | 1_800_000  | Green ship               | `green-build`         |
+| `readme-driven`       | README-driven       | +50 flat | 5_000_000  | Docs & ship              | `readme-driven`       |
+| `ship-it-friday`      | Ship-it Friday      | ×3 mult  | 15_000_000 | Friday ship              | `ship-it-friday`      |
 
 ```text
 clickPower = (1 + Σ flats) × Π mults
@@ -83,9 +90,16 @@ Owned map: `GameState.shipOwned: Partial<Record<ShipUpgradeId, true>>`.
 | --------------------- | ------------------------------------------------ |
 | `rubber-duck`         | Explain the bug out loud. The duck ships anyway. |
 | `mechanical-keyboard` | Clickier clicks. Neighbors included free.        |
+| `standup`             | Fifteen minutes. Three updates. Zero decisions.  |
 | `stack-overflow-tab`  | Copy, paste, pray, ship. Ancient ritual.         |
+| `sticky-notes`        | The kanban that lives on your monitor bezel.     |
 | `dark-mode`           | Same code. Twice the confidence.                 |
+| `pair-programming`    | Two keyboards. One brain cell. Somehow faster.   |
 | `lgtm-stamp`          | Looks good to merge. Tests optional.             |
+| `pomodoro`            | Twenty-five minutes of focus. Five of snacks.    |
+| `green-build`         | All checks passed. Nobody knows why.             |
+| `readme-driven`       | Document it first. Implement never. Ship anyway. |
+| `ship-it-friday`      | No review Friday. Weekend on-call included.      |
 
 ## Owned state
 

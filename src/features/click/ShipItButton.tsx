@@ -1,7 +1,13 @@
-import { useId, useState, type AnimationEvent } from 'react';
-import { highestShipUpgrade } from '../../game/economy';
+import {
+  useId,
+  useState,
+  type AnimationEvent,
+  type CSSProperties,
+} from 'react';
+import { shipItCta } from '../../game/economy';
 import { useGameStore } from '../../game/state';
 import type { Tokens } from '../../game/types';
+import { shipUpgradeColorVar } from '../shop/shipUpgradeColors';
 import { SHIP_UPGRADE_EMOJI } from '../shop/shipUpgradeEmoji';
 
 type Floater = {
@@ -11,19 +17,25 @@ type Floater = {
 
 /**
  * Dominant Ship It click target: earns tokens and shows floating +N feedback.
- * Label / glyph evolve subtly with Ship upgrades; press uses existing ship-press.
- * No audio. Respects prefers-reduced-motion via CSS.
+ * Each owned Ship upgrade evolves label, glyph, and accent tint.
+ * Press uses existing ship-press. No audio. Respects prefers-reduced-motion.
  */
 export function ShipItButton() {
   const shipIt = useGameStore((state) => state.shipIt);
   const shipOwned = useGameStore((state) => state.shipOwned);
-  const highest = highestShipUpgrade(shipOwned);
-  const label = highest?.ctaLabel ?? 'Ship It';
-  const glyph = highest ? SHIP_UPGRADE_EMOJI[highest.icon] : null;
+  const cta = shipItCta(shipOwned);
+  const glyph = cta.icon ? SHIP_UPGRADE_EMOJI[cta.icon] : null;
+  const accentVar = cta.upgradeId ? shipUpgradeColorVar(cta.upgradeId) : null;
   const reactId = useId();
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const [shipping, setShipping] = useState(false);
   const [floaterSeq, setFloaterSeq] = useState(0);
+
+  const buttonStyle: CSSProperties | undefined = accentVar
+    ? {
+        background: `color-mix(in srgb, var(${accentVar}) 42%, var(--ship-accent))`,
+      }
+    : undefined;
 
   function handleClick() {
     const earned = shipIt();
@@ -55,12 +67,13 @@ export function ShipItButton() {
           'text-3xl font-bold tracking-tight text-white',
           'sm:min-h-32 sm:px-12 sm:py-9 sm:text-[1.75rem]',
           'lg:w-auto lg:min-h-28 lg:min-w-56 lg:max-w-none lg:px-12 lg:py-8 lg:text-2xl',
-          'transition-[filter] hover:brightness-110',
+          'transition-[filter,background-color] duration-200 hover:brightness-110',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ship-accent)]',
           'active:translate-y-1',
           shipping ? 'ship-it-shipping' : '',
         ].join(' ')}
-        aria-label={`${label} — earn tokens`}
+        style={buttonStyle}
+        aria-label={`${cta.label} — earn tokens`}
         onClick={handleClick}
         onAnimationEnd={handleAnimationEnd}
       >
@@ -70,7 +83,7 @@ export function ShipItButton() {
               {glyph}
             </span>
           ) : null}
-          {label}
+          {cta.label}
         </span>
       </button>
 

@@ -1,10 +1,11 @@
-import { Save } from 'lucide-react';
+import { Medal, Save } from 'lucide-react';
 import {
   SaveUntrustedBanner,
   useAutosave,
   useHydrateSave,
 } from '../features/save';
 import { useProductionTick } from '../features/shop';
+import { AchievementsView } from './AchievementsView';
 import { Atmosphere } from './Atmosphere';
 import { PlayView } from './PlayView';
 import { SaveView } from './SaveView';
@@ -40,14 +41,24 @@ export function App() {
             Ship It
           </button>
           {view === 'play' ? (
-            <button
-              type="button"
-              className={iconNavClass}
-              aria-label="Save"
-              onClick={() => setView('save')}
-            >
-              <Save className="size-5" strokeWidth={2} aria-hidden />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                className={iconNavClass}
+                aria-label="Achievements"
+                onClick={() => setView('achievements')}
+              >
+                <Medal className="size-5" strokeWidth={2} aria-hidden />
+              </button>
+              <button
+                type="button"
+                className={iconNavClass}
+                aria-label="Save"
+                onClick={() => setView('save')}
+              >
+                <Save className="size-5" strokeWidth={2} aria-hidden />
+              </button>
+            </div>
           ) : (
             <button
               type="button"
@@ -74,7 +85,13 @@ export function App() {
         </div>
       ) : null}
 
-      {view === 'save' ? <SaveView /> : <PlayView />}
+      {view === 'save' ? (
+        <SaveView />
+      ) : view === 'achievements' ? (
+        <AchievementsView />
+      ) : (
+        <PlayView />
+      )}
     </div>
   );
 }

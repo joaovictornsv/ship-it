@@ -75,7 +75,8 @@ export function clickPower(shipOwned: OwnedShipUpgrades = {}): Tokens {
 
 /**
  * Highest owned Ship upgrade in ladder order, or null when none owned.
- * Drives subtle Ship It CTA label / glyph evolution.
+ * Drives Ship It CTA label / glyph / accent evolution — every owned step
+ * must change the CTA (see each def's `ctaLabel`).
  */
 export function highestShipUpgrade(
   shipOwned: OwnedShipUpgrades,
@@ -87,6 +88,23 @@ export function highestShipUpgrade(
     }
   }
   return highest;
+}
+
+/** CTA presentation from the highest owned Ship upgrade (or base Ship It). */
+export function shipItCta(shipOwned: OwnedShipUpgrades): {
+  label: string;
+  icon: (typeof shipUpgrades)[number]['icon'] | null;
+  upgradeId: (typeof shipUpgrades)[number]['id'] | null;
+} {
+  const highest = highestShipUpgrade(shipOwned);
+  if (!highest) {
+    return { label: 'Ship It', icon: null, upgradeId: null };
+  }
+  return {
+    label: highest.ctaLabel,
+    icon: highest.icon,
+    upgradeId: highest.id,
+  };
 }
 
 /**
