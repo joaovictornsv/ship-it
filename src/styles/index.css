@@ -50,6 +50,14 @@ body {
   background-attachment: fixed;
 }
 
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 /* Soft floating atmosphere behind play (gated under reduced-motion). */
 .ship-atmosphere {
   pointer-events: none;
@@ -177,17 +185,12 @@ body {
 }
 
 @keyframes tps-tick-pulse {
-  0% {
-    transform: scale(1);
-    color: var(--ship-muted);
-  }
-  40% {
-    transform: scale(1.06);
-    color: var(--ship-accent-deep);
-  }
+  0%,
   100% {
-    transform: scale(1);
-    color: var(--ship-muted);
+    opacity: 1;
+  }
+  45% {
+    opacity: 0.72;
   }
 }
 
@@ -214,6 +217,24 @@ body {
   }
 }
 
+@keyframes office-talk-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes office-talk-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .ship-it-button {
   box-shadow: 0 8px 0 var(--ship-accent-deep);
 }
@@ -232,7 +253,7 @@ body {
 }
 
 .tokens-tps-pulse {
-  animation: tps-tick-pulse 280ms ease-out;
+  animation: tps-tick-pulse 700ms ease-in-out;
 }
 
 .buy-spend-flash {
@@ -241,6 +262,14 @@ body {
 
 .play-tip {
   animation: tip-fade-in 220ms ease-out;
+}
+
+.office-talk-bubble {
+  animation: office-talk-in 480ms ease-out;
+}
+
+.office-talk-bubble-out {
+  animation: office-talk-out 700ms ease-in forwards;
 }
 
 /* Living office — local flavor vars (mugs); shell tokens stay cool slate. */
@@ -411,7 +440,9 @@ body {
 
   .tokens-tps-pulse,
   .buy-spend-flash,
-  .play-tip {
+  .play-tip,
+  .office-talk-bubble,
+  .office-talk-bubble-out {
     animation: none;
   }
 

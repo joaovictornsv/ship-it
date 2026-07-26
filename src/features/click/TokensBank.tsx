@@ -3,9 +3,12 @@ import { selectTokensPerSecond, useGameStore } from '../../game/state';
 import { formatTokensCompact } from '../../game/format';
 import { subscribeProductionTick } from '../shop/productionPulse';
 
+/** Min gap between tokens/s pulses so 10Hz ticks don't strobe the HUD. */
+const TPS_PULSE_MIN_MS = 1600;
+
 /**
  * Game HUD token bank + tokens/s — docks on the Ship It cluster (not the header).
- * tokens/s pulses briefly when passive production lands.
+ * tokens/s gives a soft, throttled nudge when passive production is landing.
  */
 export function TokensBank() {
   const tokens = useGameStore((state) => state.tokens);
@@ -15,9 +18,15 @@ export function TokensBank() {
   const [tpsPulse, setTpsPulse] = useState(false);
   const [spendFlash, setSpendFlash] = useState(false);
   const prevTokensRef = useRef(tokens);
+  const lastPulseAtRef = useRef(0);
 
   useEffect(() => {
     return subscribeProductionTick(() => {
+      const now = Date.now();
+      if (now - lastPulseAtRef.current < TPS_PULSE_MIN_MS) {
+        return;
+      }
+      lastPulseAtRef.current = now;
       setTpsPulse(false);
       requestAnimationFrame(() => {
         setTpsPulse(true);

@@ -13,7 +13,7 @@ type ShopRowProps = {
 };
 
 /**
- * Scan-first buy row: colored icon · name · Owned · price/buy.
+ * Scan-first buy row: colored icon · name · ×owned · price/buy.
  * Blurb + per-unit tokens/s: hover / keyboard focus / touch ⓘ toggle (never hover-only).
  */
 export function ShopRow({ upgrade }: ShopRowProps) {
@@ -114,8 +114,11 @@ export function ShopRow({ upgrade }: ShopRowProps) {
               </div>
             </div>
           </div>
-          <p className="mt-0.5 text-xs font-semibold tabular-nums text-[var(--ship-ink)]">
-            Owned <span className="text-sm">×{owned}</span>
+          <p
+            className="mt-0.5 text-lg font-bold tabular-nums leading-none text-[var(--ship-ink)] sm:text-xl"
+            aria-label={`${owned} owned`}
+          >
+            ×{owned}
           </p>
         </div>
 

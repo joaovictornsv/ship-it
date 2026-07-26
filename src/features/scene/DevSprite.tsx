@@ -1,4 +1,4 @@
-import { LaptopMinimal } from 'lucide-react';
+import { devEmojiForIndex } from '../shop/upgradeEmoji';
 
 type DevSpriteProps = {
   index: number;
@@ -8,9 +8,9 @@ type DevSpriteProps = {
 };
 
 /**
- * Recognizable Dev icon sprite (Lucide laptop) — not abstract stick figures.
+ * Emoji Dev sprite — warmer than monochrome notebook icons.
  *
- * Extension point for #10 contributor skins: swap `LaptopMinimal` (or wrap this
+ * Extension point for #10 contributor skins: swap the emoji (or wrap this
  * component) with a skin-aware renderer that picks an avatar / variant from the
  * opt-in contributor pool while keeping the same desk-cell layout contract.
  */
@@ -23,7 +23,7 @@ export function DevSprite({
   return (
     <span
       className={[
-        'office-dev mb-0.5 flex items-center justify-center',
+        'office-dev mb-0.5 flex items-center justify-center text-xl leading-none sm:text-2xl',
         spawn ? 'office-dev-spawn' : '',
       ].join(' ')}
       style={{ animationDelay: spawn ? '0ms' : `${delayMs}ms` }}
@@ -34,10 +34,7 @@ export function DevSprite({
         }
       }}
     >
-      <LaptopMinimal
-        className="size-5 text-[var(--ship-upgrade-dev)] sm:size-6"
-        strokeWidth={1.75}
-      />
+      {devEmojiForIndex(index)}
     </span>
   );
 }

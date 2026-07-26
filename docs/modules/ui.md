@@ -46,7 +46,7 @@ Defined on `:root` in `src/styles/index.css`. Prefer these over raw hex in compo
 
 **Do not** reintroduce coffee-brown shell chrome (`#8b5a2b`, cream `#f3eee4`, etc.). Scene mug tint (`--office-mug`) stays local on `.office-scene`.
 
-**Avoid:** purple / indigo default gradients, dark-mode-first shells, neon glow stacks, emoji-as-chrome.
+**Avoid:** purple / indigo default gradients, dark-mode-first shells, neon glow stacks. Scene / shop **producer glyphs** may use emoji for warmth; do not sprinkle emoji into header chrome or CTA labels.
 
 ### Tailwind usage
 
@@ -91,20 +91,23 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 
 **Cards:** only when they wrap a clear interaction (e.g. buy row, HUD bank). Prefer token borders (`--ship-line`) over heavy multi-shadow stacks.
 
+**Cursor:** enabled `button`s use `cursor: pointer`; disabled use `cursor: not-allowed` (global in `index.css`).
+
 ## Motion
 
-| Name                 | Where                   | Notes                                                                   |
-| -------------------- | ----------------------- | ----------------------------------------------------------------------- |
-| `ship-press`         | `.ship-it-shipping`     | Brief scale on Ship It click (~180ms)                                   |
-| `floater-rise`       | `.click-floater`        | `+N` feedback (~700ms); shorter step-end under `prefers-reduced-motion` |
-| `atmosphere-drift`   | `.ship-atmosphere-blob` | Slow backdrop drift; **off** under reduced motion                       |
-| `tps-tick-pulse`     | `.tokens-tps-pulse`     | tokens/s pulse when passive production lands; off under reduced motion  |
-| `buy-spend-flash`    | `.buy-spend-flash`      | Brief brightness flash on buy / spend                                   |
-| `office-dev-bob`     | `.office-dev`           | Light Dev idle bob; off under reduced motion                            |
-| `office-spawn-pop`   | `.office-dev-spawn`     | Buy spawn celebration on new Dev sprite                                 |
-| `office-stage-flash` | `.office-stage-flash`   | Optional inset flash when milestone stage changes                       |
-| `shop-drawer-up`     | `.shop-drawer-panel`    | Mobile shop bottom sheet enter (~220ms); off under reduced motion       |
-| `tip-fade-in`        | `.play-tip`             | Ephemeral play tip enter                                                |
+| Name                 | Where                   | Notes                                                                     |
+| -------------------- | ----------------------- | ------------------------------------------------------------------------- |
+| `ship-press`         | `.ship-it-shipping`     | Brief scale on Ship It click (~180ms)                                     |
+| `floater-rise`       | `.click-floater`        | `+N` feedback (~700ms); shorter step-end under `prefers-reduced-motion`   |
+| `atmosphere-drift`   | `.ship-atmosphere-blob` | Slow backdrop drift; **off** under reduced motion                         |
+| `tps-tick-pulse`     | `.tokens-tps-pulse`     | Soft opacity nudge on tokens/s (~1.6s throttle); off under reduced motion |
+| `office-talk-in`     | `.office-talk-bubble`   | Occasional Dev speech bubble above the office                             |
+| `buy-spend-flash`    | `.buy-spend-flash`      | Brief brightness flash on buy / spend                                     |
+| `office-dev-bob`     | `.office-dev`           | Light Dev idle bob; off under reduced motion                              |
+| `office-spawn-pop`   | `.office-dev-spawn`     | Buy spawn celebration on new Dev sprite                                   |
+| `office-stage-flash` | `.office-stage-flash`   | Optional inset flash when milestone stage changes                         |
+| `shop-drawer-up`     | `.shop-drawer-panel`    | Mobile shop bottom sheet enter (~220ms); off under reduced motion         |
+| `tip-fade-in`        | `.play-tip`             | Ephemeral play tip enter                                                  |
 
 Always respect `prefers-reduced-motion` (already in `index.css`). Prefer light CSS motion; no audio in MVP.
 

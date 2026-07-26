@@ -6,7 +6,7 @@ Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke co
 
 ## Owned by
 
-- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopRow`, `ShopUpgradeIcon`, `upgradeColors`, `useProductionTick`, `productionPulse`
+- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopRow`, `ShopUpgradeIcon`, `upgradeEmoji`, `upgradeColors`, `useProductionTick`, `productionPulse`
 - `src/app/breakpoints.ts` — shared `lg` breakpoint (`DESKTOP_MIN_WIDTH_PX = 1024`)
 - `src/features/scene/` — living office reads owned from store; `onUpgradeOwnedChanged` fans out spawn FX
 
@@ -23,14 +23,14 @@ Mobile first paint keeps **one primary action** (Ship It). The drawer is `aria-m
 
 Each catalog upgrade renders as a dense interactive row (card only because it wraps buy):
 
-| Priority     | Element                                                       | Notes                        |
-| ------------ | ------------------------------------------------------------- | ---------------------------- |
-| Primary scan | Colored Lucide icon · **name** · **Owned ×N** · **price/buy** | Numbers dominate at a glance |
-| Details      | Joke blurb + `+X tokens/s each`                               | Hidden by default            |
+| Priority     | Element                                   | Notes                                                 |
+| ------------ | ----------------------------------------- | ----------------------------------------------------- |
+| Primary scan | Emoji · **name** · **×N** · **price/buy** | Owned count is the big number only (no “Owned” label) |
+| Details      | Joke blurb + `+X tokens/s each`           | Hidden by default                                     |
 
 Details reveal via **hover**, **keyboard focus**, or **touch** on the ⓘ control (toggle) — never hover-only. Buy control uses deploy teal when affordable and a muted disabled state when not. Successful buy flashes the row (`buy-spend-flash`).
 
-Shared list: `ShopCatalog` (used by rail + drawer). Per-upgrade hues: `upgradeColors.ts` → `--ship-upgrade-*` tokens (see `ui.md`).
+Shared list: `ShopCatalog` (used by rail + drawer). Glyphs: `upgradeEmoji.ts` (shop + scene). Per-upgrade hues: `upgradeColors.ts` → `--ship-upgrade-*` still tint the icon chip background.
 
 ## Copy
 

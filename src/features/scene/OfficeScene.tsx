@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { BellRing, Coffee, GitPullRequest, Workflow } from 'lucide-react';
 import { DESKTOP_MEDIA_QUERY } from '../../app/breakpoints';
 import { useMediaQuery } from '../../app/useMediaQuery';
 import {
@@ -10,8 +9,10 @@ import {
   ON_CALL_ID,
 } from '../../data/upgrades';
 import { useGameStore } from '../../game/state';
+import { UPGRADE_EMOJI } from '../shop/upgradeEmoji';
 import { DevSprite } from './DevSprite';
 import { lodBadgeCount, sceneSpriteCap, visibleDevCount } from './lod';
+import { OfficeTalkBubbles } from './OfficeTalkBubbles';
 import { isDevSpawnEvent, subscribeUpgradeOwnedChanged } from './sceneEvents';
 import { sceneStageForOwned, type SceneStageId } from './stages';
 
@@ -21,6 +22,12 @@ const STAGE_EMPTY_DESKS: Record<SceneStageId, number> = {
   'small-team': 6,
   'open-plan': 10,
   crowded: 12,
+};
+
+type PropChip = {
+  emoji: string;
+  owned: number;
+  label: string;
 };
 
 /**
@@ -74,6 +81,28 @@ export function OfficeScene() {
   }, [stage.id]);
 
   const deskCount = Math.max(visible, STAGE_EMPTY_DESKS[stage.id]);
+  const props: PropChip[] = [
+    {
+      emoji: UPGRADE_EMOJI.coffee,
+      owned: espressoOwned,
+      label: 'Espresso',
+    },
+    {
+      emoji: UPGRADE_EMOJI['code-review'],
+      owned: codeReviewOwned,
+      label: 'Code review',
+    },
+    {
+      emoji: UPGRADE_EMOJI['ci-cd'],
+      owned: ciOwned,
+      label: 'CI / CD',
+    },
+    {
+      emoji: UPGRADE_EMOJI['on-call'],
+      owned: onCallOwned,
+      label: 'On-call',
+    },
+  ].filter((prop) => prop.owned > 0);
 
   return (
     <section
@@ -96,48 +125,22 @@ export function OfficeScene() {
       <div className="office-sky pointer-events-none absolute inset-x-0 top-0 h-1/3" />
       <div className="office-floor pointer-events-none absolute inset-x-0 bottom-0 h-2/3" />
 
-      <div className="office-props-rail relative z-[1]" aria-hidden>
-        {espressoOwned > 0 ? (
-          <span className="office-prop text-[var(--ship-upgrade-espresso)]">
-            <Coffee className="size-4" strokeWidth={1.75} />
-            {espressoOwned > 1 ? (
-              <span className="text-[10px] font-semibold tabular-nums text-[var(--ship-muted)]">
-                ×{espressoOwned}
-              </span>
-            ) : null}
-          </span>
-        ) : null}
-        {codeReviewOwned > 0 ? (
-          <span className="office-prop text-[var(--ship-upgrade-code-review)]">
-            <GitPullRequest className="size-4" strokeWidth={1.75} />
-            {codeReviewOwned > 1 ? (
-              <span className="text-[10px] font-semibold tabular-nums text-[var(--ship-muted)]">
-                ×{codeReviewOwned}
-              </span>
-            ) : null}
-          </span>
-        ) : null}
-        {ciOwned > 0 ? (
-          <span className="office-prop text-[var(--ship-upgrade-ci-cd)]">
-            <Workflow className="size-4" strokeWidth={1.75} />
-            {ciOwned > 1 ? (
-              <span className="text-[10px] font-semibold tabular-nums text-[var(--ship-muted)]">
-                ×{ciOwned}
-              </span>
-            ) : null}
-          </span>
-        ) : null}
-        {onCallOwned > 0 ? (
-          <span className="office-prop text-[var(--ship-upgrade-on-call)]">
-            <BellRing className="size-4" strokeWidth={1.75} />
-            {onCallOwned > 1 ? (
-              <span className="text-[10px] font-semibold tabular-nums text-[var(--ship-muted)]">
-                ×{onCallOwned}
-              </span>
-            ) : null}
-          </span>
-        ) : null}
-      </div>
+      <OfficeTalkBubbles visibleDevs={visible} />
+
+      {props.length > 0 ? (
+        <div className="office-props-rail relative z-[1]" aria-hidden>
+          {props.map((prop) => (
+            <span key={prop.label} className="office-prop">
+              <span className="text-sm leading-none">{prop.emoji}</span>
+              {prop.owned > 1 ? (
+                <span className="text-[10px] font-semibold tabular-nums text-[var(--ship-muted)]">
+                  ×{prop.owned}
+                </span>
+              ) : null}
+            </span>
+          ))}
+        </div>
+      ) : null}
 
       <div className="office-desk-farm relative z-[1]">
         {Array.from({ length: deskCount }, (_, index) => {
