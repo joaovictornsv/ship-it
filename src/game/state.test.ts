@@ -5,7 +5,11 @@ import { initialGameState, useGameStore } from './state';
 
 describe('useGameStore', () => {
   beforeEach(() => {
-    useGameStore.setState({ ...initialGameState, owned: {} });
+    useGameStore.setState({
+      ...initialGameState,
+      owned: {},
+      saveUntrusted: false,
+    });
   });
 
   it('starts with an empty token bank and no upgrades', () => {
@@ -70,5 +74,23 @@ describe('useGameStore', () => {
     useGameStore.getState().resumeFromHidden(60_000);
     expect(useGameStore.getState().tokens).toBe(2);
     expect(useGameStore.getState().lastTickAt).toBe(60_000);
+  });
+
+  it('hydrateFromSave restores bank/owned and marks untrusted when asked', () => {
+    useGameStore.getState().hydrateFromSave(
+      {
+        tokens: 50,
+        owned: { [ESPRESSO_MACHINE_ID]: 3 },
+        lastTickAt: 1,
+      },
+      { untrusted: true, nowMs: 9_000 },
+    );
+    const state = useGameStore.getState();
+    expect(state.tokens).toBe(50);
+    expect(state.owned[ESPRESSO_MACHINE_ID]).toBe(3);
+    expect(state.lastTickAt).toBe(9_000);
+    expect(state.saveUntrusted).toBe(true);
+    state.dismissSaveWarning();
+    expect(useGameStore.getState().saveUntrusted).toBe(false);
   });
 });

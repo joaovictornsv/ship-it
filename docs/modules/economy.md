@@ -22,7 +22,7 @@ Formulas, cost curves, tokens/s, click power, number formatting (K/M/B).
 | Bank          | `GameState.tokens` in Zustand (`useGameStore`)                          |
 | Click action  | `shipIt()` adds `clickPower()` tokens; returns amount for floating `+N` |
 | Base power    | `clickPower()` → `1` (no modifiers yet)                                 |
-| Persistence   | None yet — in-memory only until saves (#5)                              |
+| Persistence   | Versioned save via `src/features/save/` (see `saves.md`)                |
 | UI rate label | **tokens/s** (`tokensPerSecond(owned)` in header)                       |
 | UI integers   | Bank + rate display `Math.floor` (no decimals in `TokensBank`)          |
 

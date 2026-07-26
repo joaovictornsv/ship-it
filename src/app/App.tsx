@@ -1,8 +1,24 @@
+import {
+  SaveControls,
+  SaveUntrustedBanner,
+  useAutosave,
+  useHydrateSave,
+} from '../features/save';
 import { ShipItButton, TokensBank } from '../features/click';
 import { EspressoBuyRow, useProductionTick } from '../features/shop';
 
 export function App() {
-  useProductionTick();
+  const { ready, error } = useHydrateSave();
+  useAutosave(ready);
+  useProductionTick(ready);
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center px-4 text-[var(--ship-muted)]">
+        Loading save…
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -15,6 +31,20 @@ export function App() {
         </div>
       </header>
 
+      <SaveUntrustedBanner />
+
+      {error ? (
+        <div
+          role="alert"
+          className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_94%,transparent)] px-4 py-2 text-sm text-[var(--ship-ink)]"
+        >
+          <p className="mx-auto max-w-6xl text-left">
+            Could not restore the previous save ({error}). Starting fresh —
+            export backups if you need them.
+          </p>
+        </div>
+      ) : null}
+
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-8 px-4 py-10 text-center">
         <div className="flex flex-col items-center gap-2">
           <h1 className="sr-only">Ship It</h1>
@@ -24,6 +54,7 @@ export function App() {
         </div>
         <ShipItButton />
         <EspressoBuyRow />
+        <SaveControls />
       </main>
     </div>
   );
