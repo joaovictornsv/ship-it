@@ -2,9 +2,14 @@
 
 :root {
   color-scheme: light;
-  --ship-bg: #f3eee4;
-  --ship-ink: #1a1510;
-  --ship-accent: #8b5a2b;
+  /* Shipping / CI dock — cool slate chrome + deploy teal (not coffee brown). */
+  --ship-bg: #e6edf5;
+  --ship-bg-elevated: #f4f7fb;
+  --ship-ink: #122033;
+  --ship-muted: #5b6b7c;
+  --ship-accent: #0f7a74;
+  --ship-accent-deep: #0a524e;
+  --ship-line: color-mix(in srgb, var(--ship-ink) 12%, transparent);
 }
 
 html,
@@ -15,9 +20,23 @@ body,
 
 body {
   margin: 0;
-  background: var(--ship-bg);
   color: var(--ship-ink);
-  font-family: 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--ship-bg);
+  background-image:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, #c5d8ec 55%, var(--ship-bg)) 0%,
+      var(--ship-bg) 42%,
+      color-mix(in srgb, #d7e8e4 40%, var(--ship-bg-elevated)) 100%
+    ),
+    linear-gradient(var(--ship-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ship-line) 1px, transparent 1px);
+  background-size:
+    auto,
+    28px 28px,
+    28px 28px;
+  background-attachment: fixed;
 }
 
 @keyframes ship-press {
@@ -41,6 +60,14 @@ body {
     opacity: 0;
     transform: translate(-50%, -2.75rem);
   }
+}
+
+.ship-it-button {
+  box-shadow: 0 8px 0 var(--ship-accent-deep);
+}
+
+.ship-it-button:active {
+  box-shadow: 0 4px 0 var(--ship-accent-deep);
 }
 
 .ship-it-shipping {

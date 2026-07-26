@@ -45,10 +45,10 @@ export function ShipItButton() {
         type="button"
         className={[
           'ship-it-button relative z-10 min-h-28 min-w-56 rounded-2xl bg-[var(--ship-accent)] px-12 py-8',
-          'text-2xl font-bold tracking-tight text-white shadow-[0_8px_0_#6b4423]',
+          'text-2xl font-bold tracking-tight text-white',
           'transition-[filter] hover:brightness-110',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ship-accent)]',
-          'active:translate-y-1 active:shadow-[0_4px_0_#6b4423]',
+          'active:translate-y-1',
           shipping ? 'ship-it-shipping' : '',
         ].join(' ')}
         aria-label="Ship It — earn tokens"

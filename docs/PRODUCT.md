@@ -22,6 +22,7 @@ A **developer-themed idle clicker**: you click to earn **tokens**, hire **Devs**
 - **Fantasy spine:** you start as a solo hacker and grow into a chaotic but productive engineering org / platform — then **rewrite** and do it again, wiser (permanent mults).
 - **Audience:** portfolio + friends (not itch.io / broad market first).
 - **Narrative:** pure systemic humor for now (no story unlock messages). Incidents / SEV events → later.
+- **Shell palette:** cool slate + **deploy teal** (shipping / CI chrome). Coffee stays as scene flavor (Espresso, mugs), not the UI coin colors. Tokens in CSS: `--ship-bg`, `--ship-ink`, `--ship-accent`, `--ship-muted` in `src/styles/index.css`.
 
 ### Core fantasy loop
 

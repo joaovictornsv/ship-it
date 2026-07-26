@@ -20,14 +20,17 @@ export function TokensBank() {
   const tokenLabel = Math.floor(tokens) === 1 ? 'token' : 'tokens';
 
   return (
-    <div className="text-right text-sm tabular-nums text-black/70">
+    <div className="text-right text-sm tabular-nums text-[var(--ship-muted)]">
       <p aria-live="polite">
         <span className="font-semibold text-[var(--ship-ink)]">
           {formatTokens(tokens)}
         </span>{' '}
         {tokenLabel}
       </p>
-      <p className="text-xs text-black/55" aria-live="polite">
+      <p
+        className="text-xs text-[color-mix(in_srgb,var(--ship-muted)_85%,transparent)]"
+        aria-live="polite"
+      >
         {formatRate(tps)} tokens/s
       </p>
     </div>
