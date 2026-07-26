@@ -1,15 +1,19 @@
-# Check quality reference (stub)
+# Check quality reference
 
-Shared scope and report template for check-quality tiers. Flesh out in roadmap issue #13.
+Shared scope and report templates for check-quality tiers.
+
+## Scope
+
+Review and audit tiers cover changed files under `src/` (and related `docs/modules/` when behavior changes). Verify runs repo-wide scripts.
 
 ## Tiers
 
-| Tier            | Focus                                                    |
-| --------------- | -------------------------------------------------------- |
-| `check-quality` | Full pipeline before PR                                  |
-| `verify`        | `pnpm test`, lint, typecheck, build                      |
-| `review`        | REVIEW.md / AGENTS patterns, dead code, module-doc drift |
-| `audit`         | Save/security assumptions + scene/tick perf              |
+| Tier            | Focus                                                                  |
+| --------------- | ---------------------------------------------------------------------- |
+| `check-quality` | Full pipeline before PR                                                |
+| `verify`        | `pnpm lint`, typecheck, test, build                                    |
+| `review`        | REVIEW.md / AGENTS patterns, **enum centralization**, module-doc drift |
+| `audit`         | Save/security assumptions + scene/tick perf                            |
 
 ## Fast path (verify)
 
@@ -17,7 +21,16 @@ Shared scope and report template for check-quality tiers. Flesh out in roadmap i
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
-## Report template (stub)
+## Review-tier report template
+
+```text
+## Check quality — review
+- enum logic: pass | pass (skipped) | fail
+- code quality (REVIEW.md): pass | fail
+Notes:
+```
+
+## Full pipeline report template
 
 ```text
 ## Check quality

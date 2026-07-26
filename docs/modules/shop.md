@@ -55,7 +55,7 @@ Empty state copy when the queue has nothing to buy:
 | Primary   | Glyph · short name · cost                 | Whole tile is the buy control                                                               |
 | Details   | ⓘ tooltip: blurb, click effect, CTA label | Hover / keyboard focus / touch toggle; portaled to `body` so shop overflow does not clip it |
 
-Successful buy flashes the tile (`buy-spend-flash`). Glyphs: `shipUpgradeEmoji.ts`. Hues: `shipUpgradeColors.ts` → `--ship-upgrade-*`.
+Successful buy flashes the tile (`buy-spend-flash`). Glyphs and hues live on each Ship upgrade def (`emoji`, `colorVar` → `--ship-upgrade-*`).
 
 ## Copy
 

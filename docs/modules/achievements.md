@@ -7,7 +7,7 @@ Gallery shell for owned Ship upgrades and upcoming achievement stubs.
 ## Owned by
 
 - `src/app/AchievementsView.tsx` — player UI
-- `src/data/achievements.ts` — upcoming placeholder list
+- `src/data/achievements.ts` — `UpcomingAchievements` (`createEnum`) + ordered `upcomingAchievements`
 - `src/app/appView.ts` — `#/achievements` hash view
 - Header Medal icon in `App.tsx` (play view)
 
@@ -16,7 +16,7 @@ Gallery shell for owned Ship upgrades and upcoming achievement stubs.
 | Section             | Content                                                           |
 | ------------------- | ----------------------------------------------------------------- |
 | Ship upgrades owned | This-run `shipOwned` catalog entries (glyph, name, blurb, effect) |
-| Coming soon         | Static stubs from `upcomingAchievements` — not unlockable yet     |
+| Coming soon         | Static stubs from `UpcomingAchievements` — not unlockable yet     |
 
 Uses `--ship-*` / Ship upgrade hue tokens; English copy only. No emoji in header chrome (Medal icon is Lucide).
 

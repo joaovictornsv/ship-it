@@ -7,9 +7,6 @@ import {
 import { shipItCta } from '../../game/economy';
 import { useGameStore } from '../../game/state';
 import type { Tokens } from '../../game/types';
-import { shipUpgradeColorVar } from '../shop/shipUpgradeColors';
-import { SHIP_UPGRADE_EMOJI } from '../shop/shipUpgradeEmoji';
-
 type Floater = {
   id: number;
   amount: Tokens;
@@ -24,8 +21,8 @@ export function ShipItButton() {
   const shipIt = useGameStore((state) => state.shipIt);
   const shipOwned = useGameStore((state) => state.shipOwned);
   const cta = shipItCta(shipOwned);
-  const glyph = cta.icon ? SHIP_UPGRADE_EMOJI[cta.icon] : null;
-  const accentVar = cta.upgradeId ? shipUpgradeColorVar(cta.upgradeId) : null;
+  const glyph = cta.emoji;
+  const accentVar = cta.colorVar;
   const reactId = useId();
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const [shipping, setShipping] = useState(false);

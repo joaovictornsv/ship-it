@@ -35,6 +35,10 @@ Espresso is **never** a click-power building. No producer row gains click side-e
 
 Constants: `ESPRESSO_MACHINE_ID`, `DEV_ID`, `CODE_REVIEW_ID`, `CI_CD_ID`, `ON_CALL_ID`.
 
+Each producer def owns **`emoji`** and **`colorVar`** (shop / scene accents). Do not add parallel id→glyph or id→color maps in features.
+
+**Catalog shape (intentional):** producers and Ship upgrades stay as **typed def objects + ordered arrays** (`upgrades`, `shipUpgrades`). Stable save `id` is a field on the def (not the `createEnum` key) so display `name` does not collide with enum `name`. Discrete sets (AppViews, SceneStages, effect kinds, upcoming achievements) use `createEnum`.
+
 Shop order follows the table (early → late). Costs / rates are playtest starting points.
 
 ### Espresso machine (locked role)
@@ -77,6 +81,10 @@ One-shot ladder in `src/data/shipUpgrades.ts`. Buy once → unlock next. Soft un
 | `green-build`         | Green build         | ×2 mult  | 1_800_000  | Green ship               | `green-build`         |
 | `readme-driven`       | README-driven       | +50 flat | 5_000_000  | Docs & ship              | `readme-driven`       |
 | `ship-it-friday`      | Ship-it Friday      | ×3 mult  | 15_000_000 | Friday ship              | `ship-it-friday`      |
+
+Each Ship upgrade def owns **`emoji`** and **`colorVar`**. Shop / CTA helpers should read fields from the def (or thin wrappers), not parallel maps.
+
+Effect kind labels / click-power folding live on `ShipUpgradeEffectKinds` + `shipUpgradeEffectLabel` / `applyShipUpgradeEffect` in `shipUpgrades.ts`.
 
 ```text
 clickPower = (1 + Σ flats) × Π mults

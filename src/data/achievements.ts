@@ -1,39 +1,39 @@
 /**
  * Upcoming achievement stubs for the Achievements page.
- * Real unlock logic lands with the Achievements / incidents roadmap item.
+ * Real unlock predicates land with the Achievements / incidents roadmap item (#33).
+ * Entries use `createEnum` so unlock logic can attach to the same objects later.
  */
 
-export type UpcomingAchievement = {
-  id: string;
-  name: string;
-  blurb: string;
-};
+import { createEnum } from '../lib/createEnum';
 
-/** Placeholder list — not persisted, not unlockable yet. */
-export const upcomingAchievements: UpcomingAchievement[] = [
-  {
-    id: 'first-ship',
-    name: 'First ship',
+export const UpcomingAchievements = createEnum({
+  'first-ship': {
+    title: 'First ship',
     blurb: 'Click Ship It once. The journey of a thousand deploys.',
   },
-  {
-    id: 'espresso-drip',
-    name: 'Espresso drip',
+  'espresso-drip': {
+    title: 'Espresso drip',
     blurb: 'Own an Espresso machine. Automation smells like progress.',
   },
-  {
-    id: 'crowd-control',
-    name: 'Crowd control',
+  'crowd-control': {
+    title: 'Crowd control',
     blurb: 'Fill the office with Devs. LOD will remember this.',
   },
-  {
-    id: 'incident-adjacent',
-    name: 'Incident-adjacent',
+  'incident-adjacent': {
+    title: 'Incident-adjacent',
     blurb: 'Survive a SEV-flavored mini-event (coming later).',
   },
-  {
-    id: 'rewrite-ready',
-    name: 'Rewrite ready',
+  'rewrite-ready': {
+    title: 'Rewrite ready',
     blurb: 'Bank your first Rewrite when prestige ships.',
   },
-];
+});
+
+export type UpcomingAchievementId = keyof typeof UpcomingAchievements;
+
+export type UpcomingAchievement =
+  (typeof UpcomingAchievements)[UpcomingAchievementId];
+
+/** Ordered list for the Achievements gallery (insertion order). */
+export const upcomingAchievements: readonly UpcomingAchievement[] =
+  Object.values(UpcomingAchievements).sort((a, b) => a.index - b.index);

@@ -1,12 +1,12 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Info } from 'lucide-react';
+import { shipUpgradeEffectLabel } from '../../data/shipUpgrades';
 import type { ShipUpgradeDef } from '../../data/shipUpgrades';
 import { shipUpgradeCost } from '../../game/economy';
 import { formatTokensCompact } from '../../game/format';
 import { useGameStore } from '../../game/state';
 import { ShopShipUpgradeIcon } from './ShopShipUpgradeIcon';
-import { shipUpgradeColorVar } from './shipUpgradeColors';
 
 type ShopShipTileProps = {
   upgrade: ShipUpgradeDef;
@@ -24,7 +24,7 @@ export function ShopShipTile({ upgrade }: ShopShipTileProps) {
   const buyShipUpgrade = useGameStore((s) => s.buyShipUpgrade);
   const cost = shipUpgradeCost(upgrade.id);
   const canBuy = tokens >= cost;
-  const colorVar = shipUpgradeColorVar(upgrade.id);
+  const colorVar = upgrade.colorVar;
   const tipId = useId();
   const anchorRef = useRef<HTMLDivElement>(null);
   const tipPanelRef = useRef<HTMLDivElement>(null);
@@ -35,10 +35,7 @@ export function ShopShipTile({ upgrade }: ShopShipTileProps) {
 
   const tipVisible = pinned || hovered;
 
-  const effectLabel =
-    upgrade.effect.kind === 'flat'
-      ? `+${upgrade.effect.amount} tokens per click`
-      : `×${upgrade.effect.factor} click power`;
+  const effectLabel = shipUpgradeEffectLabel(upgrade.effect);
 
   function updatePos() {
     const anchor = anchorRef.current;
@@ -192,7 +189,7 @@ export function ShopShipTile({ upgrade }: ShopShipTileProps) {
           }}
           aria-hidden
         >
-          <ShopShipUpgradeIcon icon={upgrade.icon} />
+          <ShopShipUpgradeIcon emoji={upgrade.emoji} />
         </div>
         <span className="max-w-full truncate text-[0.65rem] font-semibold leading-tight text-[var(--ship-ink)]">
           {upgrade.name}

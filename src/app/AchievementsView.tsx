@@ -1,9 +1,7 @@
 import { upcomingAchievements } from '../data/achievements';
-import { shipUpgrades } from '../data/shipUpgrades';
+import { shipUpgradeEffectLabel, shipUpgrades } from '../data/shipUpgrades';
 import { hasShipUpgrade } from '../game/economy';
 import { useGameStore } from '../game/state';
-import { SHIP_UPGRADE_EMOJI } from '../features/shop/shipUpgradeEmoji';
-import { shipUpgradeColorVar } from '../features/shop/shipUpgradeColors';
 
 /**
  * Achievements screen: owned Ship upgrades + upcoming achievement stubs.
@@ -43,11 +41,7 @@ export function AchievementsView() {
         ) : (
           <ul className="mt-3 flex list-none flex-col gap-2 p-0 sm:grid sm:grid-cols-2 sm:gap-3">
             {ownedList.map((upgrade) => {
-              const colorVar = shipUpgradeColorVar(upgrade.id);
-              const effect =
-                upgrade.effect.kind === 'flat'
-                  ? `+${upgrade.effect.amount} tokens per click`
-                  : `×${upgrade.effect.factor} click power`;
+              const effect = shipUpgradeEffectLabel(upgrade.effect);
               return (
                 <li key={upgrade.id}>
                   <article
@@ -59,11 +53,11 @@ export function AchievementsView() {
                     <div
                       className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--ship-line)] text-lg"
                       style={{
-                        background: `color-mix(in srgb, var(${colorVar}) 14%, transparent)`,
+                        background: `color-mix(in srgb, var(${upgrade.colorVar}) 14%, transparent)`,
                       }}
                       aria-hidden
                     >
-                      {SHIP_UPGRADE_EMOJI[upgrade.icon]}
+                      {upgrade.emoji}
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]">
@@ -100,7 +94,7 @@ export function AchievementsView() {
         </p>
         <ul className="mt-3 flex list-none flex-col gap-2 p-0">
           {upcomingAchievements.map((item) => (
-            <li key={item.id}>
+            <li key={item.name}>
               <article
                 className={[
                   'rounded-xl border border-dashed border-[var(--ship-line)]',
@@ -108,7 +102,7 @@ export function AchievementsView() {
                 ].join(' ')}
               >
                 <h3 className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]">
-                  {item.name}
+                  {item.title}
                 </h3>
                 <p className="mt-0.5 text-xs text-[var(--ship-muted)]">
                   {item.blurb}
