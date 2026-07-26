@@ -19,8 +19,9 @@ description: >-
 4. **Update the checklist in-place** as work progresses (`gh issue edit … --body-file`).
 5. **Work item by item.** Mark the current line `(IN PROGRESS)`, implement, prove, then `(DONE)` with proof (or `(BLOCKED)` with a reason).
 6. **Assign yourself** at the start. Open the PR with `create-pr` when ready (that skill also assigns `@joaovictornsv`).
-7. **Use issue-linked commit messages** when the user asks for a commit (never commit unprompted). Full rules: `git-workflow` skill. Subject is `#<number> <issue title>` from GitHub (`gh issue view <number> --json title -q .title`), then `- ` bullets for what that commit actually changed. Do not require quality checks before committing.
-8. **Follow project UI rules** when the issue touches player-facing UI: read [`docs/modules/ui.md`](../../../docs/modules/ui.md) during PLAN; use `--ship-*` tokens / documented type & spacing; update `ui.md` in the same change if tokens change. If the issue body lacks a **UI rules** section and the work is UI-facing, add one (pointing at `ui.md`) when writing the checklist.
+7. **Agent owns the PR Agent test plan.** When opening or updating the PR via `create-pr`, run every agent test-plan command and mark those boxes `- [x]` yourself. Leave **Human test plan** items unchecked for the human reviewer. Never ask the human to run/check agent commands.
+8. **Use issue-linked commit messages** when the user asks for a commit (never commit unprompted). Full rules: `git-workflow` skill. Subject is `#<number> <issue title>` from GitHub (`gh issue view <number> --json title -q .title`), then `- ` bullets for what that commit actually changed. Do not require quality checks before committing.
+9. **Follow project UI rules** when the issue touches player-facing UI: read [`docs/modules/ui.md`](../../../docs/modules/ui.md) during PLAN; use `--ship-*` tokens / documented type & spacing; update `ui.md` in the same change if tokens change. If the issue body lacks a **UI rules** section and the work is UI-facing, add one (pointing at `ui.md`) when writing the checklist.
 
 ## Checklist format
 
@@ -36,8 +37,8 @@ Append if missing (derive items from acceptance criteria; keep lines concrete + 
 - [ ] (TODO) (UI) Follow `docs/modules/ui.md` (tokens, type, spacing, motion) — or `(SKIP)` with Reason: no player-facing UI.
 - [ ] (TODO) (TEST) Add or update unit tests for <behavior>.
 - [ ] (TODO) (DOCS) Update matching `docs/modules/*.md` if behavior changed (include `ui.md` when chrome/tokens change).
-- [ ] (TODO) (VERIFY) `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
-- [ ] (TODO) (PR) Open PR with `create-pr` and link it here.
+- [ ] (TODO) (VERIFY) `pnpm lint && pnpm typecheck && pnpm test && pnpm build` (same commands the agent will check off on the PR Agent test plan).
+- [ ] (TODO) (PR) Open PR with `create-pr` (agent runs + checks Agent test plan; human leaves Human test plan) and link it here.
 ```
 
 Status rules:
@@ -95,8 +96,8 @@ When committing (only if the user asks), follow the `git-workflow` skill: `#<num
 
 ### 4. Closeout
 
-1. Run verify: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
-2. Open a PR with `create-pr`; put the PR URL on the `(PR)` checklist line as `(DONE)`.
-3. Leave the issue body as the single source of checklist truth.
+1. Open a PR with `create-pr` (that skill runs the **Agent test plan**, marks those boxes `- [x]` on the PR body, and leaves **Human test plan** items unchecked for the reviewer). Put the PR URL on the `(PR)` checklist line as `(DONE)`.
+2. Do **not** ask the human to run or check agent test-plan commands — that is the agent's job when opening/updating the PR.
+3. Leave the issue body as the single source of execution-checklist truth.
 
 See `AGENTS.md` and `.cursor/check-quality-reference.md`.
