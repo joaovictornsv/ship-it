@@ -1,27 +1,23 @@
 import { selectTokensPerSecond, useGameStore } from '../../game/state';
 
+const integerFormat = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 0,
+  minimumFractionDigits: 0,
+});
+
 function formatTokens(tokens: number): string {
-  const fractionDigits = Number.isInteger(tokens) ? 0 : 1;
-  return new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: fractionDigits,
-    minimumFractionDigits: fractionDigits,
-  }).format(tokens);
+  return integerFormat.format(Math.floor(tokens));
 }
 
 function formatRate(tps: number): string {
-  if (tps === 0) return '0';
-  const digits = tps < 1 ? 1 : tps < 10 ? 1 : 0;
-  return new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: digits,
-    minimumFractionDigits: tps < 10 && tps > 0 ? 1 : 0,
-  }).format(tps);
+  return integerFormat.format(Math.floor(tps));
 }
 
 /** Header (or equivalent) token bank + tokens/s display. */
 export function TokensBank() {
   const tokens = useGameStore((state) => state.tokens);
   const tps = useGameStore(selectTokensPerSecond);
-  const tokenLabel = tokens === 1 ? 'token' : 'tokens';
+  const tokenLabel = Math.floor(tokens) === 1 ? 'token' : 'tokens';
 
   return (
     <div className="text-right text-sm tabular-nums text-black/70">
