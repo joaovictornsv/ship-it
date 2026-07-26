@@ -22,7 +22,7 @@ A **developer-themed idle clicker**: you click to earn **tokens**, hire **Devs**
 - **Fantasy spine:** you start as a solo hacker and grow into a chaotic but productive engineering org / platform — then **rewrite** and do it again, wiser (permanent mults).
 - **Audience:** portfolio + friends (not itch.io / broad market first).
 - **Narrative:** pure systemic humor for now (no story unlock messages). Incidents / SEV events → later.
-- **Shell palette:** cool slate + **deploy teal** (shipping / CI chrome). Coffee stays as scene flavor (Espresso, mugs), not the UI coin colors. Canonical tokens / type / spacing: [`docs/modules/ui.md`](./modules/ui.md) (`src/styles/index.css`).
+- **Shell palette:** cool slate + **deploy teal** CTA (shipping / CI chrome), with warmer **token gold** / sky accents for game juice. Coffee stays as scene flavor (Espresso, mugs), not the shell chrome. Canonical tokens / type / spacing: [`docs/modules/ui.md`](./modules/ui.md) (`src/styles/index.css`).
 
 ### Core fantasy loop
 
@@ -76,9 +76,10 @@ Examples:
 
 ### Layout
 
-- **Left / center:** Ship It button + tokens + tokens/s
-- **Middle / background:** living **scene** that densifies as you buy; unlockable rooms over time (office → datacenter → …)
-- **Shop:** right rail on web; bottom drawer / sheet on mobile
+- **Header:** brand mark + Save affordance only (no token meta in the bar)
+- **Left / center:** living **office stage**, then tokens + tokens/s HUD docked on the **Ship It** cluster
+- **Middle / background:** animated atmosphere behind play; scene densifies as you buy; unlockable rooms over time (office → datacenter → …)
+- **Shop:** right rail on web; bottom drawer / sheet on mobile — scan-first buy rows
 
 Scene starts sparse (empty office) and becomes crowded / gloriously messy.
 
@@ -206,7 +207,7 @@ No huge heavenly tree in v1 — three upgrades is enough. Expand later if needed
 ### v1
 
 - [ ] Full early upgrade ladder
-- [ ] Light motion polish (**no audio** yet)
+- [x] Light motion polish (**no audio** yet) — absorbed by #28 game UI redesign
 - [ ] **Rewrite** prestige + **Rewrites** bank mult + small prestige shop (Postmortem / Muscle memory / Stub repo)
 - [ ] Contributor skin pipeline (**static** JSON/assets + fallback skins; opt-in; hover names; bots OK)
 - [ ] Empty → busy office; **unlockable rooms**

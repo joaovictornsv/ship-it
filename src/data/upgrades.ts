@@ -14,7 +14,7 @@ export type UpgradeId =
   | typeof CI_CD_ID
   | typeof ON_CALL_ID;
 
-/** Free-license Lucide icon keys for shop rows (see `ShopUpgradeIcon`). */
+/** Free-license emoji keys for shop rows / scene (see `upgradeEmoji`). */
 export type UpgradeIconId =
   'coffee' | 'dev' | 'code-review' | 'ci-cd' | 'on-call';
 

@@ -1,0 +1,76 @@
+/** Natural office chatter for living-office speech bubbles (English). */
+
+export type DevDialogue = {
+  a: string;
+  b: string;
+};
+
+/** Standalone lines — things people actually say at work. */
+export const DEV_LINES = [
+  'Anyone want coffee?',
+  'Be right back.',
+  'Can you take a look at this?',
+  'Lunch soon?',
+  "I'm stuck on this bug.",
+  'Did you see my message?',
+  'Meeting in five.',
+  'Thanks!',
+  'That makes sense.',
+  'Hold on — almost done.',
+  "Where's the design doc?",
+  "I'll push after lunch.",
+  'Can we sync later?',
+  'Good catch.',
+  'Sorry, was on mute.',
+  'What time is standup?',
+  'My build is still running.',
+  'Does this look okay?',
+  'I can pair on it.',
+  'Ping me when you’re free.',
+  'Taking a quick break.',
+  'Who owns this service?',
+  "I'll leave a comment.",
+  'Ship it when you’re ready.',
+  'Need a second pair of eyes.',
+  'Wifi is acting up again.',
+  'Running late — start without me.',
+  'That PR looks good.',
+  "I'll rebase and merge.",
+  'How’s your day going?',
+  'Got a sec?',
+  'Let me know what you think.',
+  'I pushed a fix.',
+  'Can you share the link?',
+  'I’ll join after this call.',
+  'Standing desk day.',
+  'Is the AC on too high?',
+  'Snack break?',
+  'Don’t forget to save.',
+  'Happy to help.',
+  'On it.',
+  'Sounds good.',
+  'Talk later?',
+  'Nice work on that.',
+  'I’ll follow up in Slack.',
+  'One more thing…',
+  'Where did we leave off?',
+  'Should we hop on a call?',
+  'I’m around if you need me.',
+  'Let’s check after lunch.',
+] as const;
+
+/** Short two-person exchanges that can appear as neighboring bubbles. */
+export const DEV_DIALOGUES: readonly DevDialogue[] = [
+  { a: 'Got a minute?', b: 'Yeah, what’s up?' },
+  { a: 'Coffee run?', b: 'I’m in.' },
+  { a: 'Is staging okay?', b: 'Looks fine from here.' },
+  { a: 'Ready to review?', b: 'Send it over.' },
+  { a: 'Want to pair?', b: 'Sure — give me two minutes.' },
+  { a: 'Did tests pass?', b: 'Yep, all green.' },
+  { a: 'Lunch?', b: 'Give me ten.' },
+  { a: 'You free later?', b: 'After standup, yeah.' },
+  { a: 'Merge okay?', b: 'Go for it.' },
+  { a: 'Need help?', b: 'Actually, yeah — thanks.' },
+  { a: 'Seen the ticket?', b: 'Just opened it.' },
+  { a: 'Pushing now.', b: 'I’ll pull in a sec.' },
+];

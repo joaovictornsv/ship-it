@@ -1,16 +1,17 @@
+import { Save } from 'lucide-react';
 import {
   SaveUntrustedBanner,
   useAutosave,
   useHydrateSave,
 } from '../features/save';
-import { TokensBank } from '../features/click';
 import { useProductionTick } from '../features/shop';
+import { Atmosphere } from './Atmosphere';
 import { PlayView } from './PlayView';
 import { SaveView } from './SaveView';
 import { useAppView } from './useAppView';
 
-const navLinkClass =
-  'rounded-lg px-2 py-1 text-sm font-semibold text-[var(--ship-accent-deep)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]';
+const iconNavClass =
+  'inline-flex size-9 items-center justify-center rounded-lg text-[var(--ship-accent-deep)] hover:bg-[color-mix(in_srgb,var(--ship-ink)_6%,transparent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]';
 
 export function App() {
   const { ready, error } = useHydrateSave();
@@ -27,36 +28,35 @@ export function App() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_82%,transparent)] px-4 py-3 backdrop-blur-sm">
+    <div className="ship-shell flex min-h-dvh flex-col">
+      <Atmosphere />
+      <header className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_82%,transparent)] px-4 py-2.5 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <button
+            type="button"
+            className="text-lg font-semibold tracking-tight text-[var(--ship-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]"
+            onClick={() => setView('play')}
+          >
+            Ship It
+          </button>
+          {view === 'play' ? (
             <button
               type="button"
-              className="text-lg font-semibold tracking-tight text-[var(--ship-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]"
+              className={iconNavClass}
+              aria-label="Save"
+              onClick={() => setView('save')}
+            >
+              <Save className="size-5" strokeWidth={2} aria-hidden />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="rounded-lg px-2 py-1 text-sm font-semibold text-[var(--ship-accent-deep)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]"
               onClick={() => setView('play')}
             >
-              Ship It
+              Back to play
             </button>
-            {view === 'play' ? (
-              <button
-                type="button"
-                className={navLinkClass}
-                onClick={() => setView('save')}
-              >
-                Save
-              </button>
-            ) : (
-              <button
-                type="button"
-                className={navLinkClass}
-                onClick={() => setView('play')}
-              >
-                Back to play
-              </button>
-            )}
-          </div>
-          <TokensBank />
+          )}
         </div>
       </header>
 

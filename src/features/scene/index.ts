@@ -8,6 +8,11 @@ export {
   visibleDevCount,
 } from './lod';
 export {
+  isDevSpawnEvent,
+  notifyUpgradeOwnedChanged,
+  subscribeUpgradeOwnedChanged,
+} from './sceneEvents';
+export {
   sceneStageForOwned,
   SCENE_STAGES,
   type SceneStage,
