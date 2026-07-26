@@ -14,12 +14,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-/** Minimal structural read of `state` before checksum (no clamping). */
+/**
+ * Minimal structural read of `state` before checksum (no clamping).
+ * Omits `shipOwned` when absent so v1 checksums still match pre-migration blobs.
+ */
 function readRawGameState(raw: unknown): GameState {
   if (!isRecord(raw)) {
     throw new Error('Save state must be an object');
   }
-  const { tokens, owned, lastTickAt } = raw;
+  const { tokens, owned, lastTickAt, shipOwned } = raw;
   if (typeof tokens !== 'number' || !Number.isFinite(tokens)) {
     throw new Error('Save state.tokens must be a finite number');
   }
@@ -35,7 +38,21 @@ function readRawGameState(raw: unknown): GameState {
       ownedCounts[id as keyof GameState['owned']] = count;
     }
   }
-  return { tokens, owned: ownedCounts, lastTickAt };
+
+  // Preserve wire shape for checksum: only include shipOwned when present.
+  if (shipOwned === undefined) {
+    return { tokens, owned: ownedCounts, lastTickAt } as GameState;
+  }
+  if (!isRecord(shipOwned)) {
+    throw new Error('Save state.shipOwned must be an object');
+  }
+  const shipFlags: GameState['shipOwned'] = {};
+  for (const [id, flag] of Object.entries(shipOwned)) {
+    if (flag === true || flag === 1) {
+      shipFlags[id as keyof GameState['shipOwned']] = true;
+    }
+  }
+  return { tokens, owned: ownedCounts, shipOwned: shipFlags, lastTickAt };
 }
 
 /** Build a versioned SaveFile for the given state (fresh checksum). */

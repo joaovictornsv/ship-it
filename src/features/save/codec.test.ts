@@ -22,6 +22,7 @@ function sampleState(overrides: Partial<GameState> = {}): GameState {
   return {
     tokens: 42,
     owned: { [ESPRESSO_MACHINE_ID]: 2 },
+    shipOwned: {},
     lastTickAt: 1_700_000_000_000,
     ...overrides,
   };
@@ -101,15 +102,40 @@ describe('checksum + codec', () => {
     await expect(parseSaveBlob(junk)).resolves.toMatchObject({ ok: false });
   });
 
+  it('loads a v1 blob (no shipOwned) with matching checksum then migrates', async () => {
+    const v1State = {
+      tokens: 12,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+      lastTickAt: 50,
+    };
+    const checksum = await checksumState(v1State as GameState);
+    const blob = encodeSaveBlob({
+      v: 1,
+      savedAt: 7,
+      state: v1State as GameState,
+      checksum,
+    });
+    const outcome = await parseSaveBlob(blob);
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) {
+      return;
+    }
+    expect(outcome.result.checksumOk).toBe(true);
+    expect(outcome.result.file.v).toBe(2);
+    expect(outcome.result.file.state.shipOwned).toEqual({});
+    expect(outcome.result.file.state.tokens).toBe(12);
+  });
+
   it('checksum is stable across key order in owned', async () => {
     const a = await checksumState({
       tokens: 1,
       lastTickAt: 0,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
+      shipOwned: {},
     });
     const b = await checksumState(
       JSON.parse(
-        `{"lastTickAt":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"tokens":1}`,
+        `{"lastTickAt":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"shipOwned":{},"tokens":1}`,
       ) as GameState,
     );
     expect(a).toBe(b);
@@ -125,6 +151,24 @@ describe('migrateSaveFile', () => {
       checksum: 'abc',
     };
     expect(migrateSaveFile(file)).toEqual(file);
+  });
+
+  it('migrates v1 saves by adding empty shipOwned', () => {
+    const v1State = {
+      tokens: 10,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+      lastTickAt: 99,
+    } as GameState;
+    const migrated = migrateSaveFile({
+      v: 1,
+      savedAt: 1,
+      state: v1State,
+      checksum: 'abc',
+    });
+    expect(migrated.v).toBe(2);
+    expect(migrated.state.shipOwned).toEqual({});
+    expect(migrated.state.tokens).toBe(10);
+    expect(migrated.state.owned[ESPRESSO_MACHINE_ID]).toBe(1);
   });
 
   it('rejects newer-than-supported versions', () => {

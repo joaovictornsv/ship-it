@@ -13,7 +13,7 @@ export function ShopRail() {
         <h2 className="text-base font-semibold tracking-tight text-[var(--ship-ink)]">
           Shop
         </h2>
-        <p className="text-xs text-[var(--ship-muted)]">tokens/s producers</p>
+        <p className="text-xs text-[var(--ship-muted)]">buildings + ship</p>
       </div>
       <ShopCatalog />
     </aside>

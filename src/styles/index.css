@@ -21,6 +21,19 @@
   --ship-upgrade-code-review: #3d7ea6;
   --ship-upgrade-ci-cd: #2a9d6e;
   --ship-upgrade-on-call: #d97706;
+  /* Ship upgrades (click-power track) — distinct from producer hues. */
+  --ship-upgrade-rubber-duck: #d4a017;
+  --ship-upgrade-keyboard: #5b6b7c;
+  --ship-upgrade-standup: #0f7a74;
+  --ship-upgrade-stack-overflow: #c47a3a;
+  --ship-upgrade-sticky-notes: #e8c47c;
+  --ship-upgrade-dark-mode: #3d5a80;
+  --ship-upgrade-pair: #3d7ea6;
+  --ship-upgrade-lgtm: #2a9d6e;
+  --ship-upgrade-pomodoro: #d97706;
+  --ship-upgrade-green-build: #2a9d6e;
+  --ship-upgrade-readme: #5b6b7c;
+  --ship-upgrade-friday: #0f7a74;
 }
 
 html,

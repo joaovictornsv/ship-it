@@ -1,6 +1,14 @@
-import { useId, useState, type AnimationEvent } from 'react';
+import {
+  useId,
+  useState,
+  type AnimationEvent,
+  type CSSProperties,
+} from 'react';
+import { shipItCta } from '../../game/economy';
 import { useGameStore } from '../../game/state';
 import type { Tokens } from '../../game/types';
+import { shipUpgradeColorVar } from '../shop/shipUpgradeColors';
+import { SHIP_UPGRADE_EMOJI } from '../shop/shipUpgradeEmoji';
 
 type Floater = {
   id: number;
@@ -9,14 +17,25 @@ type Floater = {
 
 /**
  * Dominant Ship It click target: earns tokens and shows floating +N feedback.
- * No audio. Brief press animation; respects prefers-reduced-motion via CSS.
+ * Each owned Ship upgrade evolves label, glyph, and accent tint.
+ * Press uses existing ship-press. No audio. Respects prefers-reduced-motion.
  */
 export function ShipItButton() {
   const shipIt = useGameStore((state) => state.shipIt);
+  const shipOwned = useGameStore((state) => state.shipOwned);
+  const cta = shipItCta(shipOwned);
+  const glyph = cta.icon ? SHIP_UPGRADE_EMOJI[cta.icon] : null;
+  const accentVar = cta.upgradeId ? shipUpgradeColorVar(cta.upgradeId) : null;
   const reactId = useId();
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const [shipping, setShipping] = useState(false);
   const [floaterSeq, setFloaterSeq] = useState(0);
+
+  const buttonStyle: CSSProperties | undefined = accentVar
+    ? {
+        background: `color-mix(in srgb, var(${accentVar}) 42%, var(--ship-accent))`,
+      }
+    : undefined;
 
   function handleClick() {
     const earned = shipIt();
@@ -48,16 +67,24 @@ export function ShipItButton() {
           'text-3xl font-bold tracking-tight text-white',
           'sm:min-h-32 sm:px-12 sm:py-9 sm:text-[1.75rem]',
           'lg:w-auto lg:min-h-28 lg:min-w-56 lg:max-w-none lg:px-12 lg:py-8 lg:text-2xl',
-          'transition-[filter] hover:brightness-110',
+          'transition-[filter,background-color] duration-200 hover:brightness-110',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ship-accent)]',
           'active:translate-y-1',
           shipping ? 'ship-it-shipping' : '',
         ].join(' ')}
-        aria-label="Ship It — earn tokens"
+        style={buttonStyle}
+        aria-label={`${cta.label} — earn tokens`}
         onClick={handleClick}
         onAnimationEnd={handleAnimationEnd}
       >
-        Ship It
+        <span className="inline-flex items-center justify-center gap-2">
+          {glyph ? (
+            <span className="text-[0.85em] leading-none" aria-hidden>
+              {glyph}
+            </span>
+          ) : null}
+          {cta.label}
+        </span>
       </button>
 
       <div
