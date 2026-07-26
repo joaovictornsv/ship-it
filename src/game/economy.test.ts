@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { ESPRESSO_MACHINE, ESPRESSO_MACHINE_ID } from '../data/upgrades';
+import {
+  CODE_REVIEW,
+  CODE_REVIEW_ID,
+  DEV,
+  DEV_ID,
+  ESPRESSO_MACHINE,
+  ESPRESSO_MACHINE_ID,
+} from '../data/upgrades';
 import {
   clickPower,
   COST_GROWTH,
@@ -48,6 +55,20 @@ describe('tokensPerSecond', () => {
     );
     expect(tokensPerSecond({ [ESPRESSO_MACHINE_ID]: 3 })).toBeCloseTo(
       ESPRESSO_MACHINE.tokensPerSecond * 3,
+    );
+  });
+
+  it('sums tokens/s across multiple upgrade types', () => {
+    expect(
+      tokensPerSecond({
+        [ESPRESSO_MACHINE_ID]: 2,
+        [DEV_ID]: 3,
+        [CODE_REVIEW_ID]: 1,
+      }),
+    ).toBeCloseTo(
+      ESPRESSO_MACHINE.tokensPerSecond * 2 +
+        DEV.tokensPerSecond * 3 +
+        CODE_REVIEW.tokensPerSecond,
     );
   });
 });
