@@ -1,4 +1,5 @@
 import {
+  applyShipUpgradeEffect,
   getShipUpgrade,
   shipUpgrades,
   type ShipUpgradeId,
@@ -58,19 +59,14 @@ export function shipUpgradeCost(id: ShipUpgradeId): Tokens {
  * Prestige Muscle memory (#9) will stack as a permanent % on top later.
  */
 export function clickPower(shipOwned: OwnedShipUpgrades = {}): Tokens {
-  let flat = 0;
-  let mult = 1;
+  const acc = { flat: 0, mult: 1 };
   for (const def of shipUpgrades) {
     if (!hasShipUpgrade(shipOwned, def.id)) {
       continue;
     }
-    if (def.effect.kind === 'flat') {
-      flat += def.effect.amount;
-    } else {
-      mult *= def.effect.factor;
-    }
+    applyShipUpgradeEffect(acc, def.effect);
   }
-  return (1 + flat) * mult;
+  return (1 + acc.flat) * acc.mult;
 }
 
 /**

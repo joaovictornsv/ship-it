@@ -66,7 +66,7 @@ export function ShopRow({ upgrade }: ShopRowProps) {
           }}
           aria-hidden
         >
-          <ShopUpgradeIcon icon={upgrade.icon} />
+          <ShopUpgradeIcon emoji={upgrade.emoji} />
         </div>
 
         <div className="min-w-0 flex-1">

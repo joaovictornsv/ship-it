@@ -1,5 +1,5 @@
 import { upcomingAchievements } from '../data/achievements';
-import { shipUpgrades } from '../data/shipUpgrades';
+import { shipUpgradeEffectLabel, shipUpgrades } from '../data/shipUpgrades';
 import { hasShipUpgrade } from '../game/economy';
 import { useGameStore } from '../game/state';
 
@@ -41,10 +41,7 @@ export function AchievementsView() {
         ) : (
           <ul className="mt-3 flex list-none flex-col gap-2 p-0 sm:grid sm:grid-cols-2 sm:gap-3">
             {ownedList.map((upgrade) => {
-              const effect =
-                upgrade.effect.kind === 'flat'
-                  ? `+${upgrade.effect.amount} tokens per click`
-                  : `×${upgrade.effect.factor} click power`;
+              const effect = shipUpgradeEffectLabel(upgrade.effect);
               return (
                 <li key={upgrade.id}>
                   <article
@@ -97,7 +94,7 @@ export function AchievementsView() {
         </p>
         <ul className="mt-3 flex list-none flex-col gap-2 p-0">
           {upcomingAchievements.map((item) => (
-            <li key={item.id}>
+            <li key={item.name}>
               <article
                 className={[
                   'rounded-xl border border-dashed border-[var(--ship-line)]',
@@ -105,7 +102,7 @@ export function AchievementsView() {
                 ].join(' ')}
               >
                 <h3 className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]">
-                  {item.name}
+                  {item.title}
                 </h3>
                 <p className="mt-0.5 text-xs text-[var(--ship-muted)]">
                   {item.blurb}

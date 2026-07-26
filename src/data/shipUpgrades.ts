@@ -1,3 +1,4 @@
+import { createEnum } from '../lib/createEnum';
 import type { Tokens } from '../game/types';
 
 /** Stable Ship upgrade IDs — do not rename without a save migrator. */
@@ -61,6 +62,54 @@ export type ShipUpgradeColorVar =
 /** Flat add to base click power, or multiply after flats. */
 export type ShipUpgradeEffect =
   { kind: 'flat'; amount: number } | { kind: 'mult'; factor: number };
+
+/**
+ * Effect kinds own label / accumulate behavior so shop / achievements /
+ * economy do not duplicate `effect.kind === 'flat'` chains.
+ */
+export const ShipUpgradeEffectKinds = createEnum({
+  flat: {
+    getLabel: (effect: { amount: number }) =>
+      `+${effect.amount} tokens per click`,
+    accumulate: (
+      acc: { flat: number; mult: number },
+      effect: { amount: number },
+    ) => {
+      acc.flat += effect.amount;
+    },
+  },
+  mult: {
+    getLabel: (effect: { factor: number }) => `×${effect.factor} click power`,
+    accumulate: (
+      acc: { flat: number; mult: number },
+      effect: { factor: number },
+    ) => {
+      acc.mult *= effect.factor;
+    },
+  },
+});
+
+export type ShipUpgradeEffectKind = keyof typeof ShipUpgradeEffectKinds;
+
+/** Player-facing effect line for a Ship upgrade. */
+export function shipUpgradeEffectLabel(effect: ShipUpgradeEffect): string {
+  if (effect.kind === ShipUpgradeEffectKinds.flat.name) {
+    return ShipUpgradeEffectKinds.flat.getLabel(effect);
+  }
+  return ShipUpgradeEffectKinds.mult.getLabel(effect);
+}
+
+/** Fold one owned effect into click-power accumulators. */
+export function applyShipUpgradeEffect(
+  acc: { flat: number; mult: number },
+  effect: ShipUpgradeEffect,
+): void {
+  if (effect.kind === ShipUpgradeEffectKinds.flat.name) {
+    ShipUpgradeEffectKinds.flat.accumulate(acc, effect);
+    return;
+  }
+  ShipUpgradeEffectKinds.mult.accumulate(acc, effect);
+}
 
 export type ShipUpgradeDef = {
   id: ShipUpgradeId;
