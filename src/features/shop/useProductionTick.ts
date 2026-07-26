@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useGameStore } from '../../game/state';
+import { notifyProductionTick } from './productionPulse';
 
 const TICK_MS = 100;
 
@@ -26,7 +27,10 @@ export function useProductionTick(
     ensureTickClock(now());
 
     const id = window.setInterval(() => {
-      tick(now());
+      const earned = tick(now());
+      if (earned > 0) {
+        notifyProductionTick();
+      }
     }, TICK_MS);
 
     const onVisibility = () => {

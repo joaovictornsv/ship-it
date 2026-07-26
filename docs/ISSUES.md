@@ -392,18 +392,18 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 
 File with `create-issue` when ready. Product detail in PRODUCT §8 Later.
 
-| Idea                                       | Notes                                                 |
-| ------------------------------------------ | ----------------------------------------------------- |
-| Light motion polish pass                   | v1 polish; still **no audio** until sound toggle      |
-| Balance playtest pass                      | Tune `K`, costs, prestige %; use `balance-pass` skill |
-| Dev tier super-upgrade                     | Promote whole owned stack in place                    |
-| Custom pixel art                           | Replace stock icons where it matters                  |
-| Achievements / incidents / SEV mini-events | Narrative/events later                                |
-| Seasonal skins / hackathon modes           | Cosmetics                                             |
-| Offline progress                           | Explicitly deferred                                   |
-| Sound toggle                               | Post-MVP audio                                        |
-| Accessibility pass                         | Reduce motion (beyond baseline), keyboard shop        |
-| Leaderboard / localization                 | Out of scope (client-only; English only)              |
+| Idea                                       | Notes                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------- |
+| Light motion polish pass                   | Absorbed by #28 (game UI redesign); still **no audio** until sound toggle |
+| Balance playtest pass                      | Tune `K`, costs, prestige %; use `balance-pass` skill                     |
+| Dev tier super-upgrade                     | Promote whole owned stack in place                                        |
+| Custom pixel art                           | Replace stock icons where it matters                                      |
+| Achievements / incidents / SEV mini-events | Narrative/events later                                                    |
+| Seasonal skins / hackathon modes           | Cosmetics                                                                 |
+| Offline progress                           | Explicitly deferred                                                       |
+| Sound toggle                               | Post-MVP audio                                                            |
+| Accessibility pass                         | Reduce motion (beyond baseline), keyboard shop                            |
+| Leaderboard / localization                 | Out of scope (client-only; English only)                                  |
 
 ---
 
