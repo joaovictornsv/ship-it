@@ -220,14 +220,17 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 - Shared DOM+CSS scene; buying a Dev spawns a visible character.
 - Cap rendered sprites (~24–48) + `×N` badge / LOD at high counts.
 - Sparse empty office → denser as owned count grows (buildings/props for non-Dev can be minimal).
+- **Milestone densification:** discrete scene stages keyed off Dev owned count (e.g. 0 / 1 / 10 / 25 / 50+). Stages change layout, props, and density via light CSS/DOM — not continuous morphs, not new art pipelines.
+- Out of scope for #7: Dev tier promotion (junior → mid → …); other upgrades rewriting Dev visuals.
 - Prefer light CSS motion; respect `prefers-reduced-motion`.
 
 **Acceptance criteria**
 
-| Product                                                               | Technical                                            |
-| --------------------------------------------------------------------- | ---------------------------------------------------- |
-| Buy Dev → see a Dev appear; scene readable at 0 / 10 / 100+ (via LOD) | Scene feature under `src/features/scene/`; no Canvas |
-| First 30s path complete: click → buy → tokens/s **and** presence      | `scene.md` documents LOD rules                       |
+| Product                                                                       | Technical                                                     |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Buy Dev → see a Dev appear; scene readable at 0 / 10 / 100+ (via LOD)         | Scene feature under `src/features/scene/`; no Canvas          |
+| Crossing Dev milestones visibly shifts the office (stage, not only +1 sprite) | Milestone thresholds + stage mapping documented in `scene.md` |
+| First 30s path complete: click → buy → tokens/s **and** presence              | `scene.md` documents LOD rules + milestone stages             |
 
 **Depends on:** #6  
 **Module docs:** `scene.md`
