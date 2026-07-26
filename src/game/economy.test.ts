@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { ESPRESSO_MACHINE, ESPRESSO_MACHINE_ID } from '../data/upgrades';
 import {
-  beansFromDelta,
-  beansPerSecond,
   clickPower,
   COST_GROWTH,
   espressoMachineCost,
+  tokensFromDelta,
+  tokensPerSecond,
   upgradeCost,
 } from './economy';
 
 describe('clickPower', () => {
-  it('returns base click power of 1 bean', () => {
+  it('returns base click power of 1 token', () => {
     expect(clickPower()).toBe(1);
   });
 });
@@ -37,31 +37,31 @@ describe('espressoMachineCost', () => {
   });
 });
 
-describe('beansPerSecond', () => {
+describe('tokensPerSecond', () => {
   it('is 0 with nothing owned', () => {
-    expect(beansPerSecond({})).toBe(0);
+    expect(tokensPerSecond({})).toBe(0);
   });
 
   it('scales linearly with Espresso machines owned', () => {
-    expect(beansPerSecond({ [ESPRESSO_MACHINE_ID]: 1 })).toBeCloseTo(
-      ESPRESSO_MACHINE.beansPerSecond,
+    expect(tokensPerSecond({ [ESPRESSO_MACHINE_ID]: 1 })).toBeCloseTo(
+      ESPRESSO_MACHINE.tokensPerSecond,
     );
-    expect(beansPerSecond({ [ESPRESSO_MACHINE_ID]: 3 })).toBeCloseTo(
-      ESPRESSO_MACHINE.beansPerSecond * 3,
+    expect(tokensPerSecond({ [ESPRESSO_MACHINE_ID]: 3 })).toBeCloseTo(
+      ESPRESSO_MACHINE.tokensPerSecond * 3,
     );
   });
 });
 
-describe('beansFromDelta', () => {
-  it('accrues bps * seconds', () => {
-    expect(beansFromDelta(0.1, 1000)).toBeCloseTo(0.1);
-    expect(beansFromDelta(0.1, 10_000)).toBeCloseTo(1);
-    expect(beansFromDelta(1, 500)).toBeCloseTo(0.5);
+describe('tokensFromDelta', () => {
+  it('accrues tps * seconds', () => {
+    expect(tokensFromDelta(0.1, 1000)).toBeCloseTo(0.1);
+    expect(tokensFromDelta(0.1, 10_000)).toBeCloseTo(1);
+    expect(tokensFromDelta(1, 500)).toBeCloseTo(0.5);
   });
 
   it('returns 0 for non-positive delta or rate', () => {
-    expect(beansFromDelta(0.1, 0)).toBe(0);
-    expect(beansFromDelta(0.1, -100)).toBe(0);
-    expect(beansFromDelta(0, 1000)).toBe(0);
+    expect(tokensFromDelta(0.1, 0)).toBe(0);
+    expect(tokensFromDelta(0.1, -100)).toBe(0);
+    expect(tokensFromDelta(0, 1000)).toBe(0);
   });
 });

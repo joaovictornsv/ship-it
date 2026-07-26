@@ -4,7 +4,7 @@ import { useGameStore } from '../../game/state';
 const TICK_MS = 100;
 
 /**
- * Drives the passive beans/s loop while the tab is open.
+ * Drives the passive tokens/s loop while the tab is open.
  * On hide → show, resumes the tick cursor without offline accrual.
  */
 export function useProductionTick(now: () => number = Date.now): void {

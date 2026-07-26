@@ -1,14 +1,14 @@
-import { beansFromDelta, beansPerSecond } from './economy';
-import type { Beans, GameState, OwnedUpgrades } from './types';
+import { tokensFromDelta, tokensPerSecond } from './economy';
+import type { GameState, OwnedUpgrades, Tokens } from './types';
 
 /** Injectable clock — default is `Date.now`. */
 export type Clock = () => number;
 
 export type TickResult = {
-  beans: Beans;
+  tokens: Tokens;
   lastTickAt: number;
-  /** Beans granted this tick (0 when skipping accrual). */
-  earned: Beans;
+  /** Tokens granted this tick (0 when skipping accrual). */
+  earned: Tokens;
 };
 
 /**
@@ -16,17 +16,17 @@ export type TickResult = {
  * Pure: does not mutate; caller applies the result to the store.
  */
 export function applyProductionTick(
-  state: Pick<GameState, 'beans' | 'owned' | 'lastTickAt'>,
+  state: Pick<GameState, 'tokens' | 'owned' | 'lastTickAt'>,
   nowMs: number,
 ): TickResult {
   const deltaMs = nowMs - state.lastTickAt;
   if (deltaMs <= 0) {
-    return { beans: state.beans, lastTickAt: state.lastTickAt, earned: 0 };
+    return { tokens: state.tokens, lastTickAt: state.lastTickAt, earned: 0 };
   }
 
-  const earned = beansFromDelta(beansPerSecond(state.owned), deltaMs);
+  const earned = tokensFromDelta(tokensPerSecond(state.owned), deltaMs);
   return {
-    beans: state.beans + earned,
+    tokens: state.tokens + earned,
     lastTickAt: nowMs,
     earned,
   };
@@ -34,7 +34,7 @@ export function applyProductionTick(
 
 /**
  * Resume after the tab was hidden / unloaded: move the tick cursor forward
- * without granting away-time beans (v1: no offline accrual).
+ * without granting away-time tokens (v1: no offline accrual).
  */
 export function resumeWithoutAccrual(
   nowMs: number,

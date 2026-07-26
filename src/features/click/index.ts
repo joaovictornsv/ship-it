@@ -1,2 +1,2 @@
-export { BeansBank } from './BeansBank';
 export { ShipItButton } from './ShipItButton';
+export { TokensBank } from './TokensBank';

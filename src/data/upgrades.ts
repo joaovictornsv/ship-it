@@ -1,4 +1,4 @@
-import type { Beans } from '../game/types';
+import type { Tokens } from '../game/types';
 
 /** Stable upgrade IDs — do not rename without a save migrator. */
 export const ESPRESSO_MACHINE_ID = 'espresso-machine' as const;
@@ -11,13 +11,13 @@ export type UpgradeDef = {
   /** Short joke blurb for shop rows. */
   blurb: string;
   /** Cost of the first purchase (owned = 0). */
-  baseCost: Beans;
-  /** Passive beans/s contributed per owned unit. */
-  beansPerSecond: number;
+  baseCost: Tokens;
+  /** Passive tokens/s contributed per owned unit. */
+  tokensPerSecond: number;
 };
 
 /**
- * First ladder building: small beans/s producer (not a click-power boost).
+ * First ladder building: small tokens/s producer (not a click-power boost).
  * Costs / rates are playtest-tuned starting points.
  */
 export const ESPRESSO_MACHINE: UpgradeDef = {
@@ -25,7 +25,7 @@ export const ESPRESSO_MACHINE: UpgradeDef = {
   name: 'Espresso machine',
   blurb: 'A tiny drip of automation. Smells like progress.',
   baseCost: 15,
-  beansPerSecond: 0.1,
+  tokensPerSecond: 0.1,
 };
 
 export const upgrades = [ESPRESSO_MACHINE] as const;

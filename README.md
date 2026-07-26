@@ -1,6 +1,6 @@
 # Ship It
 
-Coffee-bean incremental game — ship software, brew beans, grow the office.
+Developer-themed incremental game — ship software, earn tokens, grow the office.
 
 ## Quick start
 
