@@ -89,7 +89,7 @@ export function ShopDrawer() {
                   Shop
                 </h2>
                 <p className="text-xs text-[var(--ship-muted)]">
-                  tokens/s producers
+                  buildings + ship
                 </p>
               </div>
               <button

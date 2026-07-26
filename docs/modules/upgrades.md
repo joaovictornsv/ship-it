@@ -1,18 +1,29 @@
 # Upgrades
 
-Upgrade IDs (Dev, Espresso machine, …), tiers, shop copy, shop ↔ scene hooks.
+Producer IDs (Dev, Espresso machine, …) and the separate **Ship upgrades** click-power track.
 
-**Status:** active — early ladder through On-call (issue #6); Dev / Espresso scene presence (issue #7).
+**Status:** active — early ladder through On-call (#6); Dev / Espresso scene (#7); Ship upgrades one-shot track (#30).
 
 ## Owned by
 
-- `src/data/upgrades.ts` — catalog definitions
-- `src/features/shop/` — `ShopRail` / `ShopRow`
-- `src/game/economy.ts` — cost + tokens/s from owned counts
-- `src/game/state.ts` — `owned` map + `buyUpgrade`
-- `src/features/scene/` — `OfficeScene` from owned; `onUpgradeOwnedChanged` on buy
+- `src/data/upgrades.ts` — producer catalog
+- `src/data/shipUpgrades.ts` — Ship upgrade (click-power) catalog
+- `src/features/shop/` — `ShopRail` / `ShopRow` / `ShopShipRow`
+- `src/game/economy.ts` — cost + tokens/s + `clickPower`
+- `src/game/state.ts` — `owned` / `shipOwned` + buy actions
+- `src/features/scene/` — `OfficeScene` from producer owned; `onUpgradeOwnedChanged` on buy
 
-## Catalog
+## Split (locked)
+
+| Track         | Job                                    | Cost model            | Resets on Rewrite (#9) |
+| ------------- | -------------------------------------- | --------------------- | ---------------------- |
+| Buildings     | tokens/s + scene presence              | Cookie `×1.15` owned  | Yes (run state)        |
+| Ship upgrades | tokens per click + light CTA evolution | One-shot fixed ladder | Yes (run state)        |
+| Muscle memory | permanent % on click (prestige shop)   | Rewrites currency     | No (keep)              |
+
+Espresso is **never** a click-power building. No producer row gains click side-effects.
+
+## Producer catalog
 
 | ID                 | Name             | Role                                                                 | baseCost | tokens/s each | icon key      |
 | ------------------ | ---------------- | -------------------------------------------------------------------- | -------- | ------------- | ------------- |
@@ -38,7 +49,7 @@ Shop order follows the table (early → late). Costs / rates are playtest starti
 - Core tokens/s producer; visible DOM Devs + LOD / milestone stages in `OfficeScene` (#7).
 - One tier for now (no Intern; no junior→mid promote yet).
 
-### Copy
+### Producer copy
 
 | ID                 | Name             | Blurb                                                   |
 | ------------------ | ---------------- | ------------------------------------------------------- |
@@ -48,15 +59,44 @@ Shop order follows the table (early → late). Costs / rates are playtest starti
 | `ci-cd`            | CI / CD          | Green checks soothe the soul. Red ones build character. |
 | `on-call`          | On-call          | Pager duty: the original idle notification.             |
 
+## Ship upgrades (click-power track)
+
+One-shot ladder in `src/data/shipUpgrades.ts`. Buy once → unlock next. Soft unlock after **any** producer is owned (`shipUpgradesUnlocked`).
+
+| ID                    | Name                | Effect  | cost    | CTA label (when highest) | icon key              |
+| --------------------- | ------------------- | ------- | ------- | ------------------------ | --------------------- |
+| `rubber-duck`         | Rubber duck         | +1 flat | 100     | Ship It                  | `rubber-duck`         |
+| `mechanical-keyboard` | Mechanical keyboard | +2 flat | 750     | Type & ship              | `mechanical-keyboard` |
+| `stack-overflow-tab`  | Stack Overflow tab  | +5 flat | 4_000   | Ship from SO             | `stack-overflow-tab`  |
+| `dark-mode`           | Dark mode           | ×2 mult | 25_000  | Ship after dark          | `dark-mode`           |
+| `lgtm-stamp`          | LGTM stamp          | ×2 mult | 150_000 | LGTM ship                | `lgtm-stamp`          |
+
+```text
+clickPower = (1 + Σ flats) × Π mults
+```
+
+Owned map: `GameState.shipOwned: Partial<Record<ShipUpgradeId, true>>`.
+
+### Ship upgrade copy
+
+| ID                    | Blurb                                            |
+| --------------------- | ------------------------------------------------ |
+| `rubber-duck`         | Explain the bug out loud. The duck ships anyway. |
+| `mechanical-keyboard` | Clickier clicks. Neighbors included free.        |
+| `stack-overflow-tab`  | Copy, paste, pray, ship. Ancient ritual.         |
+| `dark-mode`           | Same code. Twice the confidence.                 |
+| `lgtm-stamp`          | Looks good to merge. Tests optional.             |
+
 ## Owned state
 
-`GameState.owned: Partial<Record<UpgradeId, number>>` — missing key means 0.
+- `GameState.owned` — producer counts (missing key = 0)
+- `GameState.shipOwned` — one-shot flags (missing key = not owned)
 
 ## Scene hooks
 
-`onUpgradeOwnedChanged(id, owned)` is a no-op stub until #7. Shop calls it after a successful buy.
+`onUpgradeOwnedChanged(id, owned)` fans out spawn FX for **producers** only. Ship upgrades do not spawn office props in v1.
 
 ## Notes
 
 - Upgrade IDs are stable; renames need a save migrator.
-- Further ladder rows / multipliers can extend the catalog without renaming existing IDs.
+- Further ladder rows / multipliers can extend catalogs without renaming existing IDs.

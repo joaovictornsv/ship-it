@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DARK_MODE_ID,
+  LGTM_STAMP_ID,
+  MECHANICAL_KEYBOARD_ID,
+  RUBBER_DUCK_ID,
+  STACK_OVERFLOW_TAB_ID,
+} from '../data/shipUpgrades';
+import {
   CODE_REVIEW,
   CODE_REVIEW_ID,
   DEV,
@@ -11,14 +18,92 @@ import {
   clickPower,
   COST_GROWTH,
   espressoMachineCost,
+  hasShipUpgrade,
+  highestShipUpgrade,
+  nextShipUpgradeId,
+  shipUpgradesUnlocked,
   tokensFromDelta,
   tokensPerSecond,
   upgradeCost,
 } from './economy';
 
 describe('clickPower', () => {
-  it('returns base click power of 1 token', () => {
+  it('returns base click power of 1 token with no Ship upgrades', () => {
     expect(clickPower()).toBe(1);
+    expect(clickPower({})).toBe(1);
+  });
+
+  it('adds flat Ship upgrades before multiplying', () => {
+    expect(clickPower({ [RUBBER_DUCK_ID]: true })).toBe(2);
+    expect(
+      clickPower({
+        [RUBBER_DUCK_ID]: true,
+        [MECHANICAL_KEYBOARD_ID]: true,
+      }),
+    ).toBe(4);
+    expect(
+      clickPower({
+        [RUBBER_DUCK_ID]: true,
+        [MECHANICAL_KEYBOARD_ID]: true,
+        [STACK_OVERFLOW_TAB_ID]: true,
+      }),
+    ).toBe(9);
+  });
+
+  it('applies mult Ship upgrades after flats', () => {
+    expect(
+      clickPower({
+        [RUBBER_DUCK_ID]: true,
+        [MECHANICAL_KEYBOARD_ID]: true,
+        [STACK_OVERFLOW_TAB_ID]: true,
+        [DARK_MODE_ID]: true,
+      }),
+    ).toBe(18);
+    expect(
+      clickPower({
+        [RUBBER_DUCK_ID]: true,
+        [MECHANICAL_KEYBOARD_ID]: true,
+        [STACK_OVERFLOW_TAB_ID]: true,
+        [DARK_MODE_ID]: true,
+        [LGTM_STAMP_ID]: true,
+      }),
+    ).toBe(36);
+  });
+});
+
+describe('ship upgrade ladder helpers', () => {
+  it('unlocks after the first producer is owned', () => {
+    expect(shipUpgradesUnlocked({})).toBe(false);
+    expect(shipUpgradesUnlocked({ [ESPRESSO_MACHINE_ID]: 1 })).toBe(true);
+  });
+
+  it('walks the one-shot ladder in catalog order', () => {
+    expect(nextShipUpgradeId({})).toBe(RUBBER_DUCK_ID);
+    expect(nextShipUpgradeId({ [RUBBER_DUCK_ID]: true })).toBe(
+      MECHANICAL_KEYBOARD_ID,
+    );
+    expect(
+      nextShipUpgradeId({
+        [RUBBER_DUCK_ID]: true,
+        [MECHANICAL_KEYBOARD_ID]: true,
+        [STACK_OVERFLOW_TAB_ID]: true,
+        [DARK_MODE_ID]: true,
+        [LGTM_STAMP_ID]: true,
+      }),
+    ).toBeNull();
+  });
+
+  it('reports the highest owned Ship upgrade for CTA evolution', () => {
+    expect(highestShipUpgrade({})).toBeNull();
+    expect(
+      highestShipUpgrade({
+        [RUBBER_DUCK_ID]: true,
+        [MECHANICAL_KEYBOARD_ID]: true,
+      })?.id,
+    ).toBe(MECHANICAL_KEYBOARD_ID);
+    expect(hasShipUpgrade({ [RUBBER_DUCK_ID]: true }, RUBBER_DUCK_ID)).toBe(
+      true,
+    );
   });
 });
 
@@ -70,6 +155,12 @@ describe('tokensPerSecond', () => {
         DEV.tokensPerSecond * 3 +
         CODE_REVIEW.tokensPerSecond,
     );
+  });
+
+  it('never gains click side-effects from producers', () => {
+    // Espresso / buildings only affect tokens/s — clickPower stays base without shipOwned.
+    expect(tokensPerSecond({ [ESPRESSO_MACHINE_ID]: 10 })).toBeCloseTo(1);
+    expect(clickPower({})).toBe(1);
   });
 });
 

@@ -2,30 +2,34 @@
 
 Formulas, cost curves, tokens/s, click power, number formatting (K/M/B).
 
-**Status:** active — multi-upgrade tokens/s, Cookie-style costs, compact formatting (issue #6).
+**Status:** active — producer tokens/s + Ship upgrade click-power track (issue #30).
 
 ## Owned by
 
 - `src/game/economy.ts` — pure formulas
 - `src/game/format.ts` — `formatTokensCompact` (K / M / B)
 - `src/game/tick.ts` — pure production tick / resume helpers
-- `src/game/state.ts` — Zustand store (`tokens`, `owned`, `lastTickAt`, actions)
-- `src/game/types.ts` — shared `Tokens` / `OwnedUpgrades` / `GameState`
+- `src/game/state.ts` — Zustand store (`tokens`, `owned`, `shipOwned`, `lastTickAt`, actions)
+- `src/game/types.ts` — shared `Tokens` / `OwnedUpgrades` / `OwnedShipUpgrades` / `GameState`
 - `src/features/click/` — Ship It button + bank UI (tokens + tokens/s)
 - `src/features/shop/` — shop rail + `useProductionTick`
 - related Vitest coverage (`economy.test.ts`, `format.test.ts`, `tick.test.ts`, `state.test.ts`)
 
 ## Click power / bank
 
-| Concept       | Contract                                                                |
-| ------------- | ----------------------------------------------------------------------- |
-| Currency      | Tokens (`Tokens`)                                                       |
-| Bank          | `GameState.tokens` in Zustand (`useGameStore`)                          |
-| Click action  | `shipIt()` adds `clickPower()` tokens; returns amount for floating `+N` |
-| Base power    | `clickPower()` → `1` (no modifiers yet)                                 |
-| Persistence   | Versioned save via `src/features/save/` (see `saves.md`)                |
-| UI rate label | **tokens/s** (`tokensPerSecond(owned)` in header)                       |
-| UI amounts    | `formatTokensCompact` — floor, then plain / K / M / B (no scientific)   |
+| Concept       | Contract                                                                                          |
+| ------------- | ------------------------------------------------------------------------------------------------- |
+| Currency      | Tokens (`Tokens`)                                                                                 |
+| Bank          | `GameState.tokens` in Zustand (`useGameStore`)                                                    |
+| Click action  | `shipIt()` adds `clickPower(shipOwned)` tokens; returns amount for floating `+N`                  |
+| Base power    | `1`                                                                                               |
+| Ship upgrades | Flats sum, then mults multiply: `(1 + Σ flat) × Π mult` from `shipOwned` (this run; see upgrades) |
+| Prestige      | Muscle memory (#9) will be a permanent % on top — not implemented yet                             |
+| Persistence   | Versioned save via `src/features/save/` (see `saves.md`)                                          |
+| UI rate label | **tokens/s** (`tokensPerSecond(owned)` in header)                                                 |
+| UI amounts    | `formatTokensCompact` — floor, then plain / K / M / B (no scientific)                             |
+
+Soft unlock: `shipUpgradesUnlocked(owned)` is true when any producer count is > 0.
 
 ## Number formatting
 
@@ -40,7 +44,7 @@ Formulas, cost curves, tokens/s, click power, number formatting (K/M/B).
 
 Used by the token bank and shop buy costs. Never emits scientific notation.
 
-## Cost curve
+## Cost curve (buildings)
 
 Cookie-style exponential (no hard cap):
 
@@ -51,16 +55,20 @@ cost(owned) = ceil(baseCost × 1.15 ^ owned)
 - Constant: `COST_GROWTH = 1.15` in `economy.ts`
 - Helper: `upgradeCost(baseCost, owned)` / `nextUpgradeCost(id, owned)`
 
+Ship upgrades use **fixed one-shot costs** from the catalog (not `×1.15`).
+
 ## Tokens/s + tick
 
 | Concept          | Contract                                                                                      |
 | ---------------- | --------------------------------------------------------------------------------------------- |
-| Rate             | `tokensPerSecond(owned)` — sum of `owned[id] × def.tokensPerSecond` over the full catalog     |
+| Rate             | `tokensPerSecond(owned)` — sum of `owned[id] × def.tokensPerSecond` over the producer catalog |
 | Accrual          | `tokensFromDelta(tps, deltaMs)` → `tps × deltaMs / 1000`                                      |
 | Open-tab tick    | `applyProductionTick(state, nowMs)` via store `tick(nowMs)` (~100ms)                          |
 | Clock            | Injectable `nowMs` / `Clock` — tests pass fake times                                          |
 | Offline / resume | **No accrual.** `resumeWithoutAccrual(nowMs)` / `resumeFromHidden` only advances `lastTickAt` |
 | Visibility       | On `hidden`: flush tick; on `visible`: resume without grant                                   |
+
+Ship upgrades **never** contribute tokens/s. Producers **never** grant click power (Espresso included).
 
 ## Notes
 

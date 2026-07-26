@@ -21,6 +21,12 @@
   --ship-upgrade-code-review: #3d7ea6;
   --ship-upgrade-ci-cd: #2a9d6e;
   --ship-upgrade-on-call: #d97706;
+  /* Ship upgrades (click-power track) — distinct from producer hues. */
+  --ship-upgrade-rubber-duck: #d4a017;
+  --ship-upgrade-keyboard: #5b6b7c;
+  --ship-upgrade-stack-overflow: #c47a3a;
+  --ship-upgrade-dark-mode: #3d5a80;
+  --ship-upgrade-lgtm: #2a9d6e;
 }
 
 html,

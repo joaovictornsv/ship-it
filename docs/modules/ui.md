@@ -25,28 +25,33 @@ Agents and humans that change player-facing UI **must** read this doc and follow
 
 Defined on `:root` in `src/styles/index.css`. Prefer these over raw hex in components.
 
-| Token                        | Value                  | Use                                                   |
-| ---------------------------- | ---------------------- | ----------------------------------------------------- |
-| `--ship-bg`                  | `#e6edf5`              | Page base (under gradient / grid)                     |
-| `--ship-bg-elevated`         | `#f4f7fb`              | Header / panel surfaces                               |
-| `--ship-ink`                 | `#122033`              | Primary text                                          |
-| `--ship-muted`               | `#5b6b7c`              | Secondary text, helper copy                           |
-| `--ship-accent`              | `#0f7a74`              | Primary actions (Ship It, buy), focus rings, floaters |
-| `--ship-accent-deep`         | `#0a524e`              | Accent press shadow / depth                           |
-| `--ship-line`                | `color-mix(… ink 12%)` | Borders / hairlines                                   |
-| `--ship-token`               | `#d4a017`              | Currency numeral accent in the HUD                    |
-| `--ship-token-soft`          | `#f0d78c`              | Soft token wash (optional highlights)                 |
-| `--ship-sky`                 | `#9ec5e8`              | Backdrop / office wall wash                           |
-| `--ship-warm`                | `#e8c47c`              | Warm backdrop accent (not cream+terracotta shell)     |
-| `--ship-upgrade-espresso`    | `#c47a3a`              | Espresso icon / prop                                  |
-| `--ship-upgrade-dev`         | `#0f7a74`              | Dev icon (aligns with accent)                         |
-| `--ship-upgrade-code-review` | `#3d7ea6`              | Code review icon / prop                               |
-| `--ship-upgrade-ci-cd`       | `#2a9d6e`              | CI / CD icon / prop                                   |
-| `--ship-upgrade-on-call`     | `#d97706`              | On-call icon / prop                                   |
+| Token                           | Value                  | Use                                                   |
+| ------------------------------- | ---------------------- | ----------------------------------------------------- |
+| `--ship-bg`                     | `#e6edf5`              | Page base (under gradient / grid)                     |
+| `--ship-bg-elevated`            | `#f4f7fb`              | Header / panel surfaces                               |
+| `--ship-ink`                    | `#122033`              | Primary text                                          |
+| `--ship-muted`                  | `#5b6b7c`              | Secondary text, helper copy                           |
+| `--ship-accent`                 | `#0f7a74`              | Primary actions (Ship It, buy), focus rings, floaters |
+| `--ship-accent-deep`            | `#0a524e`              | Accent press shadow / depth                           |
+| `--ship-line`                   | `color-mix(… ink 12%)` | Borders / hairlines                                   |
+| `--ship-token`                  | `#d4a017`              | Currency numeral accent in the HUD                    |
+| `--ship-token-soft`             | `#f0d78c`              | Soft token wash (optional highlights)                 |
+| `--ship-sky`                    | `#9ec5e8`              | Backdrop / office wall wash                           |
+| `--ship-warm`                   | `#e8c47c`              | Warm backdrop accent (not cream+terracotta shell)     |
+| `--ship-upgrade-espresso`       | `#c47a3a`              | Espresso icon / prop                                  |
+| `--ship-upgrade-dev`            | `#0f7a74`              | Dev icon (aligns with accent)                         |
+| `--ship-upgrade-code-review`    | `#3d7ea6`              | Code review icon / prop                               |
+| `--ship-upgrade-ci-cd`          | `#2a9d6e`              | CI / CD icon / prop                                   |
+| `--ship-upgrade-on-call`        | `#d97706`              | On-call icon / prop                                   |
+| `--ship-upgrade-rubber-duck`    | `#d4a017`              | Ship upgrade: Rubber duck                             |
+| `--ship-upgrade-keyboard`       | `#5b6b7c`              | Ship upgrade: Mechanical keyboard                     |
+| `--ship-upgrade-stack-overflow` | `#c47a3a`              | Ship upgrade: Stack Overflow tab                      |
+| `--ship-upgrade-dark-mode`      | `#3d5a80`              | Ship upgrade: Dark mode                               |
+| `--ship-upgrade-lgtm`           | `#2a9d6e`              | Ship upgrade: LGTM stamp                              |
 
 **Do not** reintroduce coffee-brown shell chrome (`#8b5a2b`, cream `#f3eee4`, etc.). Scene mug tint (`--office-mug`) stays local on `.office-scene`.
 
-**Avoid:** purple / indigo default gradients, dark-mode-first shells, neon glow stacks. Scene / shop **producer glyphs** may use emoji for warmth; do not sprinkle emoji into header chrome or CTA labels.
+**Avoid:** purple / indigo default gradients, dark-mode-first shells, neon glow stacks. Scene / shop **producer and Ship-upgrade glyphs** may use emoji for warmth; do not sprinkle emoji into header chrome. Ship It CTA may show a small evolution glyph beside the label (not as header chrome).
 
 ### Tailwind usage
 

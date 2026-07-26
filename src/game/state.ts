@@ -1,12 +1,26 @@
 import { create } from 'zustand';
+import {
+  type ShipUpgradeId,
+  getShipUpgrade,
+  shipUpgradeLadderIndex,
+} from '../data/shipUpgrades';
 import { ESPRESSO_MACHINE_ID, type UpgradeId } from '../data/upgrades';
-import { clickPower, nextUpgradeCost, tokensPerSecond } from './economy';
+import {
+  clickPower,
+  hasShipUpgrade,
+  nextShipUpgradeId,
+  nextUpgradeCost,
+  shipUpgradeCost,
+  shipUpgradesUnlocked,
+  tokensPerSecond,
+} from './economy';
 import { applyProductionTick, resumeWithoutAccrual } from './tick';
 import type { GameState, Tokens } from './types';
 
 export const initialGameState: GameState = {
   tokens: 0,
   owned: {},
+  shipOwned: {},
   lastTickAt: 0,
 };
 
@@ -18,6 +32,11 @@ type GameActions = {
    * Returns true when the purchase succeeded.
    */
   buyUpgrade: (id: UpgradeId) => boolean;
+  /**
+   * Buy the next one-shot Ship upgrade if unlocked and affordable.
+   * Returns true when the purchase succeeded.
+   */
+  buyShipUpgrade: (id: ShipUpgradeId) => boolean;
   /** Apply a production tick using `nowMs` (injectable clock). */
   tick: (nowMs: number) => Tokens;
   /**
@@ -48,7 +67,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   ...initialGameState,
   saveUntrusted: false,
   shipIt: () => {
-    const earned = clickPower();
+    const earned = clickPower(get().shipOwned);
     set((state) => ({ tokens: state.tokens + earned }));
     return earned;
   },
@@ -62,6 +81,34 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({
       tokens: state.tokens - cost,
       owned: { ...state.owned, [id]: ownedCount + 1 },
+    });
+    return true;
+  },
+  buyShipUpgrade: (id) => {
+    const state = get();
+    if (!shipUpgradesUnlocked(state.owned)) {
+      return false;
+    }
+    if (hasShipUpgrade(state.shipOwned, id)) {
+      return false;
+    }
+    const nextId = nextShipUpgradeId(state.shipOwned);
+    if (nextId !== id) {
+      return false;
+    }
+    // Ladder integrity: refuse unknown / out-of-order ids.
+    if (shipUpgradeLadderIndex(id) < 0) {
+      return false;
+    }
+    const cost = shipUpgradeCost(id);
+    if (state.tokens < cost) {
+      return false;
+    }
+    // Touch catalog so a typo id throws before mutating state.
+    getShipUpgrade(id);
+    set({
+      tokens: state.tokens - cost,
+      shipOwned: { ...state.shipOwned, [id]: true },
     });
     return true;
   },
@@ -86,6 +133,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({
       tokens: saved.tokens,
       owned: { ...saved.owned },
+      shipOwned: { ...saved.shipOwned },
       lastTickAt: nowMs,
       saveUntrusted: untrusted,
     });
@@ -109,6 +157,7 @@ export function selectPersistedState(state: GameState): GameState {
   return {
     tokens: state.tokens,
     owned: state.owned,
+    shipOwned: state.shipOwned,
     lastTickAt: state.lastTickAt,
   };
 }

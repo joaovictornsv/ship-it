@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { RUBBER_DUCK, RUBBER_DUCK_ID } from '../data/shipUpgrades';
 import { ESPRESSO_MACHINE, ESPRESSO_MACHINE_ID } from '../data/upgrades';
 import { espressoMachineCost } from './economy';
 import { initialGameState, useGameStore } from './state';
@@ -8,6 +9,7 @@ describe('useGameStore', () => {
     useGameStore.setState({
       ...initialGameState,
       owned: {},
+      shipOwned: {},
       saveUntrusted: false,
     });
   });
@@ -16,6 +18,7 @@ describe('useGameStore', () => {
     const state = useGameStore.getState();
     expect(state.tokens).toBe(0);
     expect(state.owned).toEqual({});
+    expect(state.shipOwned).toEqual({});
   });
 
   it('shipIt adds clickPower tokens and returns the amount earned', () => {
@@ -26,6 +29,16 @@ describe('useGameStore', () => {
     useGameStore.getState().shipIt();
     useGameStore.getState().shipIt();
     expect(useGameStore.getState().tokens).toBe(3);
+  });
+
+  it('shipIt scales with owned Ship upgrades', () => {
+    useGameStore.setState({
+      tokens: 0,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+      shipOwned: { [RUBBER_DUCK_ID]: true },
+    });
+    expect(useGameStore.getState().shipIt()).toBe(2);
+    expect(useGameStore.getState().tokens).toBe(2);
   });
 
   it('buyUpgrade spends tokens and increments owned Espresso machines', () => {
@@ -53,6 +66,22 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().tokens).toBe(5);
   });
 
+  it('buyShipUpgrade requires a producer and ladder order', () => {
+    useGameStore.setState({ tokens: 1_000 });
+    expect(useGameStore.getState().buyShipUpgrade(RUBBER_DUCK_ID)).toBe(false);
+
+    useGameStore.setState({
+      tokens: 1_000,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+    });
+    expect(useGameStore.getState().buyShipUpgrade(RUBBER_DUCK_ID)).toBe(true);
+    expect(useGameStore.getState().shipOwned[RUBBER_DUCK_ID]).toBe(true);
+    expect(useGameStore.getState().tokens).toBe(1_000 - RUBBER_DUCK.cost);
+
+    // One-shot: cannot buy again.
+    expect(useGameStore.getState().buyShipUpgrade(RUBBER_DUCK_ID)).toBe(false);
+  });
+
   it('tick accrues tokens/s with an injectable clock', () => {
     useGameStore.setState({
       tokens: 0,
@@ -76,11 +105,12 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().lastTickAt).toBe(60_000);
   });
 
-  it('hydrateFromSave restores bank/owned and marks untrusted when asked', () => {
+  it('hydrateFromSave restores bank/owned/shipOwned and marks untrusted when asked', () => {
     useGameStore.getState().hydrateFromSave(
       {
         tokens: 50,
         owned: { [ESPRESSO_MACHINE_ID]: 3 },
+        shipOwned: { [RUBBER_DUCK_ID]: true },
         lastTickAt: 1,
       },
       { untrusted: true, nowMs: 9_000 },
@@ -88,6 +118,7 @@ describe('useGameStore', () => {
     const state = useGameStore.getState();
     expect(state.tokens).toBe(50);
     expect(state.owned[ESPRESSO_MACHINE_ID]).toBe(3);
+    expect(state.shipOwned[RUBBER_DUCK_ID]).toBe(true);
     expect(state.lastTickAt).toBe(9_000);
     expect(state.saveUntrusted).toBe(true);
     state.dismissSaveWarning();

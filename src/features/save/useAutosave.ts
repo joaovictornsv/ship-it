@@ -10,8 +10,8 @@ function getPersistedSnapshot() {
 }
 
 /**
- * Trailing autosave ~1.5s after tokens / owned changes, plus sync flush on
- * `visibilitychange` (hidden) and `pagehide` via a warmed base64 blob.
+ * Trailing autosave ~1.5s after tokens / owned / shipOwned changes, plus sync
+ * flush on `visibilitychange` (hidden) and `pagehide` via a warmed base64 blob.
  *
  * `lastTickAt`-only updates do not schedule a save. Token accrual from the
  * production tick does schedule, but an already-pending timer is not reset —
@@ -90,7 +90,11 @@ export function useAutosave(enabled: boolean = true): void {
 
     const unsub = useGameStore.subscribe((state, prev) => {
       // Ignore lastTickAt-only noise from the production tick clock.
-      if (state.tokens === prev.tokens && state.owned === prev.owned) {
+      if (
+        state.tokens === prev.tokens &&
+        state.owned === prev.owned &&
+        state.shipOwned === prev.shipOwned
+      ) {
         return;
       }
       schedule();

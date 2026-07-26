@@ -5,11 +5,18 @@ type Migrator = (state: GameState) => GameState;
 
 /**
  * Ordered migrators: key `n` migrates a save at version `n` to `n + 1`.
- * Empty until the first schema bump after v1.
  */
 const migrators: Record<number, Migrator> = {
-  // Example future entry:
-  // 1: (state) => ({ ...state, /* v2 fields */ }),
+  /** v1 → v2: add this-run Ship upgrades map (click-power track). */
+  1: (state) => {
+    const legacy = state as GameState & { shipOwned?: GameState['shipOwned'] };
+    return {
+      tokens: legacy.tokens,
+      owned: legacy.owned,
+      lastTickAt: legacy.lastTickAt,
+      shipOwned: legacy.shipOwned ?? {},
+    };
+  },
 };
 
 /**

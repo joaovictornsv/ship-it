@@ -1,6 +1,8 @@
 import { useId, useState, type AnimationEvent } from 'react';
+import { highestShipUpgrade } from '../../game/economy';
 import { useGameStore } from '../../game/state';
 import type { Tokens } from '../../game/types';
+import { SHIP_UPGRADE_EMOJI } from '../shop/shipUpgradeEmoji';
 
 type Floater = {
   id: number;
@@ -9,10 +11,15 @@ type Floater = {
 
 /**
  * Dominant Ship It click target: earns tokens and shows floating +N feedback.
- * No audio. Brief press animation; respects prefers-reduced-motion via CSS.
+ * Label / glyph evolve subtly with Ship upgrades; press uses existing ship-press.
+ * No audio. Respects prefers-reduced-motion via CSS.
  */
 export function ShipItButton() {
   const shipIt = useGameStore((state) => state.shipIt);
+  const shipOwned = useGameStore((state) => state.shipOwned);
+  const highest = highestShipUpgrade(shipOwned);
+  const label = highest?.ctaLabel ?? 'Ship It';
+  const glyph = highest ? SHIP_UPGRADE_EMOJI[highest.icon] : null;
   const reactId = useId();
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const [shipping, setShipping] = useState(false);
@@ -53,11 +60,18 @@ export function ShipItButton() {
           'active:translate-y-1',
           shipping ? 'ship-it-shipping' : '',
         ].join(' ')}
-        aria-label="Ship It — earn tokens"
+        aria-label={`${label} — earn tokens`}
         onClick={handleClick}
         onAnimationEnd={handleAnimationEnd}
       >
-        Ship It
+        <span className="inline-flex items-center justify-center gap-2">
+          {glyph ? (
+            <span className="text-[0.85em] leading-none" aria-hidden>
+              {glyph}
+            </span>
+          ) : null}
+          {label}
+        </span>
       </button>
 
       <div
