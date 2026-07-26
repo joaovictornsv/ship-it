@@ -195,6 +195,19 @@ body {
   z-index: 5;
 }
 
+@keyframes shop-drawer-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.shop-drawer-panel {
+  animation: shop-drawer-up 220ms ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ship-it-shipping {
     animation: none;
@@ -210,5 +223,9 @@ body {
 
   .office-desk {
     transition: none;
+  }
+
+  .shop-drawer-panel {
+    animation: none;
   }
 }

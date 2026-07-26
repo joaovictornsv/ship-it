@@ -50,13 +50,13 @@ For translucent mixes, use `color-mix` with underscores in arbitrary values, e.g
 
 ## Typography
 
-| Role                         | Spec                                                                                                                            |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Family                       | **Space Grotesk** (`index.html` Google Fonts), then `ui-sans-serif, system-ui, sans-serif`                                      |
-| Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy                                           |
-| Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                                                                |
-| Numbers (bank, costs, rates) | `tabular-nums`                                                                                                                  |
-| Hierarchy (shell today)      | Brand `text-lg`; Ship It CTA `text-2xl`; body `text-base`; meta `text-sm` / `text-xs`; header nav links `text-sm font-semibold` |
+| Role                         | Spec                                                                                                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Family                       | **Space Grotesk** (`index.html` Google Fonts), then `ui-sans-serif, system-ui, sans-serif`                                                                    |
+| Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy                                                                         |
+| Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                                                                                              |
+| Numbers (bank, costs, rates) | `tabular-nums`                                                                                                                                                |
+| Hierarchy (shell today)      | Brand `text-lg`; Ship It CTA `text-3xl` (mobile) → `text-2xl` (`lg+`); body `text-base`; meta `text-sm` / `text-xs`; header nav links `text-sm font-semibold` |
 
 Do not add Inter / Roboto / Arial as the primary UI face. Do not introduce a second display font without updating this doc.
 
@@ -72,7 +72,9 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 | Header nav    | Brand + `gap-3` text links (**Save** / **Back to play**)                                     | Lightweight hash views (`#/` / `#/save`); no router dependency yet |
 | Panel pad     | `px-4 py-3`                                                                                  | Shop / card-like interactive rows                                  |
 | Content max   | `max-w-6xl` (shell), `max-w-md` (single shop row / Save panel), `max-w-sm` (helper sentence) |
-| Main vertical | `py-10`                                                                                      | Primary play / Save area breathing room                            |
+| Main vertical | `py-10`; below `lg` add `pb-28` for the fixed Shop trigger                                   | Primary play area breathing room + mobile shop clearance           |
+| Ship It CTA   | Mobile: `min-h-36` + `w-full max-w-sm` + `text-3xl`; `lg+`: `min-h-28 min-w-56 text-2xl`     | Large phone tap target; desktop stays compact                      |
+| Shop drawer   | Fixed bottom trigger (`max-w-md`); sheet `max-h-[min(78dvh,36rem)]`, `rounded-t-2xl`         | Below `lg` only; closed by default so Ship It owns first paint     |
 
 **Radius:** interactive panels `rounded-xl`; small controls `rounded-lg`; primary Ship It CTA `rounded-2xl`.
 
@@ -80,11 +82,12 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 
 ## Motion
 
-| Name             | Where               | Notes                                                                   |
-| ---------------- | ------------------- | ----------------------------------------------------------------------- |
-| `ship-press`     | `.ship-it-shipping` | Brief scale on Ship It click (~180ms)                                   |
-| `floater-rise`   | `.click-floater`    | `+N` feedback (~700ms); shorter step-end under `prefers-reduced-motion` |
-| `office-dev-bob` | `.office-dev`       | Light Dev idle bob in the living office; off under reduced motion       |
+| Name             | Where                | Notes                                                                   |
+| ---------------- | -------------------- | ----------------------------------------------------------------------- |
+| `ship-press`     | `.ship-it-shipping`  | Brief scale on Ship It click (~180ms)                                   |
+| `floater-rise`   | `.click-floater`     | `+N` feedback (~700ms); shorter step-end under `prefers-reduced-motion` |
+| `office-dev-bob` | `.office-dev`        | Light Dev idle bob in the living office; off under reduced motion       |
+| `shop-drawer-up` | `.shop-drawer-panel` | Mobile shop bottom sheet enter (~220ms); off under reduced motion       |
 
 Always respect `prefers-reduced-motion` (already in `index.css`). Prefer light CSS motion; no audio in MVP.
 

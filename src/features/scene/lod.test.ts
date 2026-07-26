@@ -1,6 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { lodBadgeCount, SCENE_SPRITE_CAP, visibleDevCount } from './lod';
+import {
+  lodBadgeCount,
+  SCENE_SPRITE_CAP,
+  SCENE_SPRITE_CAP_MOBILE,
+  sceneSpriteCap,
+  visibleDevCount,
+} from './lod';
 import { sceneStageForOwned, SCENE_STAGES } from './stages';
+
+describe('sceneSpriteCap', () => {
+  it('uses desktop budget at lg+', () => {
+    expect(sceneSpriteCap(true)).toBe(SCENE_SPRITE_CAP);
+  });
+
+  it('uses leaner mobile budget below lg', () => {
+    expect(sceneSpriteCap(false)).toBe(SCENE_SPRITE_CAP_MOBILE);
+  });
+});
 
 describe('visibleDevCount', () => {
   it('is 0 when nothing owned', () => {
@@ -13,9 +29,16 @@ describe('visibleDevCount', () => {
     expect(visibleDevCount(SCENE_SPRITE_CAP)).toBe(SCENE_SPRITE_CAP);
   });
 
-  it('caps at SCENE_SPRITE_CAP', () => {
+  it('caps at SCENE_SPRITE_CAP by default', () => {
     expect(visibleDevCount(SCENE_SPRITE_CAP + 1)).toBe(SCENE_SPRITE_CAP);
     expect(visibleDevCount(100)).toBe(SCENE_SPRITE_CAP);
+  });
+
+  it('respects an explicit mobile cap', () => {
+    expect(visibleDevCount(20, SCENE_SPRITE_CAP_MOBILE)).toBe(
+      SCENE_SPRITE_CAP_MOBILE,
+    );
+    expect(visibleDevCount(10, SCENE_SPRITE_CAP_MOBILE)).toBe(10);
   });
 
   it('rejects non-finite / negative as 0', () => {
@@ -33,6 +56,11 @@ describe('lodBadgeCount', () => {
   it('returns total owned above the cap', () => {
     expect(lodBadgeCount(33)).toBe(33);
     expect(lodBadgeCount(100)).toBe(100);
+  });
+
+  it('badges earlier under the mobile cap', () => {
+    expect(lodBadgeCount(16, SCENE_SPRITE_CAP_MOBILE)).toBeNull();
+    expect(lodBadgeCount(17, SCENE_SPRITE_CAP_MOBILE)).toBe(17);
   });
 });
 

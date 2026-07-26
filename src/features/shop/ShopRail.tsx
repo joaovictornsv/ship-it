@@ -1,8 +1,7 @@
-import { upgrades } from '../../data/upgrades';
-import { ShopRow } from './ShopRow';
+import { ShopCatalog } from './ShopCatalog';
 
 /**
- * Desktop right-rail shop (stacked under play area below `lg` until #8 drawer).
+ * Desktop right-rail shop (`lg` and up). Mobile uses `ShopDrawer` instead.
  */
 export function ShopRail() {
   return (
@@ -16,13 +15,7 @@ export function ShopRail() {
         </h2>
         <p className="text-xs text-[var(--ship-muted)]">tokens/s producers</p>
       </div>
-      <ul className="flex list-none flex-col gap-3 p-0">
-        {upgrades.map((upgrade) => (
-          <li key={upgrade.id}>
-            <ShopRow upgrade={upgrade} />
-          </li>
-        ))}
-      </ul>
+      <ShopCatalog />
     </aside>
   );
 }
