@@ -1,21 +1,26 @@
 import { Coffee } from 'lucide-react';
+import { DESKTOP_MEDIA_QUERY } from '../../app/breakpoints';
+import { useMediaQuery } from '../../app/useMediaQuery';
 import { DEV_ID, ESPRESSO_MACHINE_ID } from '../../data/upgrades';
 import { useGameStore } from '../../game/state';
 import { DEV_SLOTS } from './devSlots';
 import { DevSprite } from './DevSprite';
-import { lodBadgeCount, visibleDevCount } from './lod';
+import { lodBadgeCount, sceneSpriteCap, visibleDevCount } from './lod';
 import { sceneStageForOwned } from './stages';
 
 /**
  * Shared DOM+CSS living office: Devs spawn from owned count, LOD-capped,
  * with discrete milestone stages (not continuous morphs).
+ * Below `lg`, uses the leaner mobile sprite budget.
  */
 export function OfficeScene() {
+  const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);
+  const cap = sceneSpriteCap(isDesktop);
   const devOwned = useGameStore((s) => s.owned[DEV_ID] ?? 0);
   const espressoOwned = useGameStore((s) => s.owned[ESPRESSO_MACHINE_ID] ?? 0);
   const stage = sceneStageForOwned(devOwned);
-  const visible = visibleDevCount(devOwned);
-  const badge = lodBadgeCount(devOwned);
+  const visible = visibleDevCount(devOwned, cap);
+  const badge = lodBadgeCount(devOwned, cap);
 
   return (
     <section

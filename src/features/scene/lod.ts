@@ -1,14 +1,25 @@
 /**
  * Scene LOD: cap rendered Dev sprites; show ×N badge above the cap.
- * Cap sits mid-range of the product lean (24–48).
+ * Desktop cap sits mid-range of the product lean (24–48); mobile uses a leaner budget.
  */
 
-/** Max Dev DOM sprites rendered at once. */
+/** Max Dev DOM sprites on desktop (`lg` / 1024px+). */
 export const SCENE_SPRITE_CAP = 32;
+
+/** Max Dev DOM sprites below `lg` — leaner mobile budget. */
+export const SCENE_SPRITE_CAP_MOBILE = 16;
+
+/**
+ * Sprite budget for the current layout breakpoint.
+ * `isDesktop` matches Tailwind `lg` (`min-width: 1024px`).
+ */
+export function sceneSpriteCap(isDesktop: boolean): number {
+  return isDesktop ? SCENE_SPRITE_CAP : SCENE_SPRITE_CAP_MOBILE;
+}
 
 /**
  * How many Dev sprites to mount for the given owned count.
- * Clamped to `[0, SCENE_SPRITE_CAP]`.
+ * Clamped to `[0, cap]` (default: desktop `SCENE_SPRITE_CAP`).
  */
 export function visibleDevCount(
   devOwned: number,

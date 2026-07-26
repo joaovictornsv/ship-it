@@ -1,12 +1,13 @@
 # Scene
 
-DOM + CSS living office, LOD caps (24–48), rooms, animation / `prefers-reduced-motion`.
+DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), rooms, animation / `prefers-reduced-motion`.
 
-**Status:** active — visible Devs + LOD + milestone stages (issue #7). Mobile sprite lean in #8.
+**Status:** active — living office + mobile sprite lean (issue #8).
 
 ## Owned by
 
 - `src/features/scene/` — `OfficeScene`, LOD / stage helpers, `onUpgradeOwnedChanged` buy notify
+- `src/app/breakpoints.ts` / `useMediaQuery` — desktop vs mobile sprite budget
 - `src/styles/index.css` — `.office-*` layout, stage desk density, Dev idle bob
 - `src/app/PlayView.tsx` — mounts `OfficeScene` above Ship It
 
@@ -20,14 +21,17 @@ DOM + CSS living office, LOD caps (24–48), rooms, animation / `prefers-reduced
 
 Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap).
 
-## LOD
+## LOD / sprite budget
 
-| Rule            | Value                                                     |
-| --------------- | --------------------------------------------------------- |
-| Sprite cap      | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)         |
-| Visible sprites | `min(owned, 32)` via `visibleDevCount`                    |
-| Badge           | When `owned > 32`, show `×{owned}` so 100+ stays readable |
-| Slots           | Deterministic `DEV_SLOTS` positions — no Canvas           |
+| Rule               | Value                                                                     |
+| ------------------ | ------------------------------------------------------------------------- |
+| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`) |
+| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                         |
+| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                               |
+| Cap helper         | `sceneSpriteCap(isDesktop)`                                               |
+| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                   |
+| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                |
+| Slots              | Deterministic `DEV_SLOTS` positions — no Canvas                           |
 
 Helpers: `src/features/scene/lod.ts` (unit-tested).
 
@@ -55,11 +59,10 @@ Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold sh
 | `office-dev-bob` | `.office-dev`  | Light idle bob (~2.4s); **off** under `prefers-reduced-motion`   |
 | Desk opacity     | `.office-desk` | Short opacity ease when stage changes; none under reduced motion |
 
-Shell motion (`ship-press`, `floater-rise`) stays documented in `ui.md`. Scene mug tint (`--office-mug`) is **local** to `.office-scene` — not a global shell token.
+Shell motion (`ship-press`, `floater-rise`, `shop-drawer-up`) stays documented in `ui.md`. Scene mug tint (`--office-mug`) is **local** to `.office-scene` — not a global shell token.
 
 ## Out of scope (here)
 
-- Mobile sprite budget / leaner scene (#8)
 - Unlockable rooms / prestige keep-list (#11)
 - Contributor skins (#10)
 - Pixel art pipeline

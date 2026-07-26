@@ -1,6 +1,12 @@
 export { onUpgradeOwnedChanged } from './hooks';
 export { OfficeScene } from './OfficeScene';
-export { lodBadgeCount, SCENE_SPRITE_CAP, visibleDevCount } from './lod';
+export {
+  lodBadgeCount,
+  SCENE_SPRITE_CAP,
+  SCENE_SPRITE_CAP_MOBILE,
+  sceneSpriteCap,
+  visibleDevCount,
+} from './lod';
 export {
   sceneStageForOwned,
   SCENE_STAGES,
