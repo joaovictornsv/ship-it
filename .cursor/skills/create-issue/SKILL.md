@@ -1,12 +1,12 @@
 ---
-name: gh-issue
+name: create-issue
 description: >-
   Create or update GitHub issues for Ship It from docs/ISSUES.md (roadmap) or
   bugs/follow-ups. Use when filing the next roadmap issue, opening a bug, or
   the user asks to create/update a GitHub issue. Do not invent labels.
 ---
 
-# gh-issue
+# create-issue
 
 Open GitHub issues for **Ship It** with a consistent body and **only** allowed labels.
 
@@ -88,8 +88,8 @@ EOF
 Optional helper (parses one roadmap section and prints title/body hints):
 
 ```bash
-pnpm exec tsx scripts/gh-issue-from-roadmap.ts 3
-# or: node --experimental-strip-types scripts/gh-issue-from-roadmap.ts 3
+pnpm roadmap:create-issue 3
+# or: node --experimental-strip-types scripts/create-issue-from-roadmap.ts 3
 ```
 
 If the helper is unavailable, parse `docs/ISSUES.md` manually — do not skip the body template.

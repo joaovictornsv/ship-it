@@ -1,11 +1,11 @@
 ---
-name: gh-pr
+name: create-pr
 description: >-
   Open a pull request after quality checks with a structured body. Stub until
   roadmap #13.
 ---
 
-# gh-pr (stub)
+# create-pr (stub)
 
 **Status:** thin stub — deepen in issue #13.
 

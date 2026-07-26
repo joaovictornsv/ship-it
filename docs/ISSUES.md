@@ -6,14 +6,14 @@ Sequenced backlog so **product fantasy** and **technical foundations** grow toge
 
 1. Open issues **in order**. Prefer one PR per issue; keep acceptance criteria in the issue body.
 2. **Bootstrap (#1–#2):** create these without the skill (repo does not exist yet / skill does not exist yet).
-3. **From #3 onward:** create each GitHub issue with the **`gh-issue` skill** shipped in #2, using this file as the source (title, why now, scope, acceptance criteria, depends on, module docs). Do not invent labels.
+3. **From #3 onward:** create each GitHub issue with the **`create-issue` skill** shipped in #2, using this file as the source (title, why now, scope, acceptance criteria, depends on, module docs). Do not invent labels.
 4. Exact costs / prestige `K` / % values are **playtest-tuned** — not separate product issues.
 5. Do not reopen locked product/tech decisions; file bugs/follow-ups instead.
 6. Ship via PRs and staging only. Do not add GitHub Releases, git tags, or a `release` skill while this roadmap is in progress.
 
 ## Suggested labels
 
-Use only these (plus GitHub defaults when truly needed). Do not invent new labels in `gh-issue`.
+Use only these (plus GitHub defaults when truly needed). Do not invent new labels in `create-issue`.
 
 | Label          | Use                                  |
 | -------------- | ------------------------------------ |
@@ -32,8 +32,8 @@ Use only these (plus GitHub defaults when truly needed). Do not invent new label
 
 ```text
 Empty GitHub repo
-  → Scaffold SPA + gh-issue skill (and other agent stubs)
-  → [create remaining issues via gh-issue]
+  → Scaffold SPA + create-issue skill (and other agent stubs)
+  → [create remaining issues via create-issue]
   → Click Ship It (beans)
   → Buy Espresso machine (beans/s)
   → Trust save (autosave + export)
@@ -89,24 +89,24 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 - CI workflow: install (frozen lockfile), lint, typecheck, test, build.
 - Dockerfile / `httpd.conf` stubs for static SPA (deploy wired later).
 - README titled **Ship It**; `AGENTS.md`; `REVIEW.md`; `.cursor/rules/` + skill/command stubs; empty `docs/modules/*`.
-- **Ship a usable `gh-issue` skill** (not a dead stub): enough to open roadmap issues from this file with title, body (why / scope / acceptance / depends / module docs), and no label invention.
-- Other delivery skills may remain thin stubs (`issue-execution-flow`, `gh-pr`, quality-check, …) until #13 hardens them.
+- **Ship a usable `create-issue` skill** (not a dead stub): enough to open roadmap issues from this file with title, body (why / scope / acceptance / depends / module docs), and no label invention.
+- Other delivery skills may remain thin stubs (`implement-issue`, `create-pr`, `check-quality`, …) until #13 hardens them.
 - App shell renders (placeholder layout OK); HTML `<title>` = `Ship It`.
 
 **Acceptance criteria**
 
-| Product                                                          | Technical                                                                                                                   |
-| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Opening the app shows a blank/chrome shell clearly named Ship It | `pnpm dev` / `build` / `lint` / `typecheck` / `test` work; CI green on PR/`main`                                            |
-| English-only UI copy convention documented                       | Layout matches TECHNICAL suggested tree (features/, game/, data/, …); module doc stubs exist                                |
-| —                                                                | `gh-issue` can create the next roadmap issue (#3) from `docs/ISSUES.md` without hand-writing `gh issue create` from scratch |
+| Product                                                          | Technical                                                                                                                       |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Opening the app shows a blank/chrome shell clearly named Ship It | `pnpm dev` / `build` / `lint` / `typecheck` / `test` work; CI green on PR/`main`                                                |
+| English-only UI copy convention documented                       | Layout matches TECHNICAL suggested tree (features/, game/, data/, …); module doc stubs exist                                    |
+| —                                                                | `create-issue` can create the next roadmap issue (#3) from `docs/ISSUES.md` without hand-writing `gh issue create` from scratch |
 
 **Depends on:** #1  
 **Module docs:** stub all of TECHNICAL §5.2
 
 **Create how:** manually (or any one-off `gh issue create`). After this lands, **stop creating issues by hand**.
 
-**After merge:** use `gh-issue` to open **#3–#13** (and deferred items when wanted) from this roadmap, one at a time or in a batch — still respecting depends-on order for _implementation_.
+**After merge:** use `create-issue` to open **#3–#13** (and deferred items when wanted) from this roadmap, one at a time or in a batch — still respecting depends-on order for _implementation_.
 
 ---
 
@@ -130,7 +130,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #2  
 **Module docs:** start `economy.md` (click power / bank)
 
-**Create how:** `gh-issue` skill (after #2).
+**Create how:** `create-issue` skill (after #2).
 
 ---
 
@@ -155,7 +155,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #3  
 **Module docs:** `economy.md`, `upgrades.md`
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
@@ -181,7 +181,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #4  
 **Module docs:** `saves.md`, `security.md`
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
@@ -207,7 +207,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #5  
 **Module docs:** `shop.md`, `upgrades.md`, `economy.md`
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
@@ -232,7 +232,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #6  
 **Module docs:** `scene.md`
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
@@ -256,7 +256,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #7  
 **Module docs:** `shop.md`, `scene.md`
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
@@ -283,7 +283,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #8 (MVP loop solid first)  
 **Module docs:** `prestige.md`, `economy.md`, `saves.md`
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
@@ -308,7 +308,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #7 (scene), ideally #9 not strictly required  
 **Module docs:** `contributors.md`, `security.md`, `scene.md`
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
@@ -332,7 +332,7 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #7, #9  
 **Module docs:** `scene.md`, `prestige.md`, `upgrades.md`
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
@@ -357,19 +357,19 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #2 (Dockerfile stub), preferably playable MVP (#8+)  
 **Module docs:** mention in TECHNICAL / README (no dedicated module)
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
 ### 13. Agent delivery loop hardening
 
-**Why now:** Scaffold shipped a usable `gh-issue` plus thin stubs; harden the issue→implement→PR loop against real workflow.
+**Why now:** Scaffold shipped a usable `create-issue` plus thin stubs; harden the issue→implement→PR loop against real workflow.
 
 **Scope**
 
-- Flesh skills: `issue-execution-flow`, `gh-pr`, `update-docs`, `unit-tests`, `quality-check` (+ verify/review/audit tiers); deepen `gh-issue` if gaps showed up.
+- Flesh skills: `implement-issue`, `create-pr`, `update-docs`, `write-tests`, `check-quality` (+ verify/review/audit tiers); deepen `create-issue` if gaps showed up.
 - Domain skills as needed: `add-upgrade`, `save-migrate`, `balance-pass`, `prestige-change`.
-- Shared `.cursor/quality-check-reference.md`; self-heal rule: fix stale docs in the same change or file a follow-up.
+- Shared `.cursor/check-quality-reference.md`; self-heal rule: fix stale docs in the same change or file a follow-up.
 
 **Acceptance criteria**
 
@@ -381,13 +381,13 @@ Each step below pairs a **player-facing beat** with the **technical contract** t
 **Depends on:** #2; best after a few real PRs (#3–#8)  
 **Module docs:** update `AGENTS.md` / skill docs as needed
 
-**Create how:** `gh-issue` skill.
+**Create how:** `create-issue` skill.
 
 ---
 
 ## Deferred / wishlist (do not block v1)
 
-File with `gh-issue` when ready. Product detail in PRODUCT §8 Later.
+File with `create-issue` when ready. Product detail in PRODUCT §8 Later.
 
 | Idea                                       | Notes                                                 |
 | ------------------------------------------ | ----------------------------------------------------- |
@@ -406,14 +406,14 @@ File with `gh-issue` when ready. Product detail in PRODUCT §8 Later.
 
 ## Mapping to docs
 
-| Roadmap issues           | PRODUCT          | TECHNICAL                  |
-| ------------------------ | ---------------- | -------------------------- |
-| #1 Bootstrap             | Naming / slug    | Remote for CI/deploy later |
-| #2 Scaffold + `gh-issue` | —                | Phase 1 + agent stubs (§5) |
-| #3–#8                    | MVP checklist §8 | Phases 2–4 + save §3       |
-| #9–#11                   | v1 checklist §8  | Phases 5–6                 |
-| #12                      | Staging env name | Phase 7 deploy             |
-| #13                      | —                | Phase 8 agent hardening    |
+| Roadmap issues               | PRODUCT          | TECHNICAL                  |
+| ---------------------------- | ---------------- | -------------------------- |
+| #1 Bootstrap                 | Naming / slug    | Remote for CI/deploy later |
+| #2 Scaffold + `create-issue` | —                | Phase 1 + agent stubs (§5) |
+| #3–#8                        | MVP checklist §8 | Phases 2–4 + save §3       |
+| #9–#11                       | v1 checklist §8  | Phases 5–6                 |
+| #12                          | Staging env name | Phase 7 deploy             |
+| #13                          | —                | Phase 8 agent hardening    |
 
 ---
 

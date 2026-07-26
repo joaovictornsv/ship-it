@@ -1,11 +1,11 @@
 ---
-name: unit-tests
+name: write-tests
 description: >-
   Add or extend Vitest coverage for economy, saves, migrations, and pure
   helpers. Use when adding formulas or save logic.
 ---
 
-# unit-tests (stub)
+# write-tests (stub)
 
 **Status:** thin stub — patterns grow with economy / save issues.
 

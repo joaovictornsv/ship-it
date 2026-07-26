@@ -18,7 +18,7 @@
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "test:watch": "vitest",
-    "roadmap:issue": "node --experimental-strip-types scripts/gh-issue-from-roadmap.ts"
+    "roadmap:create-issue": "node --experimental-strip-types scripts/create-issue-from-roadmap.ts"
   },
   "dependencies": {
     "react": "^19.2.7",

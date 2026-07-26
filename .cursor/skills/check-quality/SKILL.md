@@ -1,10 +1,10 @@
 ---
-name: quality-check
+name: check-quality
 description: >-
   Full pre-ship quality pipeline orchestrator. Stub until roadmap #13.
 ---
 
-# quality-check (stub)
+# check-quality (stub)
 
 **Status:** thin stub — deepen in issue #13.
 
@@ -14,4 +14,4 @@ Minimum verify (always):
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
-See `.cursor/quality-check-reference.md` for tiers (verify / review / audit).
+See `.cursor/check-quality-reference.md` for tiers (verify / review / audit).

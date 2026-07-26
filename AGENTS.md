@@ -31,7 +31,7 @@ Lefthook runs format + lint (staged) + typecheck on pre-commit (`pnpm exec lefth
 ## Do
 
 - Open / implement issues from `docs/ISSUES.md` in order.
-- From roadmap **#3 onward**, create GitHub issues with the **`gh-issue`** skill (do not invent labels).
+- From roadmap **#3 onward**, create GitHub issues with the **`create-issue`** skill (do not invent labels).
 - Update the matching `docs/modules/*.md` in the same PR as behavior changes.
 - Keep economy formulas pure and unit-tested.
 - Prefer one PR-sized issue.
@@ -42,19 +42,20 @@ Lefthook runs format + lint (staged) + typecheck on pre-commit (`pnpm exec lefth
 - Add Playwright / E2E in v1.
 - Put secrets in the client.
 - Invent GitHub labels beyond those listed in `docs/ISSUES.md`.
-- Ship GitHub Releases / tags / a real `release` skill while the roadmap says not to.
+- Ship GitHub Releases / tags / a real `create-release` skill while the roadmap says not to.
 
 ## Skills & commands
 
 | Skill / command                             | Status                                                 |
 | ------------------------------------------- | ------------------------------------------------------ |
-| `gh-issue`                                  | **Usable** — open roadmap issues from `docs/ISSUES.md` |
-| `issue-execution-flow`                      | Stub until #13                                         |
-| `gh-pr`                                     | Stub until #13                                         |
-| `quality-check` (+ verify / review / audit) | Stub until #13                                         |
+| `create-issue`                              | **Usable** — open roadmap issues from `docs/ISSUES.md` |
+| `implement-issue`                           | Stub until #13                                         |
+| `create-pr`                                 | Stub until #13                                         |
+| `check-quality` (+ verify / review / audit) | Stub until #13                                         |
+| `write-tests` / `update-docs`               | Stub until #13                                         |
 | Domain skills (`add-upgrade`, …)            | Stub until needed / #13                                |
 
-Entrypoints: `.cursor/skills/`, `.cursor/commands/`, `.cursor/quality-check-reference.md`.
+Entrypoints: `.cursor/skills/`, `.cursor/commands/`, `.cursor/check-quality-reference.md`.
 
 ## Self-heal
 

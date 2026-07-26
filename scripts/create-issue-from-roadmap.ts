@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
  * Print title + body material for one docs/ISSUES.md roadmap section.
- * Usage: node --experimental-strip-types scripts/gh-issue-from-roadmap.ts <N>
- * Does not call `gh` — the gh-issue skill creates the issue after review.
+ * Usage: node --experimental-strip-types scripts/create-issue-from-roadmap.ts <N>
+ * Does not call `gh` — the create-issue skill creates the issue after review.
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const n = Number(process.argv[2]);
 if (!Number.isFinite(n) || n < 1) {
-  console.error('Usage: gh-issue-from-roadmap.ts <issue-number>');
+  console.error('Usage: create-issue-from-roadmap.ts <issue-number>');
   process.exit(1);
 }
 

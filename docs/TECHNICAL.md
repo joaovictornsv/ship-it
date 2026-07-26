@@ -121,7 +121,7 @@ clicker-game/   # repo folder; npm package / title: ship-it / "Ship It"
 │   ├── rules/
 │   ├── commands/                 # slash-style quality / flow entrypoints
 │   ├── skills/                   # CommitSwimming-style delivery skills
-│   └── quality-check-reference.md
+│   └── check-quality-reference.md
 ├── Dockerfile                    # lipanski/docker-static-website (blog-html style)
 ├── httpd.conf                    # SPA fallback → index.html if needed
 ├── lefthook.yml
@@ -229,7 +229,7 @@ On PR + `main`:
 
 Be pragmatic: **skills for the whole delivery loop**, not only game-domain tasks. Pattern mix:
 
-- **CommitSwimming:** `gh-issue`, `gh-pr`, `issue-execution-flow`, multi-tier **quality-check** commands + reference
+- **CommitSwimming:** `create-issue`, `create-pr`, `implement-issue`, multi-tier **check-quality** commands + reference
 - **cards-cli / books-cli:** thin always-on rules + focused `SKILL.md` (+ `reference.md` / `examples.md` when useful)
 
 ### 5.1 Core files
@@ -241,7 +241,7 @@ Be pragmatic: **skills for the whole delivery loop**, not only game-domain tasks
 | `.cursor/rules/`                        | Always-on routing (stack, English copy, economy purity, “update module docs”) |
 | `.cursor/skills/`                       | Delivery + domain skills (below)                                              |
 | `.cursor/commands/`                     | Slash entrypoints that point at skills / quality tiers                        |
-| `.cursor/quality-check-reference.md`    | Shared scope, report template, fast-path skips                                |
+| `.cursor/check-quality-reference.md`    | Shared scope, report template, fast-path skips                                |
 | `docs/TECHNICAL.md` / `docs/PRODUCT.md` | Product/tech decisions                                                        |
 | `docs/modules/*.md`                     | Per-module source of truth                                                    |
 
@@ -268,26 +268,26 @@ Ship skills early (scaffold / first issues), then deepen them. Adapt CommitSwimm
 
 #### Delivery / process
 
-| Skill                  | Use when                                                                             |
-| ---------------------- | ------------------------------------------------------------------------------------ |
-| `gh-issue`             | Create/update GitHub issues for phases and bugs (labels, templates)                  |
-| `issue-execution-flow` | Implement an issue: execution checklist in issue body → item-by-item proof → PR link |
-| `gh-pr`                | Open PRs after quality-check; structured body + agent/human test plans               |
-| `release`              | Version bump, changelog, GitHub release, tag; never invent secrets                   |
-| `update-docs`          | Sync TECHNICAL/PRODUCT/module docs / AGENTS/REVIEW when decisions or APIs change     |
-| `unit-tests`           | Add/extend Vitest coverage for economy, saves, migrations, pure helpers              |
-| `quality-check`        | Full pre-ship pipeline (orchestrator)                                                |
+| Skill             | Use when                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `create-issue`    | Create/update GitHub issues for phases and bugs (labels, templates)                  |
+| `implement-issue` | Implement an issue: execution checklist in issue body → item-by-item proof → PR link |
+| `create-pr`       | Open PRs after check-quality; structured body + agent/human test plans               |
+| `create-release`  | Version bump, changelog, GitHub release, tag; never invent secrets                   |
+| `update-docs`     | Sync TECHNICAL/PRODUCT/module docs / AGENTS/REVIEW when decisions or APIs change     |
+| `write-tests`     | Add/extend Vitest coverage for economy, saves, migrations, pure helpers              |
+| `check-quality`   | Full pre-ship pipeline (orchestrator)                                                |
 
-#### Quality-check tiers (commands + shared reference)
+#### Check-quality tiers (commands + shared reference)
 
 Mirror CommitSwimming’s split:
 
-| Command / tier         | Focus                                                                        |
-| ---------------------- | ---------------------------------------------------------------------------- |
-| `quality-check`        | Full pipeline before PR                                                      |
-| `quality-check-verify` | `pnpm test`, lint, typecheck, build                                          |
-| `quality-check-review` | REVIEW.md / AGENTS patterns, dead code, naming, module-doc drift             |
-| `quality-check-audit`  | Security (save tamper assumptions, no secrets) + perf (scene LOD, tick cost) |
+| Command / tier  | Focus                                                                        |
+| --------------- | ---------------------------------------------------------------------------- |
+| `check-quality` | Full pipeline before PR                                                      |
+| `verify`        | `pnpm test`, lint, typecheck, build                                          |
+| `review`        | REVIEW.md / AGENTS patterns, dead code, naming, module-doc drift             |
+| `audit`         | Security (save tamper assumptions, no secrets) + perf (scene LOD, tick cost) |
 
 #### Game-domain
 
@@ -302,20 +302,20 @@ Mirror CommitSwimming’s split:
 
 ### 5.4 Issue → PR loop (expected)
 
-1. `gh-issue` — file work with clear acceptance criteria
-2. `issue-execution-flow` — append `## Execution checklist`, implement item-by-item with proof
-3. `unit-tests` + focused `quality-check-verify` as you go
-4. Full `quality-check` before PR
-5. `gh-pr` — open PR, link back on the issue
+1. `create-issue` — file work with clear acceptance criteria
+2. `implement-issue` — append `## Execution checklist`, implement item-by-item with proof
+3. `write-tests` + focused `verify` as you go
+4. Full `check-quality` before PR
+5. `create-pr` — open PR, link back on the issue
 6. `update-docs` when behavior/contracts change
-7. `release` when shipping a versioned milestone
+7. `create-release` when shipping a versioned milestone
 
 ## 6. Testing strategy (v1)
 
 - **Unit only (Vitest):** cost curves, CPS totals, checksum round-trip, migrations, export/import parse.
 - Inject a clock for any time-based logic.
 - **No Playwright** in v1.
-- Prefer the `unit-tests` skill over ad-hoc untested formulas.
+- Prefer the `write-tests` skill over ad-hoc untested formulas.
 
 ## 7. Security & privacy
 
@@ -353,7 +353,7 @@ Mirror CommitSwimming’s split:
 - [x] Migrations for renames/split IDs: **yes**
 - [x] Contributors: **static** + fallbacks
 - [x] Backend/leaderboards: **client-only**
-- [x] Agents: **AGENTS.md + rules + skills + quality-check + module docs** (CommitSwimming + CLI pattern)
+- [x] Agents: **AGENTS.md + rules + skills + check-quality + module docs** (CommitSwimming + CLI pattern)
 - [x] Language: **English only**
 
 _(Exact `K` and % values are balance constants — tune in playtests, not product open questions.)_
@@ -369,7 +369,7 @@ Product + technical decisions are locked. Next: scaffold and issues.
 5. **Prestige (Rewrite)** — soft reset + Rewrites bank/shop per PRODUCT §7 + `prestige.md` + migration if needed
 6. **Contributor skins** — static pipeline + `contributors.md`
 7. **Quave staging deploy** — Dockerfile + deploy workflow → `joaovictornsv-ship-it-staging`
-8. **Agent hardening** — flesh out gh-issue / execution / gh-pr / release / quality-check against real workflow
+8. **Agent hardening** — flesh out create-issue / implement-issue / create-pr / create-release / check-quality against real workflow
 
 Ready to open GitHub issues for these phases when you ask.
 
