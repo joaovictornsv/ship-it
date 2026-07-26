@@ -2,6 +2,8 @@
 
 Developer-themed incremental game — ship software, earn tokens, grow the office.
 
+![Ship It gameplay — small team office, token bank, and shop](./docs/assets/gameplay.png)
+
 ## Quick start
 
 ```bash
