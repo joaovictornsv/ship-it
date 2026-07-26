@@ -40,4 +40,4 @@ Staging on Quave Cloud (`joaovictornsv-ship-it-staging`) lands in roadmap issue 
 
 ## License
 
-Private / personal for now — decide later.
+[MIT](./LICENSE)
