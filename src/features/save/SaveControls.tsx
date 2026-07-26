@@ -84,16 +84,9 @@ export function SaveControls() {
   return (
     <section
       className="w-full max-w-md rounded-xl border border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_88%,transparent)] px-4 py-3 text-left shadow-[0_1px_0_color-mix(in_srgb,var(--ship-ink)_6%,transparent)]"
-      aria-label="Save"
+      aria-label="Export and import"
     >
-      <h2 className="text-base font-semibold tracking-tight text-[var(--ship-ink)]">
-        Save
-      </h2>
-      <p className="mt-0.5 text-sm text-[var(--ship-muted)]">
-        Autosaves locally. Export a backup or import a previous run.
-      </p>
-
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         <button
           type="button"
           disabled={busy}

@@ -1,16 +1,22 @@
 import {
-  SaveControls,
   SaveUntrustedBanner,
   useAutosave,
   useHydrateSave,
 } from '../features/save';
-import { ShipItButton, TokensBank } from '../features/click';
-import { ShopRail, useProductionTick } from '../features/shop';
+import { TokensBank } from '../features/click';
+import { useProductionTick } from '../features/shop';
+import { PlayView } from './PlayView';
+import { SaveView } from './SaveView';
+import { useAppView } from './useAppView';
+
+const navLinkClass =
+  'rounded-lg px-2 py-1 text-sm font-semibold text-[var(--ship-accent-deep)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]';
 
 export function App() {
   const { ready, error } = useHydrateSave();
   useAutosave(ready);
   useProductionTick(ready);
+  const [view, setView] = useAppView();
 
   if (!ready) {
     return (
@@ -24,9 +30,32 @@ export function App() {
     <div className="flex min-h-dvh flex-col">
       <header className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_82%,transparent)] px-4 py-3 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <p className="text-lg font-semibold tracking-tight text-[var(--ship-ink)]">
-            Ship It
-          </p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="text-lg font-semibold tracking-tight text-[var(--ship-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]"
+              onClick={() => setView('play')}
+            >
+              Ship It
+            </button>
+            {view === 'play' ? (
+              <button
+                type="button"
+                className={navLinkClass}
+                onClick={() => setView('save')}
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={navLinkClass}
+                onClick={() => setView('play')}
+              >
+                Back to play
+              </button>
+            )}
+          </div>
           <TokensBank />
         </div>
       </header>
@@ -45,19 +74,7 @@ export function App() {
         </div>
       ) : null}
 
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-10 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
-        <div className="flex flex-1 flex-col items-center justify-center gap-8 text-center lg:min-h-[min(70vh,36rem)]">
-          <div className="flex flex-col items-center gap-2">
-            <h1 className="sr-only">Ship It</h1>
-            <p className="max-w-sm text-base text-[var(--ship-muted)]">
-              Click to earn tokens. Hire Devs and buy tools for tokens/s.
-            </p>
-          </div>
-          <ShipItButton />
-          <SaveControls />
-        </div>
-        <ShopRail />
-      </main>
+      {view === 'save' ? <SaveView /> : <PlayView />}
     </div>
   );
 }

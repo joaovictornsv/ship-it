@@ -50,13 +50,13 @@ For translucent mixes, use `color-mix` with underscores in arbitrary values, e.g
 
 ## Typography
 
-| Role                         | Spec                                                                                       |
-| ---------------------------- | ------------------------------------------------------------------------------------------ |
-| Family                       | **Space Grotesk** (`index.html` Google Fonts), then `ui-sans-serif, system-ui, sans-serif` |
-| Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy      |
-| Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                           |
-| Numbers (bank, costs, rates) | `tabular-nums`                                                                             |
-| Hierarchy (shell today)      | Brand `text-lg`; Ship It CTA `text-2xl`; body `text-base`; meta `text-sm` / `text-xs`      |
+| Role                         | Spec                                                                                                                            |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Family                       | **Space Grotesk** (`index.html` Google Fonts), then `ui-sans-serif, system-ui, sans-serif`                                      |
+| Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy                                           |
+| Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                                                                |
+| Numbers (bank, costs, rates) | `tabular-nums`                                                                                                                  |
+| Hierarchy (shell today)      | Brand `text-lg`; Ship It CTA `text-2xl`; body `text-base`; meta `text-sm` / `text-xs`; header nav links `text-sm font-semibold` |
 
 Do not add Inter / Roboto / Arial as the primary UI face. Do not introduce a second display font without updating this doc.
 
@@ -64,14 +64,15 @@ Do not add Inter / Roboto / Arial as the primary UI face. Do not introduce a sec
 
 Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 
-| Token-ish     | Tailwind                                                                        | Use                                       |
-| ------------- | ------------------------------------------------------------------------------- | ----------------------------------------- |
-| Page gutter   | `px-4`                                                                          | Header / main horizontal padding          |
-| Section stack | `gap-8`                                                                         | Main column between CTA / shop            |
-| Cluster       | `gap-2`–`gap-4`                                                                 | Tight groups (title + helper, header row) |
-| Panel pad     | `px-4 py-3`                                                                     | Shop / card-like interactive rows         |
-| Content max   | `max-w-6xl` (shell), `max-w-md` (single shop row), `max-w-sm` (helper sentence) |
-| Main vertical | `py-10`                                                                         | Primary play area breathing room          |
+| Token-ish     | Tailwind                                                                                     | Use                                                                |
+| ------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Page gutter   | `px-4`                                                                                       | Header / main horizontal padding                                   |
+| Section stack | `gap-8`                                                                                      | Main column between CTA / shop                                     |
+| Cluster       | `gap-2`–`gap-4`                                                                              | Tight groups (title + helper, header row)                          |
+| Header nav    | Brand + `gap-3` text links (**Save** / **Back to play**)                                     | Lightweight hash views (`#/` / `#/save`); no router dependency yet |
+| Panel pad     | `px-4 py-3`                                                                                  | Shop / card-like interactive rows                                  |
+| Content max   | `max-w-6xl` (shell), `max-w-md` (single shop row / Save panel), `max-w-sm` (helper sentence) |
+| Main vertical | `py-10`                                                                                      | Primary play / Save area breathing room                            |
 
 **Radius:** interactive panels `rounded-xl`; small controls `rounded-lg`; primary Ship It CTA `rounded-2xl`.
 
