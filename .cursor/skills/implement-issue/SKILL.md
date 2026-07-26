@@ -20,6 +20,7 @@ description: >-
 5. **Work item by item.** Mark the current line `(IN PROGRESS)`, implement, prove, then `(DONE)` with proof (or `(BLOCKED)` with a reason).
 6. **Assign yourself** at the start. Open the PR with `create-pr` when ready (that skill also assigns `@joaovictornsv`).
 7. **Use issue-linked commit messages** when the user asks for a commit (never commit unprompted). Full rules: `git-workflow` skill. Subject is `#<number> <issue title>` from GitHub (`gh issue view <number> --json title -q .title`), then `- ` bullets for what that commit actually changed. Do not require quality checks before committing.
+8. **Follow project UI rules** when the issue touches player-facing UI: read [`docs/modules/ui.md`](../../../docs/modules/ui.md) during PLAN; use `--ship-*` tokens / documented type & spacing; update `ui.md` in the same change if tokens change. If the issue body lacks a **UI rules** section and the work is UI-facing, add one (pointing at `ui.md`) when writing the checklist.
 
 ## Checklist format
 
@@ -29,11 +30,12 @@ Append if missing (derive items from acceptance criteria; keep lines concrete + 
 ## Execution checklist
 
 - [ ] (TODO) (SYNC) Checkout `main`, pull latest; if dirty tree, ask user how to proceed.
-- [ ] (TODO) (PLAN) Confirm scope and acceptance criteria from the issue body.
+- [ ] (TODO) (PLAN) Confirm scope and acceptance criteria from the issue body. Read `docs/modules/ui.md` if UI-facing.
 - [ ] (TODO) (ASSIGN) Assign issue to joaovictornsv.
 - [ ] (TODO) (CODE) Implement <specific behavior>. Proof: <focused test/check>.
+- [ ] (TODO) (UI) Follow `docs/modules/ui.md` (tokens, type, spacing, motion) — or `(SKIP)` with Reason: no player-facing UI.
 - [ ] (TODO) (TEST) Add or update unit tests for <behavior>.
-- [ ] (TODO) (DOCS) Update matching `docs/modules/*.md` if behavior changed.
+- [ ] (TODO) (DOCS) Update matching `docs/modules/*.md` if behavior changed (include `ui.md` when chrome/tokens change).
 - [ ] (TODO) (VERIFY) `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 - [ ] (TODO) (PR) Open PR with `create-pr` and link it here.
 ```
@@ -83,7 +85,7 @@ gh issue view N --repo joaovictornsv/ship-it --json body -q .body > /tmp/issue-b
 gh issue edit N --repo joaovictornsv/ship-it --body-file /tmp/issue-body-N.md
 ```
 
-If a checklist already exists, reuse it; refine only when vague or stale.
+If a checklist already exists, reuse it; refine only when vague or stale. Ensure a **(UI)** line exists (DONE with proof, or SKIP with reason).
 
 ### 3. Execute one item at a time
 

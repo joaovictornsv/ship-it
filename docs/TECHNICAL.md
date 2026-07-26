@@ -257,6 +257,7 @@ Each major game area gets a living doc. Skills that touch that area **must** rea
 | `docs/modules/security.md`     | Threat model (browser), deterrence limits, contributor data rules |
 | `docs/modules/scene.md`        | DOM scene, LOD caps, rooms, animation / reduced-motion            |
 | `docs/modules/shop.md`         | Shop UX (right rail + mobile drawer), buy affordances             |
+| `docs/modules/ui.md`           | Shell palette, type, spacing, motion — source of truth for chrome |
 | `docs/modules/prestige.md`     | **Rewrite** soft reset, Rewrites currency, what resets vs keeps   |
 | `docs/modules/contributors.md` | Static skin pipeline, opt-in, fallbacks, attribution              |
 
