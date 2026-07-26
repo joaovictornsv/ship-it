@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+:root {
+  color-scheme: light;
+  --ship-bg: #f3eee4;
+  --ship-ink: #1a1510;
+  --ship-accent: #8b5a2b;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ship-bg);
+  color: var(--ship-ink);
+  font-family: 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+}
