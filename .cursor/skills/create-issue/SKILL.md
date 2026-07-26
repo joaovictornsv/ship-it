@@ -15,6 +15,7 @@ Open GitHub issues for **Ship It** with a consistent body and **only** allowed l
 1. Confirm repo remote: `joaovictornsv/ship-it` (or `gh repo view --json nameWithOwner`).
 2. Read [`docs/ISSUES.md`](../../../docs/ISSUES.md) for roadmap items and **Suggested labels**.
 3. Check existing issues so you do not duplicate: `gh issue list --state all --limit 50`.
+4. If the issue will touch player-facing UI, read [`docs/modules/ui.md`](../../../docs/modules/ui.md) so acceptance criteria can require it.
 
 ## Allowed labels (do not invent)
 
@@ -46,13 +47,19 @@ For a numbered section (e.g. **### 3. Core click…**):
 
 <copy the Product | Technical table>
 
+## UI rules
+
+Follow [`docs/modules/ui.md`](../modules/ui.md) for shell palette, typography, spacing, and motion.
+Do not invent one-off colors/fonts. If tokens must change, update `ui.md` + `src/styles/index.css` in the same PR.
+<!-- If the issue has no player-facing UI, write: N/A — no player-facing UI. -->
+
 ## Depends on
 
 <from Depends on — link GitHub issue numbers when they exist, e.g. #2>
 
 ## Module docs
 
-<from Module docs>
+<from Module docs — include `ui.md` when the issue changes shell chrome / layout>
 
 ## Source
 
@@ -92,12 +99,12 @@ pnpm roadmap:create-issue 3
 # or: node --experimental-strip-types scripts/create-issue-from-roadmap.ts 3
 ```
 
-If the helper is unavailable, parse `docs/ISSUES.md` manually — do not skip the body template.
+If the helper is unavailable, parse `docs/ISSUES.md` manually — do not skip the body template. When using the helper, still ensure the created body includes **UI rules** (edit after create if the script does not inject it yet).
 
 ## Bugs / follow-ups
 
 - Title: short, specific.
-- Body: **What**, **Expected**, **Steps / context**, **Acceptance criteria**.
+- Body: **What**, **Expected**, **Steps / context**, **Acceptance criteria**, **UI rules** (same wording as roadmap template, or `N/A — no player-facing UI`).
 - Labels: `bug` or `type:feature` + the relevant `area:*` / `phase:*`.
 - Do not reopen locked PRODUCT/TECHNICAL decisions; point at a follow-up.
 
@@ -114,3 +121,4 @@ gh issue comment N --repo joaovictornsv/ship-it --body "…"
 - Invent labels outside the allowed set.
 - Open #3–#13 by hand-waving without reading `docs/ISSUES.md`.
 - Create GitHub Releases / tags as part of this skill.
+- Omit the **UI rules** section from new issue bodies.

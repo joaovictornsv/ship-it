@@ -9,6 +9,7 @@ alwaysApply: true
 - Product decisions live in `docs/PRODUCT.md` — do not reopen; file follow-ups.
 - UI and docs copy: **English only**.
 - When changing a game area, read and update the matching `docs/modules/*.md` in the same change.
+- Player-facing UI must follow `docs/modules/ui.md` (palette, type, spacing, motion).
 - Economy helpers stay pure (`src/game/economy.ts`); unit-test formulas.
 - From roadmap #3 onward, create GitHub issues with the `create-issue` skill; **do not invent labels** (see `docs/ISSUES.md`).
 - Prefer `pnpm` scripts; CI expects Node 24 + frozen lockfile.

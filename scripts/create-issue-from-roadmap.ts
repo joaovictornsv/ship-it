@@ -59,6 +59,11 @@ ${(scope?.[1] ?? '').trim()}
 
 ${(acceptance?.[1] ?? '').trim()}
 
+## UI rules
+
+Follow [\`docs/modules/ui.md\`](../modules/ui.md) for shell palette, typography, spacing, and motion.
+Do not invent one-off colors/fonts. If tokens must change, update \`ui.md\` + \`src/styles/index.css\` in the same PR.
+
 ## Depends on
 
 ${(depends?.[1] ?? '—').trim()}
