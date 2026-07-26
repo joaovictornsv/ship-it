@@ -7,7 +7,7 @@ Shop UX: desktop right rail + mobile bottom drawer; buy affordances; joke copy.
 ## Owned by
 
 - `src/features/shop/` — `ShopRail`, `ShopRow`, `ShopUpgradeIcon`, `useProductionTick`
-- `src/features/scene/hooks.ts` — stub `onUpgradeOwnedChanged` (wired on buy; scene in #7)
+- `src/features/scene/` — living office reads owned from store; `onUpgradeOwnedChanged` still called on buy
 
 ## Layout
 

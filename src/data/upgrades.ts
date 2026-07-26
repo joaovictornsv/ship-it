@@ -32,7 +32,7 @@ export type UpgradeDef = {
 
 /**
  * Early ladder buildings: Cookie-style rising costs; rates are playtest starting points.
- * Scene presence for Dev / props lands with the living office (#7).
+ * Dev / Espresso scene presence: `OfficeScene` (#7).
  */
 export const ESPRESSO_MACHINE: UpgradeDef = {
   id: ESPRESSO_MACHINE_ID,
