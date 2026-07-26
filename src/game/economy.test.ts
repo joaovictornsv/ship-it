@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { clickPowerPlaceholder } from './economy';
+import { clickPower } from './economy';
 
-describe('economy scaffold', () => {
-  it('exposes a placeholder click power of 1', () => {
-    expect(clickPowerPlaceholder()).toBe(1);
+describe('clickPower', () => {
+  it('returns base click power of 1 bean', () => {
+    expect(clickPower()).toBe(1);
   });
 });
