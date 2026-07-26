@@ -19,3 +19,45 @@ body {
   color: var(--ship-ink);
   font-family: 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
 }
+
+@keyframes ship-press {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.94);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes floater-rise {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -2.75rem);
+  }
+}
+
+.ship-it-shipping {
+  animation: ship-press 180ms ease-out;
+}
+
+.click-floater {
+  left: 50%;
+  animation: floater-rise 700ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ship-it-shipping {
+    animation: none;
+  }
+
+  .click-floater {
+    animation: floater-rise 400ms step-end forwards;
+  }
+}
