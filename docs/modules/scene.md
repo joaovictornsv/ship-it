@@ -47,17 +47,29 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold shifts the office (empty desk count / floor tint), not only +1 sprite. Stage changes briefly flash the panel (`.office-stage-flash`).
 
-| Owned Devs | Stage name   | Feel                                    |
-| ---------- | ------------ | --------------------------------------- |
-| 0          | `empty`      | Sparse office — faint empty desk        |
-| 1          | `solo`       | Solo hacker — first desk occupied       |
-| 10         | `small-team` | Small team — more desks visible         |
-| 25         | `open-plan`  | Open-plan densification — full desk set |
-| 50+        | `crowded`    | Crowded office; LOD + badge carry count |
+| Owned Devs | Stage name   | Feel                                         |
+| ---------- | ------------ | -------------------------------------------- |
+| 0          | `empty`      | Vacant office — empty desks + hire-Devs hint |
+| 1          | `solo`       | Solo hacker — first desk occupied            |
+| 10         | `small-team` | Small team — more desks visible              |
+| 25         | `open-plan`  | Open-plan densification — full desk set      |
+| 50+        | `crowded`    | Crowded office; LOD + badge carry count      |
 
 - Data-driven: `SceneStages` / `SCENE_STAGES` / `sceneStageForOwned` in `src/features/scene/stages.ts` (`createEnum`; per-stage fields like `emptyDesks` live on the entry).
 - Cheap CSS variants (`.office-stage-*`) — no art pipeline in #7 / #28.
 - Stages are **not** Dev tier promotion (junior → mid → senior).
+
+## Empty office (0 Devs)
+
+When `devOwned === 0` (`office-stage-empty`), the stage shows a vacant-office empty state:
+
+| Element     | Behavior                                                     |
+| ----------- | ------------------------------------------------------------ |
+| Empty desks | 4 desk chips at readable opacity (`.office-stage-empty`)     |
+| Hint        | Centered copy: “Empty office — hire Devs to fill the desks.” |
+| Exit        | Hint disappears once the first Dev is owned (stage → `solo`) |
+
+The play-tip below Ship It stays about clicking / tokens; this hint is place-specific to the office stage.
 
 ## Motion
 

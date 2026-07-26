@@ -361,11 +361,24 @@ button:disabled {
   opacity: 0.95;
 }
 
+.office-stage-empty .office-desk-cell-empty .office-desk-surface,
 .office-stage-solo .office-desk-cell-empty .office-desk-surface,
 .office-stage-small-team .office-desk-cell-empty .office-desk-surface,
 .office-stage-open-plan .office-desk-cell-empty .office-desk-surface,
 .office-stage-crowded .office-desk-cell-empty .office-desk-surface {
   opacity: 0.55;
+}
+
+.office-empty-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem;
+  text-align: center;
+  pointer-events: none;
 }
 
 .office-stage-crowded .office-floor {

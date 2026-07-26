@@ -15,7 +15,7 @@ export const SceneStages = createEnum({
     /** Short English label for docs / a11y. */
     label: 'Empty office',
     /** Empty desk chips when no Devs are rendered. */
-    emptyDesks: 1,
+    emptyDesks: 4,
   },
   solo: {
     minOwned: 1,

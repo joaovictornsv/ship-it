@@ -71,6 +71,7 @@ export function OfficeScene() {
     });
   }, [stage.name]);
 
+  const isEmptyOffice = devOwned === 0;
   const deskCount = Math.max(visible, stage.emptyDesks);
   const props: PropChip[] = [
     {
@@ -174,6 +175,12 @@ export function OfficeScene() {
           >
             ×{badge}
           </span>
+        ) : null}
+
+        {isEmptyOffice ? (
+          <p className="office-empty-hint text-sm text-[var(--ship-muted)]">
+            Empty office — hire Devs to fill the desks.
+          </p>
         ) : null}
       </div>
 
