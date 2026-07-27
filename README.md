@@ -46,7 +46,7 @@ Staging deploys to Quave Cloud env **`joaovictornsv-ship-it-staging`** on every 
 | Action      | `zcloud-ws/zcloud-deploy-action@main`                                        |
 | Secret      | `QUAVE_CLOUD_ENV_TOKEN` (repo Actions secret; env-scoped Quave token)        |
 | Image       | `Dockerfile` + `httpd.conf` (`lipanski/docker-static-website`, SPA fallback) |
-| Staging URL | Set after the first green deploy (Quave default hostname; no custom domain)  |
+| Staging URL | https://ship-it-staging-joaovictornsv.svc-us5.zcloud.ws/ (no custom domain)  |
 
 Local preview of the static image:
 
