@@ -35,7 +35,8 @@ Do not add a second panel, floating badge cluster, or HUD strip of click meta. K
 
 `RewritePanel` sits under Ship It on the play column:
 
-- Mounts **only** when `rewritesGained ≥ 1` — compact status line + accent **Rewrite** button (no early grayed panel / “earn X more” chrome)
+- **Locked** (`rewritesGained < 1`): one muted centered line — `Rewrite · {N} more` — with `role="status"` and an aria-label that names tokens remaining. No panel, button, bank, or mult preview
+- **Available**: centered row — status line + secondary **Rewrite** button (accent outline / elevated fill; Ship It stays the primary solid CTA)
 - Confirm dialog lists tokens lost, Rewrites gained, new bank, and ×tokens/s power; after confirm, the same dialog shows the **Rewrites shop**
 - Soft reset via store `rewrite()` — see `prestige.md`
 

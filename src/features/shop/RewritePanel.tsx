@@ -3,14 +3,16 @@ import {
   isRewriteAvailable,
   previewRewritePower,
   rewritesGained,
+  tokensUntilRewrite,
 } from '../../game/economy';
 import { formatTokensCompact } from '../../game/format';
 import { useGameStore } from '../../game/state';
 import { RewriteConfirmDialog } from './RewriteConfirmDialog';
 
 /**
- * Discrete Rewrite CTA — mounts only when `rewritesGained ≥ 1` (#49).
- * Opens the confirm → Rewrites shop flow; no early grayed prestige chrome.
+ * Rewrite affordance under Ship It (#49):
+ * - Locked: one muted progress line (tokens until next whole Rewrite)
+ * - Available: compact CTA → confirm → Rewrites shop
  */
 export function RewritePanel() {
   const tokens = useGameStore((s) => s.tokens);
@@ -20,8 +22,19 @@ export function RewritePanel() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const available = isRewriteAvailable(tokensEarnedThisRun);
+
   if (!available) {
-    return null;
+    const until = tokensUntilRewrite(tokensEarnedThisRun);
+    const untilLabel = formatTokensCompact(until);
+    return (
+      <p
+        className="w-full text-center text-xs tabular-nums text-[var(--ship-muted)]"
+        role="status"
+        aria-label={`Rewrite locked. Earn ${untilLabel} more tokens this run to unlock.`}
+      >
+        Rewrite · {untilLabel} more
+      </p>
+    );
   }
 
   const gained = rewritesGained(tokensEarnedThisRun);
@@ -29,8 +42,8 @@ export function RewritePanel() {
 
   return (
     <>
-      <div className="flex w-full items-center justify-between gap-3">
-        <p className="min-w-0 text-xs text-[var(--ship-muted)]">
+      <div className="flex items-center justify-center gap-2.5">
+        <p className="text-xs leading-none text-[var(--ship-muted)]">
           <span className="font-semibold text-[var(--ship-ink)]">Rewrite</span>
           {' · '}
           bank {formatTokensCompact(gained)} Rewrite
@@ -39,8 +52,10 @@ export function RewritePanel() {
         <button
           type="button"
           className={[
-            'shrink-0 rounded-lg bg-[var(--ship-accent)] px-3 py-1.5',
-            'text-sm font-semibold text-white hover:brightness-110',
+            'inline-flex h-8 shrink-0 items-center rounded-lg px-3',
+            'border border-[var(--ship-accent)] bg-[var(--ship-bg-elevated)]',
+            'text-sm font-semibold leading-none text-[var(--ship-accent)]',
+            'hover:bg-[color-mix(in_srgb,var(--ship-accent)_10%,var(--ship-bg-elevated))]',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]',
           ].join(' ')}
           aria-label={`Rewrite and bank ${formatTokensCompact(gained)} Rewrites`}

@@ -24,7 +24,7 @@ rewritesGained = floor(sqrt(tokensEarnedThisRun / K))
 | `REWRITE_TPS_BONUS_PER` | 0.05    | +5% tokens/s per banked Rewrite                     |
 | `PRESTIGE_COST_GROWTH`  | 1.5     | Rising Rewrites cost for repeatable prestige tiers  |
 
-Unlock when `rewritesGained ≥ 1` (⇔ `tokensEarnedThisRun ≥ K`). No early grayed Rewrite panel — discrete CTA only when available (#49).
+Unlock when `rewritesGained ≥ 1` (⇔ `tokensEarnedThisRun ≥ K`). Before unlock, only a muted one-line progress hint (`Rewrite · N more`) — no grayed panel (#49).
 
 Track **`tokensEarnedThisRun`** (clicks + passive), not the spendable bank — buying must not delay prestige.
 
@@ -59,7 +59,7 @@ click    = (1 + Σ flat) × Π mult × (1 + Muscle memory %)
 
 ## Player UI
 
-- **Rewrite CTA** under Ship It: mounts only when `rewritesGained ≥ 1` (compact status + accent button). No full panel / “earn X more” chrome before unlock (#49).
+- **Rewrite CTA** under Ship It: when available (`rewritesGained ≥ 1`), centered status + secondary outline button (not the solid Ship It teal). When locked, a single muted status line (`Rewrite · N more`) with an accessible label — no panel chrome, bank, or mult preview (#49).
 - **Rewrite flow** (`RewriteConfirmDialog`): confirm soft reset (tokens lost vs Rewrites gained + new ×tokens/s) → post-confirm **Rewrites shop** (`RewritesShop` + prestige rows). Not in the normal shop rail/drawer.
 - HUD may show banked Rewrites under tokens/s when `rewrites > 0`.
 - Chrome follows `docs/modules/ui.md` (`--ship-prestige-*`, `--ship-rewrite`).
