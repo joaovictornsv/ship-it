@@ -41,7 +41,7 @@ Defined on `:root` in `src/styles/index.css`. Prefer these over raw hex in compo
 | `--ship-warm`                   | `#e8c47c`              | Warm backdrop accent (not cream+terracotta shell)     |
 | `--ship-upgrade-espresso`       | `#c47a3a`              | Espresso icon / prop                                  |
 | `--ship-upgrade-dev`            | `#0f7a74`              | Dev icon (aligns with accent)                         |
-| `--ship-upgrade-code-review`    | `#3d7ea6`              | Code review icon / prop                               |
+| `--ship-upgrade-code-review`    | `#6b5b95`              | Code review icon / Review lab room tint               |
 | `--ship-upgrade-ci-cd`          | `#2a9d6e`              | CI / CD icon / prop                                   |
 | `--ship-upgrade-on-call`        | `#d97706`              | On-call icon / prop                                   |
 | `--ship-upgrade-rubber-duck`    | `#d4a017`              | Ship upgrade: Rubber duck                             |
@@ -65,7 +65,7 @@ Defined on `:root` in `src/styles/index.css`. Prefer these over raw hex in compo
 
 **Do not** reintroduce coffee-brown shell chrome (`#8b5a2b`, cream `#f3eee4`, etc.). Scene mug tint (`--office-mug`) stays local on `.office-scene`.
 
-**Avoid:** purple / indigo default gradients, dark-mode-first shells, neon glow stacks. Scene / shop **producer and Ship-upgrade glyphs** may use emoji for warmth; do not sprinkle emoji into header chrome. Ship It CTA may show a small evolution glyph beside the label (not as header chrome).
+**Avoid:** purple / indigo **shell** gradients, dark-mode-first shells, neon glow stacks. Scene room tints may use a muted purple (Review lab / code-review glyph) — that is local flavor, not page chrome. Scene / shop **producer and Ship-upgrade glyphs** may use emoji for warmth; do not sprinkle emoji into header chrome. Ship It CTA may show a small evolution glyph beside the label (not as header chrome).
 
 ### Tailwind usage
 

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  lodBadgeCount,
   SCENE_SPRITE_CAP,
   SCENE_SPRITE_CAP_MOBILE,
   sceneSpriteCap,
@@ -44,23 +43,6 @@ describe('visibleDevCount', () => {
   it('rejects non-finite / negative as 0', () => {
     expect(visibleDevCount(-3)).toBe(0);
     expect(visibleDevCount(Number.NaN)).toBe(0);
-  });
-});
-
-describe('lodBadgeCount', () => {
-  it('is null at or below the cap', () => {
-    expect(lodBadgeCount(0)).toBeNull();
-    expect(lodBadgeCount(SCENE_SPRITE_CAP)).toBeNull();
-  });
-
-  it('returns total owned above the cap', () => {
-    expect(lodBadgeCount(33)).toBe(33);
-    expect(lodBadgeCount(100)).toBe(100);
-  });
-
-  it('badges earlier under the mobile cap', () => {
-    expect(lodBadgeCount(16, SCENE_SPRITE_CAP_MOBILE)).toBeNull();
-    expect(lodBadgeCount(17, SCENE_SPRITE_CAP_MOBILE)).toBe(17);
   });
 });
 

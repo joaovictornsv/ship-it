@@ -24,18 +24,18 @@ DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), **un
 | ------------------------------ | ------------------------------------------------------------- |
 | Zustand `owned[dev]`           | `OfficeScene` subscribes; hydrate / buy both update the crowd |
 | `onUpgradeOwnedChanged(id, n)` | Notifies `sceneEvents` → spawn pop on Dev buy                 |
-| `owned[espresso-machine]` etc. | Emoji prop chips in the props rail (espresso, PR, CI, pager)  |
+| `owned[espresso-machine]` etc. | Flavor for talk bubbles / room unlocks — no scene prop chips  |
 | `roomsUnlocked` / `activeRoom` | Room map tabs + per-room floor/wall tint; kept across Rewrite |
 
-Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap). Non-Dev producers densify the props rail; rooms share the same chrome padding and differ by floor/wall tint.
+Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap). Rooms share the same chrome padding and differ by floor/wall tint.
 
 ## Desk farm + sprites
 
 | Rule               | Value                                                                                                                                                                                                                                                                                                    |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Layout             | Props rail above `.office-stage-body` (floor + talk + CSS Grid desk farm)                                                                                                                                                                                                                                |
+| Layout             | Room tabs above `.office-stage-body` (floor + talk + CSS Grid desk farm) — no building / prop chips                                                                                                                                                                                                      |
 | Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                                                                                                                                                                                                               |
-| Occupied desks     | `DeskStack` — flex desk bar: center laptop (overflows top) · right snack/drink; vacant desks keep a dim surface only                                                                                                                                                                                     |
+| Occupied desks     | `DeskStack` — flex desk bar: center laptop (overflows top) · right snack/drink; vacant desks keep a contrasting gradient surface                                                                                                                                                                         |
 | Dev sprite         | Opt-in contributor avatar when catalog non-empty; else per-room emoji pool (`upgradeEmoji` / `rooms.devEmojis`). Hover / focus shows an inverted-color name tip (GitHub username + **Contributor** for skins; fake name + **cosmetic title** for fallback). No outbound click. Avatar `onError` → emoji. |
 | Talk bubbles       | See **Talk bubbles** below — scoped to `.office-stage-body` (desk band) so `overflow-hidden` on the stage does not clip them                                                                                                                                                                             |
 | Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                                                                                                                                                                                                                |
@@ -43,7 +43,7 @@ Buying a Dev increases tokens/s **and** spawns a visible character (until the LO
 | Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                                                                                                                                                                                                              |
 | Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                                                                                                                                                                                                              |
 | Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                                                                                                                                                                                                                  |
-| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                                                                                                                                                                                                               |
+| Counts             | No ×N labels / prop chips in the office. Totals stay in shop / HUD / `sr-only`                                                                                                                                                                                                                           |
 | Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                                                                                                                                                                                                            |
 
 Helpers: `src/features/scene/lod.ts` (unit-tested).
@@ -52,7 +52,7 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 | Piece             | Behavior                                                                                                                                                                                 |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UI                | `OfficeTalkBubbles` — up to 4 bubbles over the desk band (not the props rail); inset placement; slow spawn (~5–8s), long dwell (~7–10s); **off** under `prefers-reduced-motion`          |
+| UI                | `OfficeTalkBubbles` — up to 4 bubbles over the desk band; inset placement; slow spawn (~5–8s), long dwell (~7–10s); **off** under `prefers-reduced-motion`                               |
 | Majority copy     | `roomTalk.ts` / `devTalk.ts` — **per-room** lines + dialogues (office / break-room / review-lab / ops-bay / datacenter)                                                                  |
 | Rare specialty    | `specialtyTalk.ts` — ~14% of non-dialogue spawns (`SPECIALTY_LINE_CHANCE`); category preference skewed by active room                                                                    |
 | Specialty buckets | Open GitHub issues (build-time snapshot), contributor name-drops, calendar, owned-upgrade props, office stage, tokens/s band, room flavor                                                |
@@ -70,21 +70,23 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 Data-driven map spaces in `src/data/rooms.ts`. Unlock once → sticky in `roomsUnlocked` (save **v6**); **kept** across Rewrite. `RoomSwitcher` tabs appear once ≥2 rooms are unlocked so minute-1 stays a single office stage.
 
-| ID           | Label      | Unlock                  | Dominant tint (wall / floor)                   |
-| ------------ | ---------- | ----------------------- | ---------------------------------------------- |
-| `office`     | Office     | Always                  | Light **sky blue** (`--ship-sky`)              |
-| `break-room` | Break room | Own ≥1 Espresso machine | **Warm amber** wall + **espresso** floor       |
-| `review-lab` | Review lab | Own ≥1 Code review      | **Review blue** (`--ship-upgrade-code-review`) |
-| `ops-bay`    | Ops bay    | Own ≥1 CI / CD          | **CI green** (`--ship-upgrade-ci-cd`)          |
-| `datacenter` | Datacenter | Bank ≥1 Rewrite         | **Slate dusk** wall + **teal** floor           |
+| ID           | Label      | Unlock                  | Dominant tint (wall / floor)                     |
+| ------------ | ---------- | ----------------------- | ------------------------------------------------ |
+| `office`     | Office     | Always                  | Darker **sky** wall + light sky floor wash       |
+| `break-room` | Break room | Own ≥1 Espresso machine | Darker **warm amber** wall + light espresso wash |
+| `review-lab` | Review lab | Own ≥1 Code review      | Darker **purple** wall + light wash              |
+| `ops-bay`    | Ops bay    | Own ≥1 CI / CD          | Darker **CI green** wall + light wash            |
+| `datacenter` | Datacenter | Bank ≥1 Rewrite         | Darker **slate** wall + light teal wash          |
 
-- Per-room modifiers use **strong** `color-mix` percentages so each room reads as a distinct dominant hue (not washed-out siblings).
+- Per-room modifiers use **strong** wall hues and a **light floor wash** so the wall reads darker than the floor (not washed-out siblings).
+- **Desks are shared** across rooms: ops-bay espresso wood (`ink` + espresso, warm shine) on `.office-scene` — rooms must **not** override `--office-desk` / `--office-desk-shine` / `--office-desk-edge`. `.office-desk-surface` paints a soft vertical gradient (shine → desk → edge) — no flat solid fills.
+- Wall (`.office-sky`) and floor (`.office-floor`) also use soft multi-stop gradients, not solids. Floor stays an elevated light wash — never pull darker wall/ink into the floor band (that inverted wall/floor value).
 
 - Per-room **Dev emoji pools** (`devEmojis`) — people-only fallback sprites; contributor avatars unchanged. Room tint carries place identity — not food/object glyphs as Devs.
 
 - Pure helpers: `newlyUnlockedRooms` / `resolveActiveRoom` / `roomSceneClass` in `src/game/rooms.ts` (unit-tested).
-- CSS modifiers: `.office-room-{id}` override local **tint** vars only (`--office-wall` / `--office-floor` / `--office-desk` / `--office-mug`). Do **not** change padding or min-height per room.
-- Shared chrome inset lives on `.office-scene`: `--office-pad-x` (0.85rem) for tabs, props rail, and desk farm; `--office-props-pad-bottom` (0.55rem) under the upgrade prop chips before the stage divider. Rooms must keep that standard.
+- CSS modifiers: `.office-room-{id}` override local **tint** vars only (`--office-wall` / `--office-floor` / `--office-mug`). Do **not** change desk vars, padding, or min-height per room.
+- Shared chrome inset lives on `.office-scene`: `--office-pad-x` (0.85rem) for tabs and desk farm. Rooms must keep that standard.
 - New unlocks auto-focus the highest newly unlocked room; player can switch via tabs.
 - Empty-state hint copy is per-room (`emptyHint` on the catalog entry).
 - Prestige keep-list: see `prestige.md`.
@@ -99,7 +101,7 @@ Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold sh
 | 1          | `solo`       | Solo hacker — first desk occupied            |
 | 10         | `small-team` | Small team — more desks visible              |
 | 25         | `open-plan`  | Open-plan densification — full desk set      |
-| 50+        | `crowded`    | Crowded office; LOD + badge carry count      |
+| 50+        | `crowded`    | Crowded office; LOD caps on-screen sprites   |
 
 - Data-driven: `SceneStages` / `SCENE_STAGES` / `sceneStageForOwned` in `src/features/scene/stages.ts` (`createEnum`; per-stage fields like `emptyDesks` live on the entry).
 - Cheap CSS variants (`.office-stage-*`) — no art pipeline in #7 / #28.

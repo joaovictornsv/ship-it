@@ -62,7 +62,7 @@ Working document for stack, architecture, tooling, and DevOps for **Ship It** (`
 **Rules of thumb:**
 
 - Spawn Dev (and other) entities as light DOM nodes (or CSS sprites).
-- **LOD / cap**: render at most N characters (e.g. 24–48); above that show a count badge (`×137`) so the scene stays smooth.
+- **LOD / cap**: render at most N characters (e.g. 24–48) so the scene stays smooth. Owned totals live in shop / HUD — the office does not show an ×N count badge.
 - Use CSS transforms/animations sparingly; respect `prefers-reduced-motion`.
 
 Revisit Canvas only if profiling shows DOM cannot handle the desired density.

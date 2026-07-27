@@ -95,7 +95,7 @@ Scene starts sparse (empty office) and becomes crowded / gloriously messy.
 ### Behavior
 
 - Buying +1 Dev increases tokens/s and **spawns one more visible character** in the scene.
-- **Max rendered** sprites with LOD / `×N` badge at high counts (tech lean: 24–48).
+- **Max rendered** sprites with LOD at high counts (tech lean: 24–48). Totals stay in shop / HUD — no ×N badge in the office.
 - Devs can have **skins / variants** so the crowd feels alive.
 
 ### Tier promotion (later, post-MVP)
@@ -231,7 +231,7 @@ No huge heavenly tree in v1 — three upgrades is enough. Expand later if needed
 
 - **One primary action** on first paint: the Ship It button should dominate.
 - Shop rows: icon, name, short joke blurb, owned count, cost in tokens, “buy” affordance.
-- Scene should remain readable at 0, 10, 100+ entities (cap rendered sprites, show “×N” badge, or crowd LOD).
+- Scene should remain readable at 0, 10, 100+ entities (cap rendered sprites / crowd LOD; totals in shop / HUD, not an office ×N badge).
 - Humor in copy > wall of lore. One-liners per upgrade.
 - Avoid cluttering the first viewport with stats strips; Cookie Clicker density can grow _after_ the core loop is felt.
 - **Numbers:** common abbreviations (1,234 → later 1.2K, 3.4M, 1.1B). No scientific notation in the main UI.

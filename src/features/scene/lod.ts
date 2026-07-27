@@ -1,6 +1,7 @@
 /**
- * Scene LOD: cap rendered Dev sprites; show ×N badge above the cap.
+ * Scene LOD: cap rendered Dev sprites.
  * Desktop cap sits mid-range of the product lean (24–48); mobile uses a leaner budget.
+ * Counts live in the shop / HUD — the office does not show ×N badges.
  */
 
 /** Max Dev DOM sprites on desktop (`lg` / 1024px+). */
@@ -29,18 +30,4 @@ export function visibleDevCount(
     return 0;
   }
   return Math.min(Math.floor(devOwned), cap);
-}
-
-/**
- * Total owned count for the LOD badge, or `null` when every Dev is rendered.
- * Badge shows `×{count}` so the scene stays readable at 100+.
- */
-export function lodBadgeCount(
-  devOwned: number,
-  cap: number = SCENE_SPRITE_CAP,
-): number | null {
-  if (!Number.isFinite(devOwned) || devOwned <= cap) {
-    return null;
-  }
-  return Math.floor(devOwned);
 }
