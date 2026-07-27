@@ -62,8 +62,8 @@ export function AppHeader({ view, setView }: AppHeaderProps) {
 
   if (isDesktop) {
     return (
-      <header className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_82%,transparent)] px-4 py-2.5 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
+      <header className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_82%,transparent)] py-2.5 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4">
           <button
             type="button"
             className="text-lg font-semibold tracking-tight text-[var(--ship-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]"
