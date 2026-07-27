@@ -57,7 +57,7 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 ### Contributor skins
 
-`DevSprite` resolves desk index via `resolveDevSkin` against the opt-in pool in `src/data/contributors.ts`. Avatars are static files under `public/contributors/avatars/`; bake with `pnpm generate:contributors`. Credits / attribution: `#/credits` (`CreditsView`). See `docs/modules/contributors.md`.
+`DevSprite` resolves desk index via `resolveDevSkin` against the opt-in pool in `src/data/contributors.ts` — each contributor avatar appears at most once on screen; overflow desks use emoji glyphs. Avatars are static files under `public/contributors/avatars/`; bake with `pnpm generate:contributors`. Credits / attribution: `#/credits` (`CreditsView`). See `docs/modules/contributors.md`.
 
 ## Milestone densification
 

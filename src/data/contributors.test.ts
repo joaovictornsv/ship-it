@@ -9,7 +9,7 @@ import {
 } from './contributors';
 
 describe('resolveDevSkin', () => {
-  it('cycles opt-in contributor skins by desk index', () => {
+  it('assigns each opt-in skin at most once by desk index', () => {
     const first = resolveDevSkin(0);
     const second = resolveDevSkin(1);
     const third = resolveDevSkin(2);
@@ -23,10 +23,15 @@ describe('resolveDevSkin', () => {
       mode: 'contributor',
       label: CONTRIBUTOR_SKINS[1]!.displayName,
     });
-    expect(third).toMatchObject({
-      mode: 'contributor',
-      label: CONTRIBUTOR_SKINS[0]!.displayName,
-    });
+    expect(third).toEqual({ mode: 'fallback', label: null });
+  });
+
+  it('never repeats a contributor id across visible desks', () => {
+    const ids = Array.from({ length: 16 }, (_, i) => resolveDevSkin(i))
+      .filter((skin) => skin.mode === 'contributor')
+      .map((skin) => (skin.mode === 'contributor' ? skin.skin.id : null));
+    expect(ids).toEqual(CONTRIBUTOR_SKINS.map((s) => s.id));
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   it('returns fallback mode when the opt-in pool is empty', () => {

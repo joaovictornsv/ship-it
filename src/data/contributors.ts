@@ -56,15 +56,17 @@ export function contributorAvatarSrc(skin: ContributorSkin): string {
 
 /**
  * Resolve a desk skin from an explicit pool (testable empty-pool path).
+ * Each contributor appears at most once on screen — index maps 1:1 into the
+ * pool; desks beyond the pool size use generic emoji fallbacks.
  */
 export function resolveDevSkinFromPool(
   index: number,
   pool: readonly ContributorSkin[],
 ): ResolvedDevSkin {
-  if (pool.length === 0) {
+  if (index < 0 || index >= pool.length) {
     return { mode: 'fallback', label: null };
   }
-  const skin = pool[index % pool.length]!;
+  const skin = pool[index]!;
   return {
     mode: 'contributor',
     skin,
@@ -74,8 +76,8 @@ export function resolveDevSkinFromPool(
 }
 
 /**
- * Pick a skin for desk index `i`. Cycles the opt-in pool; empty pool →
- * fallback mode (scene uses generic Dev glyphs).
+ * Pick a skin for desk index `i`. Unique per visible contributor; overflow
+ * desks (and empty pool) → fallback mode (scene uses generic Dev glyphs).
  */
 export function resolveDevSkin(index: number): ResolvedDevSkin {
   return resolveDevSkinFromPool(index, CONTRIBUTOR_SKINS);
