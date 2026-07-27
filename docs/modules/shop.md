@@ -39,6 +39,7 @@ Compact control above the building list: **×1** / **×10** / **×100** / **Max*
 
 - Session-backed via `sessionStorage` (`ship-it:shop-buy-mode`) so rail remounts / drawer open-close keep the selection
 - Cost preview on each row uses `nextUpgradeCostForN` / `maxAffordableOf` (see `economy.md`)
+- Buy control shows **×quantity** (mode or Max-resolved) above the **mode total** cost
 - Ship upgrade tiles ignore buy mode (still one-shot)
 - English labels only; totals use `formatTokensCompact`
 
@@ -46,10 +47,10 @@ Compact control above the building list: **×1** / **×10** / **×100** / **Max*
 
 Each producer renders as a dense interactive row (card only because it wraps buy):
 
-| Priority     | Element                                   | Notes                                                                              |
-| ------------ | ----------------------------------------- | ---------------------------------------------------------------------------------- |
-| Primary scan | Emoji · **name** · **×N** · **price/buy** | Owned count is the big number only (no “Owned” label); price is the **mode total** |
-| Details      | Joke blurb + `+X tokens/s each`           | Hidden by default                                                                  |
+| Priority     | Element                             | Notes                                                                                           |
+| ------------ | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Primary scan | Emoji · **name** · **×N** · **buy** | Owned count is the big number only (no “Owned” label); buy shows **×qty** + **mode total** cost |
+| Details      | Joke blurb + `+X tokens/s each`     | Hidden by default                                                                               |
 
 ## Ship upgrade queue
 
