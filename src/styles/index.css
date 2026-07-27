@@ -306,6 +306,11 @@ button:disabled {
   animation: office-talk-out 700ms ease-in forwards;
 }
 
+/* Dev name tip — same fade as talk, inverted ink/elevated so it ≠ speech. */
+.office-dev-name-tip {
+  animation: office-talk-in 480ms ease-out;
+}
+
 /* Living office — local flavor vars (mugs); shell tokens stay cool slate. */
 .office-scene {
   --office-mug: #b08968;
@@ -501,7 +506,8 @@ button:disabled {
   .play-tip,
   .achievement-toast,
   .office-talk-bubble,
-  .office-talk-bubble-out {
+  .office-talk-bubble-out,
+  .office-dev-name-tip {
     animation: none;
   }
 

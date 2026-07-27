@@ -27,19 +27,19 @@ Buying a Dev increases tokens/s **and** spawns a visible character (until the LO
 
 ## Desk farm + sprites
 
-| Rule               | Value                                                                                                                                                 |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Layout             | Props rail above `.office-stage-body` (floor + talk + CSS Grid desk farm)                                                                             |
-| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                                                            |
-| Dev sprite         | Opt-in contributor avatar when catalog non-empty; else emoji (`upgradeEmoji` / `DEV_EMOJIS`). Hover `title` = display name. Avatar `onError` → emoji. |
-| Talk bubbles       | See **Talk bubbles** below — scoped to `.office-stage-body` (desk band) so `overflow-hidden` on the stage does not clip them                          |
-| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                                                             |
-| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                                                                                                     |
-| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                                                           |
-| Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                                                           |
-| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                                                               |
-| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                                                            |
-| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                                                         |
+| Rule               | Value                                                                                                                                                                                                                                                                       |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout             | Props rail above `.office-stage-body` (floor + talk + CSS Grid desk farm)                                                                                                                                                                                                   |
+| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                                                                                                                                                                                  |
+| Dev sprite         | Opt-in contributor avatar when catalog non-empty; else emoji (`upgradeEmoji` / `DEV_EMOJIS`). Hover / focus shows an inverted-color name tip (GitHub username for skins; stable fake name for fallback). Human skins link to GitHub; bots do not. Avatar `onError` → emoji. |
+| Talk bubbles       | See **Talk bubbles** below — scoped to `.office-stage-body` (desk band) so `overflow-hidden` on the stage does not clip them                                                                                                                                                |
+| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                                                                                                                                                                                   |
+| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                                                                                                                                                                                                                           |
+| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                                                                                                                                                                                 |
+| Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                                                                                                                                                                                 |
+| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                                                                                                                                                                                     |
+| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                                                                                                                                                                                  |
+| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                                                                                                                                                                               |
 
 Helpers: `src/features/scene/lod.ts` (unit-tested).
 
@@ -57,7 +57,7 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 ### Contributor skins
 
-`DevSprite` resolves desk index via `resolveDevSkin` against the opt-in pool in `src/data/contributors.ts` — each contributor avatar appears at most once on screen; overflow desks use emoji glyphs. Avatars are static files under `public/contributors/avatars/`; bake with `pnpm generate:contributors`. Credits / attribution: `#/credits` (`CreditsView`). See `docs/modules/contributors.md`.
+`DevSprite` resolves desk index via `resolveDevSkin` against the opt-in pool in `src/data/contributors.ts` — each contributor avatar appears at most once on screen; overflow desks use emoji glyphs with a stable fake name from `FAKE_DEV_NAMES`. Hover / focus shows a portaled name tip (contributor = GitHub login; fallback = fake name) in talk-bubble shape with **inverted** ink/elevated colors so it does not read as speech — simpler than the shop ⓘ details tip (no pin). Human skins are links to `https://github.com/{login}` (`target="_blank"` + `rel="noopener noreferrer"`); `kind: 'bot'` skins show a name but are not links. Avatars are static files under `public/contributors/avatars/`; bake with `pnpm generate:contributors`. Credits / attribution: `#/credits` (`CreditsView`). See `docs/modules/contributors.md`.
 
 ## Milestone densification
 
