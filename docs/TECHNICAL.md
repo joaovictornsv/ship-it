@@ -211,11 +211,12 @@ On PR + `main`:
 ### Deploy (Quave Cloud)
 
 1. Build `pnpm build` → `dist/`.
-2. **Dockerfile:** `lipanski/docker-static-website` (or equivalent) serving `dist/` + `httpd.conf` SPA fallback — same idea as `blog-html`.
-3. Deploy via `zcloud-ws/zcloud-deploy-action@main` with `secrets.QUAVE_CLOUD_ENV_TOKEN`.
+2. **Dockerfile:** `lipanski/docker-static-website` (or equivalent) serving `dist/` + `httpd.conf` SPA fallback — same idea as `blog-html`. `.dockerignore` keeps the build context to `dist/` + `httpd.conf`.
+3. GitHub Action [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml): on push to `main` + `workflow_dispatch` → install/build → `zcloud-ws/zcloud-deploy-action@main` with `secrets.QUAVE_CLOUD_ENV_TOKEN`.
 4. Quave env name: **`joaovictornsv-ship-it-staging`** (locked with game name in [PRODUCT.md](./PRODUCT.md)).
 5. **No custom domain** for v1.
 6. **No Quave production env for now** — only staging on Quave ONE; promote to production later when ready.
+7. Document the live staging URL in [README.md](../README.md) after the first green deploy.
 
 ### Environments
 

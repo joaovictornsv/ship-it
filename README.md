@@ -38,7 +38,23 @@ Node **≥24** suggested (`engines`). CI uses Node 24 + pnpm frozen lockfile.
 
 ## Deploy
 
-Staging on Quave Cloud (`joaovictornsv-ship-it-staging`) lands in roadmap issue #12. Dockerfile + `httpd.conf` stubs are ready; workflow is stubbed.
+Staging deploys to Quave Cloud env **`joaovictornsv-ship-it-staging`** on every push to `main` (and via **Actions → Deploy staging → Run workflow**).
+
+| Piece       | Detail                                                                       |
+| ----------- | ---------------------------------------------------------------------------- |
+| Workflow    | [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)             |
+| Action      | `zcloud-ws/zcloud-deploy-action@main`                                        |
+| Secret      | `QUAVE_CLOUD_ENV_TOKEN` (repo Actions secret; env-scoped Quave token)        |
+| Image       | `Dockerfile` + `httpd.conf` (`lipanski/docker-static-website`, SPA fallback) |
+| Staging URL | Set after the first green deploy (Quave default hostname; no custom domain)  |
+
+Local preview of the static image:
+
+```bash
+pnpm build
+docker build -t ship-it:local .
+docker run --rm -p 3000:3000 ship-it:local
+```
 
 ## License
 
