@@ -239,11 +239,36 @@ button:disabled {
 @keyframes achievement-toast-in {
   from {
     opacity: 0;
-    transform: translateY(-0.35rem);
+    transform: translateY(-0.5rem) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes achievement-toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.35rem) scale(0.98);
+  }
+}
+
+@keyframes achievement-toast-accent-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 3px 0 0 0 var(--ship-accent),
+      0 1px 0 color-mix(in srgb, var(--ship-ink) 6%, transparent);
+  }
+  50% {
+    box-shadow:
+      inset 4px 0 0 0 var(--ship-accent),
+      0 1px 0 color-mix(in srgb, var(--ship-ink) 6%, transparent);
   }
 }
 
@@ -295,7 +320,13 @@ button:disabled {
 }
 
 .achievement-toast {
-  animation: achievement-toast-in 220ms ease-out;
+  animation:
+    achievement-toast-in 280ms ease-out,
+    achievement-toast-accent-pulse 1.2s ease-in-out 280ms 2;
+}
+
+.achievement-toast-out {
+  animation: achievement-toast-out 280ms ease-in forwards;
 }
 
 .office-talk-bubble {
@@ -505,6 +536,7 @@ button:disabled {
   .buy-spend-flash,
   .play-tip,
   .achievement-toast,
+  .achievement-toast-out,
   .office-talk-bubble,
   .office-talk-bubble-out,
   .office-dev-name-tip {
