@@ -444,26 +444,6 @@ button:disabled {
   outline-offset: 2px;
 }
 
-.office-scene-has-room-bg .office-sky {
-  background-image: var(--office-wall-bg);
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-}
-
-.office-scene-has-room-bg .office-floor {
-  background-image: var(--office-floor-bg);
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-}
-
-.office-scene-has-room-bg.office-stage-crowded .office-floor {
-  background-image: var(--office-floor-bg);
-}
-
 .office-sky {
   background: linear-gradient(
     180deg,

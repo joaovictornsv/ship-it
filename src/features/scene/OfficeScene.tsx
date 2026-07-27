@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DESKTOP_MEDIA_QUERY } from '../../app/breakpoints';
 import { useMediaQuery } from '../../app/useMediaQuery';
 import { getRoom } from '../../data/rooms';
@@ -108,25 +108,6 @@ export function OfficeScene() {
 
   const isEmptyOffice = devOwned === 0;
   const deskCount = Math.max(visible, stage.emptyDesks);
-  const wallBackground = room.backgroundWallSrc;
-  const floorBackground = room.backgroundFloorSrc;
-  const hasRoomBackground = wallBackground || floorBackground;
-
-  const sceneStyle =
-    wallBackground || floorBackground
-      ? ({
-          ...(wallBackground
-            ? {
-                '--office-wall-bg': `url(${wallBackground})`,
-              }
-            : {}),
-          ...(floorBackground
-            ? {
-                '--office-floor-bg': `url(${floorBackground})`,
-              }
-            : {}),
-        } as CSSProperties)
-      : undefined;
 
   return (
     <section
@@ -136,10 +117,8 @@ export function OfficeScene() {
         'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_92%,transparent)]',
         `office-stage-${stage.name}`,
         roomSceneClass(activeRoomId),
-        hasRoomBackground ? 'office-scene-has-room-bg' : '',
         stageFlash ? 'office-stage-flash' : '',
       ].join(' ')}
-      style={sceneStyle}
       aria-label={`${room.label} — ${stage.label}, ${devOwned} Dev${devOwned === 1 ? '' : 's'}`}
       data-stage={stage.name}
       data-room={activeRoomId}

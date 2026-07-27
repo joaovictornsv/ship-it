@@ -14,7 +14,6 @@ DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), **un
 - `src/data/contributors.ts` — opt-in contributor skins + talk name-drops (`pnpm generate:contributors`)
 - `src/data/talkNames.ts` — re-exports talk names from the skins catalog
 - `src/app/breakpoints.ts` / `useMediaQuery` — desktop vs mobile sprite budget
-- `docs/plans/office-visual-upgrades.md` — office flavor + two-layer background art prompts (pending wiring)
 - `src/styles/index.css` — `.office-*` desk farm, room tints, stage density, bob / spawn / stage flash / talk
 - `src/app/PlayView.tsx` — mounts `OfficeScene` as the play stage above the HUD + Ship It cluster
 - `src/app/CreditsView.tsx` — contributor skin attribution (`#/credits`)
@@ -78,7 +77,6 @@ Data-driven map spaces in `src/data/rooms.ts`. Unlock once → sticky in `roomsU
 | `datacenter` | Datacenter | Bank ≥1 Rewrite         | Cooler denser floor tint    |
 
 - Per-room **Dev emoji pools** (`devEmojis`) — people-only fallback sprites; contributor avatars unchanged. Room tint carries place identity — not food/object glyphs as Devs.
-- **Room backgrounds:** optional wall + floor strips (`backgroundWallSrc` / `backgroundFloorSrc`) on `.office-sky` and `.office-floor`. Office ships `public/office/rooms/office-wall.jpeg` + `office-floor.jpeg`. CSS gradients remain fallback when unset. Art specs for other rooms: [`docs/plans/office-visual-upgrades.md`](../plans/office-visual-upgrades.md).
 
 - Pure helpers: `newlyUnlockedRooms` / `resolveActiveRoom` / `roomSceneClass` in `src/game/rooms.ts` (unit-tested).
 - CSS modifiers: `.office-room-{id}` override local **tint** vars only (`--office-wall` / `--office-floor` / `--office-desk` / `--office-mug`). Do **not** change padding or min-height per room.

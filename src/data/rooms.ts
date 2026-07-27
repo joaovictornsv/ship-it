@@ -29,10 +29,6 @@ export type RoomFields = {
   emptyHint: string;
   /** Emoji pool for fallback Dev sprites in this room (people only). */
   devEmojis: readonly string[];
-  /** Wall strip under `public/` (e.g. `/office/rooms/office-wall.jpeg`). */
-  backgroundWallSrc?: string;
-  /** Floor strip under `public/` (e.g. `/office/rooms/office-floor.jpeg`). */
-  backgroundFloorSrc?: string;
   unlock: RoomUnlockGoal;
 };
 
@@ -43,8 +39,6 @@ export const Rooms = createEnum({
     emoji: '🏢',
     emptyHint: 'Empty office — hire Devs to fill the desks.',
     devEmojis: PEOPLE_DEV_EMOJIS.slice(0, 6),
-    backgroundWallSrc: '/office/rooms/office-wall.jpeg',
-    backgroundFloorSrc: '/office/rooms/office-floor.jpeg',
     unlock: { kind: 'always' },
   },
   'break-room': {
