@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  MUSCLE_MEMORY_ID,
+  POSTMORTEM_ID,
+  STUB_REPO_ID,
+} from '../data/prestigeUpgrades';
+import {
   DARK_MODE_ID,
   GREEN_BUILD_ID,
   LGTM_STAMP_ID,
@@ -24,19 +29,29 @@ import {
   ESPRESSO_MACHINE_ID,
 } from '../data/upgrades';
 import {
+  canBuyPrestigeUpgrade,
   clickPower,
   COST_GROWTH,
   espressoMachineCost,
   hasShipUpgrade,
+  hasStubRepo,
   highestShipUpgrade,
+  isRewriteAvailable,
+  maxAffordableUpgrades,
+  nextPrestigeUpgradeCost,
   nextShipUpgradeId,
+  ownedAfterRewrite,
+  prestigeTokensPerSecondMult,
+  REWRITE_K,
+  REWRITE_TPS_BONUS_PER,
+  rewritesGained,
   shipItCta,
   shipUpgradesUnlocked,
   tokensFromDelta,
   tokensPerSecond,
+  tokensUntilRewrite,
   upgradeCost,
   upgradeCostForN,
-  maxAffordableUpgrades,
 } from './economy';
 
 describe('clickPower', () => {
@@ -267,6 +282,79 @@ describe('tokensPerSecond', () => {
   it('never gains click side-effects from producers', () => {
     expect(tokensPerSecond({ [ESPRESSO_MACHINE_ID]: 10 })).toBeCloseTo(1);
     expect(clickPower({})).toBe(1);
+  });
+
+  it('applies banked Rewrites and Postmortem as tokens/s mult', () => {
+    const base = ESPRESSO_MACHINE.tokensPerSecond;
+    expect(tokensPerSecond({ [ESPRESSO_MACHINE_ID]: 1 }, 2)).toBeCloseTo(
+      base * (1 + 2 * REWRITE_TPS_BONUS_PER),
+    );
+    expect(
+      tokensPerSecond({ [ESPRESSO_MACHINE_ID]: 1 }, 0, {
+        [POSTMORTEM_ID]: 2,
+      }),
+    ).toBeCloseTo(base * 1.1);
+  });
+});
+
+describe('rewritesGained', () => {
+  it('is 0 below K and 1 at K', () => {
+    expect(rewritesGained(REWRITE_K - 1)).toBe(0);
+    expect(rewritesGained(REWRITE_K)).toBe(1);
+    expect(isRewriteAvailable(REWRITE_K - 1)).toBe(false);
+    expect(isRewriteAvailable(REWRITE_K)).toBe(true);
+  });
+
+  it('grows with floor(sqrt(earned / K))', () => {
+    expect(rewritesGained(REWRITE_K * 4)).toBe(2);
+    expect(rewritesGained(REWRITE_K * 9)).toBe(3);
+  });
+
+  it('tokensUntilRewrite hits the next whole Rewrite threshold', () => {
+    expect(tokensUntilRewrite(0)).toBe(REWRITE_K);
+    expect(tokensUntilRewrite(REWRITE_K)).toBe(REWRITE_K * 3);
+    expect(tokensUntilRewrite(REWRITE_K - 1)).toBe(1);
+  });
+});
+
+describe('prestigeTokensPerSecondMult', () => {
+  it('starts at 1 and stacks Rewrites + Postmortem', () => {
+    expect(prestigeTokensPerSecondMult(0)).toBe(1);
+    expect(prestigeTokensPerSecondMult(4)).toBeCloseTo(
+      1 + 4 * REWRITE_TPS_BONUS_PER,
+    );
+    expect(prestigeTokensPerSecondMult(4, { [POSTMORTEM_ID]: 1 })).toBeCloseTo(
+      (1 + 4 * REWRITE_TPS_BONUS_PER) * 1.05,
+    );
+  });
+});
+
+describe('clickPower Muscle memory', () => {
+  it('stacks permanent click % on top of Ship upgrades', () => {
+    expect(clickPower({}, { [MUSCLE_MEMORY_ID]: 1 })).toBeCloseTo(1.1);
+    expect(
+      clickPower({ [RUBBER_DUCK_ID]: true }, { [MUSCLE_MEMORY_ID]: 2 }),
+    ).toBeCloseTo(2 * 1.2);
+  });
+});
+
+describe('prestige shop helpers', () => {
+  it('uses rising Rewrites costs and respects Stub repo max', () => {
+    expect(nextPrestigeUpgradeCost(POSTMORTEM_ID, 0)).toBe(1);
+    expect(nextPrestigeUpgradeCost(POSTMORTEM_ID, 1)).toBe(2);
+    expect(nextPrestigeUpgradeCost(STUB_REPO_ID, 0)).toBe(2);
+    expect(canBuyPrestigeUpgrade(STUB_REPO_ID, {}, 2)).toBe(true);
+    expect(
+      canBuyPrestigeUpgrade(STUB_REPO_ID, { [STUB_REPO_ID]: 1 }, 100),
+    ).toBe(false);
+  });
+
+  it('ownedAfterRewrite grants Espresso when Stub repo is owned', () => {
+    expect(ownedAfterRewrite({})).toEqual({});
+    expect(hasStubRepo({ [STUB_REPO_ID]: 1 })).toBe(true);
+    expect(ownedAfterRewrite({ [STUB_REPO_ID]: 1 })).toEqual({
+      [ESPRESSO_MACHINE_ID]: 1,
+    });
   });
 });
 

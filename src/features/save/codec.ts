@@ -16,13 +16,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 /**
  * Minimal structural read of `state` before checksum (no clamping).
- * Omits `shipOwned` when absent so v1 checksums still match pre-migration blobs.
+ * Omits `shipOwned` / prestige fields when absent so older checksums still match.
  */
 function readRawGameState(raw: unknown): GameState {
   if (!isRecord(raw)) {
     throw new Error('Save state must be an object');
   }
-  const { tokens, owned, lastTickAt, shipOwned } = raw;
+  const {
+    tokens,
+    owned,
+    lastTickAt,
+    shipOwned,
+    tokensEarnedThisRun,
+    rewrites,
+    prestigeOwned,
+  } = raw;
   if (typeof tokens !== 'number' || !Number.isFinite(tokens)) {
     throw new Error('Save state.tokens must be a finite number');
   }
@@ -39,20 +47,53 @@ function readRawGameState(raw: unknown): GameState {
     }
   }
 
-  // Preserve wire shape for checksum: only include shipOwned when present.
-  if (shipOwned === undefined) {
-    return { tokens, owned: ownedCounts, lastTickAt } as GameState;
-  }
-  if (!isRecord(shipOwned)) {
-    throw new Error('Save state.shipOwned must be an object');
-  }
-  const shipFlags: GameState['shipOwned'] = {};
-  for (const [id, flag] of Object.entries(shipOwned)) {
-    if (flag === true || flag === 1) {
-      shipFlags[id as keyof GameState['shipOwned']] = true;
+  // Preserve wire shape for checksum: only include optional fields when present.
+  const base = { tokens, owned: ownedCounts, lastTickAt } as GameState;
+
+  if (shipOwned !== undefined) {
+    if (!isRecord(shipOwned)) {
+      throw new Error('Save state.shipOwned must be an object');
     }
+    const shipFlags: GameState['shipOwned'] = {};
+    for (const [id, flag] of Object.entries(shipOwned)) {
+      if (flag === true || flag === 1) {
+        shipFlags[id as keyof GameState['shipOwned']] = true;
+      }
+    }
+    base.shipOwned = shipFlags;
   }
-  return { tokens, owned: ownedCounts, shipOwned: shipFlags, lastTickAt };
+
+  if (tokensEarnedThisRun !== undefined) {
+    if (
+      typeof tokensEarnedThisRun !== 'number' ||
+      !Number.isFinite(tokensEarnedThisRun)
+    ) {
+      throw new Error('Save state.tokensEarnedThisRun must be a finite number');
+    }
+    base.tokensEarnedThisRun = tokensEarnedThisRun;
+  }
+
+  if (rewrites !== undefined) {
+    if (typeof rewrites !== 'number' || !Number.isFinite(rewrites)) {
+      throw new Error('Save state.rewrites must be a finite number');
+    }
+    base.rewrites = rewrites;
+  }
+
+  if (prestigeOwned !== undefined) {
+    if (!isRecord(prestigeOwned)) {
+      throw new Error('Save state.prestigeOwned must be an object');
+    }
+    const prestigeCounts: GameState['prestigeOwned'] = {};
+    for (const [id, count] of Object.entries(prestigeOwned)) {
+      if (typeof count === 'number' && Number.isFinite(count)) {
+        prestigeCounts[id as keyof GameState['prestigeOwned']] = count;
+      }
+    }
+    base.prestigeOwned = prestigeCounts;
+  }
+
+  return base;
 }
 
 /** Build a versioned SaveFile for the given state (fresh checksum). */

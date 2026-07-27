@@ -15,6 +15,26 @@ const migrators: Record<number, Migrator> = {
       owned: legacy.owned,
       lastTickAt: legacy.lastTickAt,
       shipOwned: legacy.shipOwned ?? {},
+    } as GameState;
+  },
+  /**
+   * v2 → v3: prestige fields (tokens earned this run, Rewrites bank, prestige shop).
+   * Mid-run v2 saves get `tokensEarnedThisRun: 0` (no retroactive credit).
+   */
+  2: (state) => {
+    const legacy = state as GameState & {
+      tokensEarnedThisRun?: GameState['tokensEarnedThisRun'];
+      rewrites?: GameState['rewrites'];
+      prestigeOwned?: GameState['prestigeOwned'];
+    };
+    return {
+      tokens: legacy.tokens,
+      owned: legacy.owned,
+      shipOwned: legacy.shipOwned ?? {},
+      lastTickAt: legacy.lastTickAt,
+      tokensEarnedThisRun: legacy.tokensEarnedThisRun ?? 0,
+      rewrites: legacy.rewrites ?? 0,
+      prestigeOwned: legacy.prestigeOwned ?? {},
     };
   },
 };

@@ -2,13 +2,14 @@
 
 Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke copy.
 
-**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal Ship upgrades queue (#30); scan-first rows (#28); responsive shell (#8).
+**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal Ship upgrades queue (#30); Rewrites prestige shop (#9); scan-first rows (#28); responsive shell (#8).
 
 ## Owned by
 
-- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, icons/colors, `useBuyMode`, `useProductionTick`
+- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, `ShopPrestigeRow`, `RewritePanel`, `RewriteConfirmDialog`, icons/colors, `useBuyMode`, `useProductionTick`
 - `src/app/breakpoints.ts` — shared `lg` breakpoint (`DESKTOP_MIN_WIDTH_PX = 1024`)
 - `src/features/scene/` — living office reads owned from store; `onUpgradeOwnedChanged` fans out spawn FX
+- `src/app/PlayView.tsx` — mounts `RewritePanel` under Ship It
 
 ## Layout / breakpoints
 
@@ -25,8 +26,17 @@ Mobile first paint keeps **one primary action** (Ship It). The drawer is `aria-m
 
 1. **Ship upgrades** — Cookie-style **horizontal** one-shot queue **above** buildings (`ShopShipTile`). Owned upgrades live on Achievements, not here.
 2. **Buildings** — tokens/s producers (`ShopRow`) with a compact **buy-mode** control in the section header
+3. **Rewrites shop** — permanent prestige rows (`ShopPrestigeRow`) spent in **Rewrites**, never tokens
 
 Do not add a second panel, floating badge cluster, or HUD strip of click meta. Keep the buy-mode control in shop chrome — not on the first-paint play column.
+
+## Rewrite CTA
+
+`RewritePanel` sits under Ship It on the play column:
+
+- Grayed until `rewritesGained ≥ 1`; shows tokens remaining otherwise
+- Confirm dialog lists tokens lost, Rewrites gained, new bank, and ×tokens/s power
+- Soft reset via store `rewrite()` — see `prestige.md`
 
 ## Buy mode (buildings only)
 
@@ -74,7 +84,7 @@ Successful buy flashes the tile (`buy-spend-flash`). Glyphs and hues live on eac
 
 ## Copy
 
-English only. Building rate label is always **tokens/s**. Ship tiles say tokens per click / click power — never mix currencies.
+English only. Building rate label is always **tokens/s**. Ship tiles say tokens per click / click power — never mix currencies. Prestige rows show **Rewrites** costs only.
 
 ## Ship It CTA
 

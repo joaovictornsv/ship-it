@@ -1,16 +1,46 @@
 import {
+  getPrestigeUpgrade,
+  MUSCLE_MEMORY_ID,
+  POSTMORTEM_ID,
+  prestigeUpgrades,
+  STUB_REPO_ID,
+  type PrestigeUpgradeId,
+} from '../data/prestigeUpgrades';
+import {
   applyShipUpgradeEffect,
   getShipUpgrade,
   shipUpgrades,
   type ShipUpgradeId,
 } from '../data/shipUpgrades';
-import { ESPRESSO_MACHINE, type UpgradeId, upgrades } from '../data/upgrades';
-import type { OwnedShipUpgrades, OwnedUpgrades, Tokens } from './types';
+import {
+  ESPRESSO_MACHINE,
+  ESPRESSO_MACHINE_ID,
+  type UpgradeId,
+  upgrades,
+} from '../data/upgrades';
+import type {
+  OwnedPrestigeUpgrades,
+  OwnedShipUpgrades,
+  OwnedUpgrades,
+  Tokens,
+} from './types';
 
 export { formatTokensCompact } from './format';
 
 /** Cookie Clicker–style building cost growth per owned unit. */
 export const COST_GROWTH = 1.15;
+
+/**
+ * Rewrite unlock constant: `rewritesGained = floor(sqrt(tokensEarnedThisRun / K))`.
+ * Playtest-tuned for first Rewrite ~20–40 min of engaged play.
+ */
+export const REWRITE_K = 10_000;
+
+/** Passive tokens/s bonus per banked Rewrite (0.05 = +5% each). */
+export const REWRITE_TPS_BONUS_PER = 0.05;
+
+/** Prestige shop rising cost growth per owned tier. */
+export const PRESTIGE_COST_GROWTH = 1.5;
 
 /**
  * Soft unlock for the Ship upgrades section: own at least one producer.
@@ -55,10 +85,13 @@ export function shipUpgradeCost(id: ShipUpgradeId): Tokens {
 
 /**
  * Tokens earned per Ship It click.
- * Base 1 + sum(flats), then × product(mults) from owned Ship upgrades.
- * Prestige Muscle memory (#9) will stack as a permanent % on top later.
+ * Base 1 + sum(flats), then × product(mults) from owned Ship upgrades,
+ * then × (1 + Muscle memory %).
  */
-export function clickPower(shipOwned: OwnedShipUpgrades = {}): Tokens {
+export function clickPower(
+  shipOwned: OwnedShipUpgrades = {},
+  prestigeOwned: OwnedPrestigeUpgrades = {},
+): Tokens {
   const acc = { flat: 0, mult: 1 };
   for (const def of shipUpgrades) {
     if (!hasShipUpgrade(shipOwned, def.id)) {
@@ -66,7 +99,168 @@ export function clickPower(shipOwned: OwnedShipUpgrades = {}): Tokens {
     }
     applyShipUpgradeEffect(acc, def.effect);
   }
-  return (1 + acc.flat) * acc.mult;
+  const ship = (1 + acc.flat) * acc.mult;
+  return ship * (1 + muscleMemoryClickBonus(prestigeOwned));
+}
+
+/** Rewrites gained from this-run earnings: `floor(sqrt(earned / K))`. */
+export function rewritesGained(
+  tokensEarnedThisRun: Tokens,
+  k: number = REWRITE_K,
+): number {
+  if (tokensEarnedThisRun <= 0 || k <= 0) {
+    return 0;
+  }
+  return Math.floor(Math.sqrt(tokensEarnedThisRun / k));
+}
+
+/** True when projected Rewrite gain is ≥ 1. */
+export function isRewriteAvailable(
+  tokensEarnedThisRun: Tokens,
+  k: number = REWRITE_K,
+): boolean {
+  return rewritesGained(tokensEarnedThisRun, k) >= 1;
+}
+
+/**
+ * Tokens still needed this run before the next whole Rewrite unlocks.
+ * `0` when already available.
+ */
+export function tokensUntilRewrite(
+  tokensEarnedThisRun: Tokens,
+  k: number = REWRITE_K,
+): Tokens {
+  const next = rewritesGained(tokensEarnedThisRun, k) + 1;
+  const need = next * next * k;
+  return Math.max(0, need - tokensEarnedThisRun);
+}
+
+/** Owned count for a prestige upgrade (missing = 0). */
+export function prestigeOwnedCount(
+  prestigeOwned: OwnedPrestigeUpgrades,
+  id: PrestigeUpgradeId,
+): number {
+  return prestigeOwned[id] ?? 0;
+}
+
+/** Whether Stub repo is owned (each Rewrite starts with 1 Espresso). */
+export function hasStubRepo(prestigeOwned: OwnedPrestigeUpgrades): boolean {
+  return prestigeOwnedCount(prestigeOwned, STUB_REPO_ID) > 0;
+}
+
+/** Additive click % from Muscle memory levels (0.1 = +10% per level). */
+export function muscleMemoryClickBonus(
+  prestigeOwned: OwnedPrestigeUpgrades,
+): number {
+  const levels = prestigeOwnedCount(prestigeOwned, MUSCLE_MEMORY_ID);
+  if (levels <= 0) {
+    return 0;
+  }
+  const def = getPrestigeUpgrade(MUSCLE_MEMORY_ID);
+  if (def.effect.kind !== 'clickPct') {
+    return 0;
+  }
+  return levels * def.effect.pct;
+}
+
+/** Additive tokens/s % from Postmortem levels. */
+export function postmortemTpsBonus(
+  prestigeOwned: OwnedPrestigeUpgrades,
+): number {
+  const levels = prestigeOwnedCount(prestigeOwned, POSTMORTEM_ID);
+  if (levels <= 0) {
+    return 0;
+  }
+  const def = getPrestigeUpgrade(POSTMORTEM_ID);
+  if (def.effect.kind !== 'tpsPct') {
+    return 0;
+  }
+  return levels * def.effect.pct;
+}
+
+/**
+ * Combined permanent tokens/s multiplier from banked Rewrites + Postmortem.
+ * `1` when neither applies.
+ */
+export function prestigeTokensPerSecondMult(
+  rewrites: number,
+  prestigeOwned: OwnedPrestigeUpgrades = {},
+): number {
+  const bank = 1 + Math.max(0, rewrites) * REWRITE_TPS_BONUS_PER;
+  return bank * (1 + postmortemTpsBonus(prestigeOwned));
+}
+
+/** Cookie-style rising cost for the next prestige purchase (Rewrites). */
+export function prestigeUpgradeCost(baseCost: Tokens, owned: number): Tokens {
+  if (owned < 0) {
+    throw new Error('owned must be >= 0');
+  }
+  return Math.ceil(baseCost * PRESTIGE_COST_GROWTH ** owned);
+}
+
+/** Next prestige purchase cost for a catalog id. */
+export function nextPrestigeUpgradeCost(
+  id: PrestigeUpgradeId,
+  owned: number,
+): Tokens {
+  return prestigeUpgradeCost(getPrestigeUpgrade(id).baseCost, owned);
+}
+
+/** Human-readable effect label for a prestige def at current owned count. */
+export function prestigeEffectLabel(
+  id: PrestigeUpgradeId,
+  owned: number = 0,
+): string {
+  const def = getPrestigeUpgrade(id);
+  switch (def.effect.kind) {
+    case 'tpsPct': {
+      const pct = Math.round(def.effect.pct * 100);
+      const total = Math.round(owned * def.effect.pct * 100);
+      return owned > 0
+        ? `+${pct}% tokens/s each (now +${total}%)`
+        : `+${pct}% tokens/s each`;
+    }
+    case 'clickPct': {
+      const pct = Math.round(def.effect.pct * 100);
+      const total = Math.round(owned * def.effect.pct * 100);
+      return owned > 0
+        ? `+${pct}% tokens per click each (now +${total}%)`
+        : `+${pct}% tokens per click each`;
+    }
+    case 'stubRepo':
+      return 'Each Rewrite starts with 1 Espresso machine';
+    default: {
+      const _exhaustive: never = def.effect;
+      return _exhaustive;
+    }
+  }
+}
+
+/** Whether another prestige purchase is allowed (respects maxOwned). */
+export function canBuyPrestigeUpgrade(
+  id: PrestigeUpgradeId,
+  prestigeOwned: OwnedPrestigeUpgrades,
+  rewrites: Tokens,
+): boolean {
+  const def = getPrestigeUpgrade(id);
+  const owned = prestigeOwnedCount(prestigeOwned, id);
+  if (owned >= def.maxOwned) {
+    return false;
+  }
+  return rewrites >= nextPrestigeUpgradeCost(id, owned);
+}
+
+/** Passive tokens/s multiplier preview after banking `gained` more Rewrites. */
+export function previewRewritePower(
+  currentRewrites: number,
+  gained: number,
+  prestigeOwned: OwnedPrestigeUpgrades = {},
+): { nextRewrites: number; tpsMult: number } {
+  const nextRewrites = currentRewrites + Math.max(0, gained);
+  return {
+    nextRewrites,
+    tpsMult: prestigeTokensPerSecondMult(nextRewrites, prestigeOwned),
+  };
 }
 
 /**
@@ -224,15 +418,34 @@ function ownedCount(owned: OwnedUpgrades, id: UpgradeId): number {
 }
 
 /**
- * Total passive tokens/s from owned producers (no prestige mults yet).
- * Ship upgrades never contribute here.
+ * Total passive tokens/s from owned producers × prestige mult
+ * (banked Rewrites + Postmortem). Ship upgrades never contribute here.
  */
-export function tokensPerSecond(owned: OwnedUpgrades): number {
+export function tokensPerSecond(
+  owned: OwnedUpgrades,
+  rewrites: number = 0,
+  prestigeOwned: OwnedPrestigeUpgrades = {},
+): number {
   let total = 0;
   for (const def of upgrades) {
     total += ownedCount(owned, def.id) * def.tokensPerSecond;
   }
-  return total;
+  return total * prestigeTokensPerSecondMult(rewrites, prestigeOwned);
+}
+
+/** Starting owned map after a Rewrite (Stub repo → 1 Espresso). */
+export function ownedAfterRewrite(
+  prestigeOwned: OwnedPrestigeUpgrades,
+): OwnedUpgrades {
+  if (!hasStubRepo(prestigeOwned)) {
+    return {};
+  }
+  return { [ESPRESSO_MACHINE_ID]: 1 };
+}
+
+/** Catalog ids that spend Rewrites (never tokens). */
+export function isPrestigeUpgradeId(id: string): id is PrestigeUpgradeId {
+  return prestigeUpgrades.some((def) => def.id === id);
 }
 
 /** Tokens granted over `deltaMs` at the given tokens/s rate. */

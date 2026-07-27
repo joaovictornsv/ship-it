@@ -1,8 +1,14 @@
+import { prestigeUpgrades } from '../../data/prestigeUpgrades';
 import { visibleShipUpgradeQueue } from '../../data/shipUpgrades';
 import { upgrades } from '../../data/upgrades';
-import { shipUpgradesUnlocked } from '../../game/economy';
+import {
+  prestigeTokensPerSecondMult,
+  shipUpgradesUnlocked,
+} from '../../game/economy';
+import { formatTokensCompact } from '../../game/format';
 import { useGameStore } from '../../game/state';
 import { ShopBuyModeControl } from './ShopBuyModeControl';
+import { ShopPrestigeRow } from './ShopPrestigeRow';
 import { ShopRow } from './ShopRow';
 import { ShopShipTile } from './ShopShipTile';
 import { useBuyMode } from './useBuyMode';
@@ -11,9 +17,12 @@ import { useBuyMode } from './useBuyMode';
 export function ShopCatalog() {
   const owned = useGameStore((s) => s.owned);
   const shipOwned = useGameStore((s) => s.shipOwned);
+  const rewrites = useGameStore((s) => s.rewrites);
+  const prestigeOwned = useGameStore((s) => s.prestigeOwned);
   const unlocked = shipUpgradesUnlocked(owned);
   const queue = unlocked ? visibleShipUpgradeQueue(shipOwned) : [];
   const [buyMode, setBuyMode] = useBuyMode();
+  const tpsMult = prestigeTokensPerSecondMult(rewrites, prestigeOwned);
 
   return (
     <div className="flex flex-col gap-5">
@@ -71,6 +80,32 @@ export function ShopCatalog() {
           {upgrades.map((upgrade) => (
             <li key={upgrade.id}>
               <ShopRow upgrade={upgrade} buyMode={buyMode} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="shop-rewrites-heading">
+        <div className="mb-2 px-0.5">
+          <h3
+            id="shop-rewrites-heading"
+            className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]"
+          >
+            Rewrites shop
+          </h3>
+          <p className="text-xs text-[var(--ship-muted)]">
+            permanent power · spend{' '}
+            <span className="font-semibold tabular-nums text-[var(--ship-rewrite)]">
+              {formatTokensCompact(rewrites)}
+            </span>{' '}
+            Rewrites
+            {tpsMult > 1 ? <> · ×{tpsMult.toFixed(2)} tokens/s</> : null}
+          </p>
+        </div>
+        <ul className="flex list-none flex-col gap-2 p-0">
+          {prestigeUpgrades.map((upgrade) => (
+            <li key={upgrade.id}>
+              <ShopPrestigeRow upgrade={upgrade} />
             </li>
           ))}
         </ul>

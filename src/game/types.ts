@@ -1,3 +1,4 @@
+import type { PrestigeUpgradeId } from '../data/prestigeUpgrades';
 import type { ShipUpgradeId } from '../data/shipUpgrades';
 import type { UpgradeId } from '../data/upgrades';
 
@@ -13,6 +14,9 @@ export type OwnedUpgrades = Partial<Record<UpgradeId, number>>;
  */
 export type OwnedShipUpgrades = Partial<Record<ShipUpgradeId, true>>;
 
+/** Prestige shop owned counts (missing key = 0). Persist across Rewrite. */
+export type OwnedPrestigeUpgrades = Partial<Record<PrestigeUpgradeId, number>>;
+
 export type GameState = {
   /** Spendable token bank. */
   tokens: Tokens;
@@ -20,9 +24,18 @@ export type GameState = {
   owned: OwnedUpgrades;
   /**
    * Purchased Ship upgrades (click-power track) for this run.
-   * Resets on Rewrite when prestige ships (#9).
+   * Resets on Rewrite.
    */
   shipOwned: OwnedShipUpgrades;
+  /**
+   * Lifetime tokens earned this run (clicks + passive). Not the bank —
+   * spending must not delay Rewrite unlock.
+   */
+  tokensEarnedThisRun: Tokens;
+  /** Lifetime banked Rewrites (prestige currency). */
+  rewrites: Tokens;
+  /** Prestige shop owned counts — kept across Rewrite. */
+  prestigeOwned: OwnedPrestigeUpgrades;
   /**
    * Epoch ms of the last applied production tick.
    * On tab resume, set to now without granting away-time tokens (no offline accrual).

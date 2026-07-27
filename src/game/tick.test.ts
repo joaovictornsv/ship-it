@@ -8,6 +8,8 @@ describe('applyProductionTick', () => {
       {
         tokens: 0,
         owned: { [ESPRESSO_MACHINE_ID]: 1 },
+        rewrites: 0,
+        prestigeOwned: {},
         lastTickAt: 1_000,
       },
       2_000,
@@ -20,7 +22,13 @@ describe('applyProductionTick', () => {
 
   it('grants nothing when nothing is owned', () => {
     const result = applyProductionTick(
-      { tokens: 5, owned: {}, lastTickAt: 0 },
+      {
+        tokens: 5,
+        owned: {},
+        rewrites: 0,
+        prestigeOwned: {},
+        lastTickAt: 0,
+      },
       5_000,
     );
     expect(result.earned).toBe(0);
@@ -33,6 +41,8 @@ describe('applyProductionTick', () => {
       {
         tokens: 1,
         owned: { [ESPRESSO_MACHINE_ID]: 10 },
+        rewrites: 0,
+        prestigeOwned: {},
         lastTickAt: 100,
       },
       100,
@@ -40,6 +50,20 @@ describe('applyProductionTick', () => {
     expect(result.earned).toBe(0);
     expect(result.tokens).toBe(1);
     expect(result.lastTickAt).toBe(100);
+  });
+
+  it('applies banked Rewrites mult to accrual', () => {
+    const result = applyProductionTick(
+      {
+        tokens: 0,
+        owned: { [ESPRESSO_MACHINE_ID]: 1 },
+        rewrites: 2,
+        prestigeOwned: {},
+        lastTickAt: 0,
+      },
+      1_000,
+    );
+    expect(result.earned).toBeCloseTo(0.1 * 1.1);
   });
 });
 

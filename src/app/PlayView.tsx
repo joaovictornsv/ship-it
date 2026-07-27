@@ -1,6 +1,6 @@
 import { ShipItButton, TokensBank } from '../features/click';
 import { OfficeScene } from '../features/scene';
-import { ShopDrawer, ShopRail } from '../features/shop';
+import { RewritePanel, ShopDrawer, ShopRail } from '../features/shop';
 import { DESKTOP_MEDIA_QUERY } from './breakpoints';
 import { PlayTip } from './PlayTip';
 import { useMediaQuery } from './useMediaQuery';
@@ -33,6 +33,7 @@ export function PlayView() {
         <div className="flex w-full max-w-md flex-col items-center gap-3">
           <TokensBank />
           <ShipItButton />
+          <RewritePanel />
           <PlayTip />
         </div>
       </div>

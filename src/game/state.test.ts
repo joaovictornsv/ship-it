@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import {
+  MUSCLE_MEMORY_ID,
+  POSTMORTEM_ID,
+  STUB_REPO_ID,
+} from '../data/prestigeUpgrades';
 import { RUBBER_DUCK, RUBBER_DUCK_ID } from '../data/shipUpgrades';
 import { ESPRESSO_MACHINE, ESPRESSO_MACHINE_ID } from '../data/upgrades';
-import { espressoMachineCost } from './economy';
+import { espressoMachineCost, REWRITE_K } from './economy';
 import { initialGameState, useGameStore } from './state';
 
 describe('useGameStore', () => {
@@ -10,6 +15,9 @@ describe('useGameStore', () => {
       ...initialGameState,
       owned: {},
       shipOwned: {},
+      prestigeOwned: {},
+      tokensEarnedThisRun: 0,
+      rewrites: 0,
       saveUntrusted: false,
     });
   });
@@ -19,16 +27,21 @@ describe('useGameStore', () => {
     expect(state.tokens).toBe(0);
     expect(state.owned).toEqual({});
     expect(state.shipOwned).toEqual({});
+    expect(state.tokensEarnedThisRun).toBe(0);
+    expect(state.rewrites).toBe(0);
+    expect(state.prestigeOwned).toEqual({});
   });
 
   it('shipIt adds clickPower tokens and returns the amount earned', () => {
     const first = useGameStore.getState().shipIt();
     expect(first).toBe(1);
     expect(useGameStore.getState().tokens).toBe(1);
+    expect(useGameStore.getState().tokensEarnedThisRun).toBe(1);
 
     useGameStore.getState().shipIt();
     useGameStore.getState().shipIt();
     expect(useGameStore.getState().tokens).toBe(3);
+    expect(useGameStore.getState().tokensEarnedThisRun).toBe(3);
   });
 
   it('shipIt scales with owned Ship upgrades', () => {
@@ -39,6 +52,18 @@ describe('useGameStore', () => {
     });
     expect(useGameStore.getState().shipIt()).toBe(2);
     expect(useGameStore.getState().tokens).toBe(2);
+  });
+
+  it('shipIt scales with Muscle memory; spending does not reduce earn tracking', () => {
+    useGameStore.setState({
+      tokens: 0,
+      prestigeOwned: { [MUSCLE_MEMORY_ID]: 1 },
+    });
+    expect(useGameStore.getState().shipIt()).toBeCloseTo(1.1);
+    const earned = useGameStore.getState().tokensEarnedThisRun;
+    useGameStore.setState({ tokens: 100 });
+    expect(useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID)).toBe(true);
+    expect(useGameStore.getState().tokensEarnedThisRun).toBeCloseTo(earned);
   });
 
   it('buyUpgrade spends tokens and increments owned Espresso machines', () => {
@@ -69,7 +94,6 @@ describe('useGameStore', () => {
   it('buyUpgrade buys quantity units for the rising-cost sum', () => {
     const quantity = 5;
     const cost = espressoMachineCost(0);
-    // Precompute exact bulk cost via repeated single costs.
     let total = 0;
     for (let i = 0; i < quantity; i++) {
       total += espressoMachineCost(i);
@@ -87,7 +111,6 @@ describe('useGameStore', () => {
     ).toBe(false);
     expect(useGameStore.getState().owned[ESPRESSO_MACHINE_ID]).toBeUndefined();
 
-    // Invalid quantities are rejected without spending.
     useGameStore.setState({ tokens: 1_000, owned: {} });
     expect(useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID, 0)).toBe(
       false,
@@ -96,7 +119,6 @@ describe('useGameStore', () => {
       false,
     );
     expect(useGameStore.getState().tokens).toBe(1_000);
-    // Default remains a single buy.
     expect(useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID)).toBe(true);
     expect(useGameStore.getState().owned[ESPRESSO_MACHINE_ID]).toBe(1);
     expect(useGameStore.getState().tokens).toBe(1_000 - cost);
@@ -114,11 +136,27 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().shipOwned[RUBBER_DUCK_ID]).toBe(true);
     expect(useGameStore.getState().tokens).toBe(1_000 - RUBBER_DUCK.cost);
 
-    // One-shot: cannot buy again.
     expect(useGameStore.getState().buyShipUpgrade(RUBBER_DUCK_ID)).toBe(false);
   });
 
-  it('tick accrues tokens/s with an injectable clock', () => {
+  it('buyPrestigeUpgrade spends Rewrites never tokens', () => {
+    useGameStore.setState({ tokens: 50, rewrites: 3 });
+    expect(useGameStore.getState().buyPrestigeUpgrade(POSTMORTEM_ID)).toBe(
+      true,
+    );
+    expect(useGameStore.getState().tokens).toBe(50);
+    expect(useGameStore.getState().rewrites).toBe(2);
+    expect(useGameStore.getState().prestigeOwned[POSTMORTEM_ID]).toBe(1);
+
+    expect(useGameStore.getState().buyPrestigeUpgrade(STUB_REPO_ID)).toBe(true);
+    expect(useGameStore.getState().rewrites).toBe(0);
+    expect(useGameStore.getState().prestigeOwned[STUB_REPO_ID]).toBe(1);
+    expect(useGameStore.getState().buyPrestigeUpgrade(STUB_REPO_ID)).toBe(
+      false,
+    );
+  });
+
+  it('tick accrues tokens/s with an injectable clock and tracks earn', () => {
     useGameStore.setState({
       tokens: 0,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -127,6 +165,7 @@ describe('useGameStore', () => {
     const earned = useGameStore.getState().tick(10_000);
     expect(earned).toBeCloseTo(1);
     expect(useGameStore.getState().tokens).toBeCloseTo(1);
+    expect(useGameStore.getState().tokensEarnedThisRun).toBeCloseTo(1);
     expect(useGameStore.getState().lastTickAt).toBe(10_000);
   });
 
@@ -141,12 +180,48 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().lastTickAt).toBe(60_000);
   });
 
-  it('hydrateFromSave restores bank/owned/shipOwned and marks untrusted when asked', () => {
+  it('rewrite soft-resets run economy and banks Rewrites', () => {
+    useGameStore.setState({
+      tokens: 500,
+      owned: { [ESPRESSO_MACHINE_ID]: 4 },
+      shipOwned: { [RUBBER_DUCK_ID]: true },
+      tokensEarnedThisRun: REWRITE_K,
+      rewrites: 1,
+      prestigeOwned: { [POSTMORTEM_ID]: 1, [STUB_REPO_ID]: 1 },
+      lastTickAt: 99,
+    });
+    expect(useGameStore.getState().rewrite()).toBe(1);
+    const state = useGameStore.getState();
+    expect(state.tokens).toBe(0);
+    expect(state.owned).toEqual({ [ESPRESSO_MACHINE_ID]: 1 });
+    expect(state.shipOwned).toEqual({});
+    expect(state.tokensEarnedThisRun).toBe(0);
+    expect(state.rewrites).toBe(2);
+    expect(state.prestigeOwned).toEqual({
+      [POSTMORTEM_ID]: 1,
+      [STUB_REPO_ID]: 1,
+    });
+  });
+
+  it('rewrite refuses when projected gain is below 1', () => {
+    useGameStore.setState({
+      tokens: 10,
+      tokensEarnedThisRun: REWRITE_K - 1,
+      rewrites: 0,
+    });
+    expect(useGameStore.getState().rewrite()).toBe(0);
+    expect(useGameStore.getState().tokens).toBe(10);
+  });
+
+  it('hydrateFromSave restores bank/owned/shipOwned/prestige and marks untrusted when asked', () => {
     useGameStore.getState().hydrateFromSave(
       {
         tokens: 50,
         owned: { [ESPRESSO_MACHINE_ID]: 3 },
         shipOwned: { [RUBBER_DUCK_ID]: true },
+        tokensEarnedThisRun: 80,
+        rewrites: 4,
+        prestigeOwned: { [MUSCLE_MEMORY_ID]: 2 },
         lastTickAt: 1,
       },
       { untrusted: true, nowMs: 9_000 },
@@ -155,6 +230,9 @@ describe('useGameStore', () => {
     expect(state.tokens).toBe(50);
     expect(state.owned[ESPRESSO_MACHINE_ID]).toBe(3);
     expect(state.shipOwned[RUBBER_DUCK_ID]).toBe(true);
+    expect(state.tokensEarnedThisRun).toBe(80);
+    expect(state.rewrites).toBe(4);
+    expect(state.prestigeOwned[MUSCLE_MEMORY_ID]).toBe(2);
     expect(state.lastTickAt).toBe(9_000);
     expect(state.saveUntrusted).toBe(true);
     state.dismissSaveWarning();

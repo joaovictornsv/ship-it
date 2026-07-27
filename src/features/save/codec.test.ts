@@ -23,6 +23,9 @@ function sampleState(overrides: Partial<GameState> = {}): GameState {
     tokens: 42,
     owned: { [ESPRESSO_MACHINE_ID]: 2 },
     shipOwned: {},
+    tokensEarnedThisRun: 100,
+    rewrites: 0,
+    prestigeOwned: {},
     lastTickAt: 1_700_000_000_000,
     ...overrides,
   };
@@ -121,9 +124,38 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(2);
+    expect(outcome.result.file.v).toBe(3);
     expect(outcome.result.file.state.shipOwned).toEqual({});
+    expect(outcome.result.file.state.tokensEarnedThisRun).toBe(0);
+    expect(outcome.result.file.state.rewrites).toBe(0);
+    expect(outcome.result.file.state.prestigeOwned).toEqual({});
     expect(outcome.result.file.state.tokens).toBe(12);
+  });
+
+  it('loads a v2 blob (no prestige) with matching checksum then migrates', async () => {
+    const v2State = {
+      tokens: 20,
+      owned: { [ESPRESSO_MACHINE_ID]: 2 },
+      shipOwned: {},
+      lastTickAt: 60,
+    };
+    const checksum = await checksumState(v2State as GameState);
+    const blob = encodeSaveBlob({
+      v: 2,
+      savedAt: 8,
+      state: v2State as GameState,
+      checksum,
+    });
+    const outcome = await parseSaveBlob(blob);
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) {
+      return;
+    }
+    expect(outcome.result.checksumOk).toBe(true);
+    expect(outcome.result.file.v).toBe(3);
+    expect(outcome.result.file.state.tokensEarnedThisRun).toBe(0);
+    expect(outcome.result.file.state.rewrites).toBe(0);
+    expect(outcome.result.file.state.prestigeOwned).toEqual({});
   });
 
   it('checksum is stable across key order in owned', async () => {
@@ -132,10 +164,13 @@ describe('checksum + codec', () => {
       lastTickAt: 0,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
       shipOwned: {},
+      tokensEarnedThisRun: 0,
+      rewrites: 0,
+      prestigeOwned: {},
     });
     const b = await checksumState(
       JSON.parse(
-        `{"lastTickAt":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"shipOwned":{},"tokens":1}`,
+        `{"lastTickAt":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"prestigeOwned":{},"rewrites":0,"shipOwned":{},"tokens":1,"tokensEarnedThisRun":0}`,
       ) as GameState,
     );
     expect(a).toBe(b);
@@ -153,7 +188,7 @@ describe('migrateSaveFile', () => {
     expect(migrateSaveFile(file)).toEqual(file);
   });
 
-  it('migrates v1 saves by adding empty shipOwned', () => {
+  it('migrates v1 saves through v2 shipOwned then v3 prestige defaults', () => {
     const v1State = {
       tokens: 10,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -165,10 +200,32 @@ describe('migrateSaveFile', () => {
       state: v1State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(2);
+    expect(migrated.v).toBe(3);
     expect(migrated.state.shipOwned).toEqual({});
+    expect(migrated.state.tokensEarnedThisRun).toBe(0);
+    expect(migrated.state.rewrites).toBe(0);
+    expect(migrated.state.prestigeOwned).toEqual({});
     expect(migrated.state.tokens).toBe(10);
     expect(migrated.state.owned[ESPRESSO_MACHINE_ID]).toBe(1);
+  });
+
+  it('migrates v2 saves by adding prestige fields', () => {
+    const v2State = {
+      tokens: 10,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+      shipOwned: {},
+      lastTickAt: 99,
+    } as GameState;
+    const migrated = migrateSaveFile({
+      v: 2,
+      savedAt: 1,
+      state: v2State,
+      checksum: 'abc',
+    });
+    expect(migrated.v).toBe(3);
+    expect(migrated.state.tokensEarnedThisRun).toBe(0);
+    expect(migrated.state.rewrites).toBe(0);
+    expect(migrated.state.prestigeOwned).toEqual({});
   });
 
   it('rejects newer-than-supported versions', () => {

@@ -34,6 +34,12 @@
   --ship-upgrade-green-build: #2a9d6e;
   --ship-upgrade-readme: #5b6b7c;
   --ship-upgrade-friday: #0f7a74;
+  /* Prestige shop accents (Rewrites currency). */
+  --ship-prestige-postmortem: #3d7ea6;
+  --ship-prestige-muscle: #0f7a74;
+  --ship-prestige-stub: #c47a3a;
+  /* Prestige currency numeral (distinct from token gold). */
+  --ship-rewrite: #5b6b7c;
 }
 
 html,
