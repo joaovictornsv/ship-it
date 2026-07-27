@@ -13,3 +13,4 @@ alwaysApply: true
 - Economy helpers stay pure (`src/game/economy.ts`); unit-test formulas.
 - From roadmap #3 onward, create GitHub issues with the `create-issue` skill; **do not invent labels** (see `docs/ISSUES.md`).
 - Prefer `pnpm` scripts; CI expects Node 24 + frozen lockfile.
+- Delivery loop: `create-issue` → `implement-issue` → `check-quality` → `create-pr` (see `AGENTS.md`). Self-heal stale skills/docs in the same change or file a follow-up.

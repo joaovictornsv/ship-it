@@ -270,16 +270,16 @@ Ship skills early (scaffold / first issues), then deepen them for this single-pa
 
 #### Delivery / process
 
-| Skill             | Use when                                                                             |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| `git-workflow`    | Commits, push, amend/reset, PR merge rules; issue-linked commit message format       |
-| `create-issue`    | Create/update GitHub issues for phases and bugs (labels, templates)                  |
-| `implement-issue` | Implement an issue: execution checklist in issue body → item-by-item proof → PR link |
-| `create-pr`       | Open PRs after check-quality; structured body + agent/human test plans               |
-| `create-release`  | Version bump, changelog, GitHub release, tag; never invent secrets                   |
-| `update-docs`     | Sync TECHNICAL/PRODUCT/module docs / AGENTS/REVIEW when decisions or APIs change     |
-| `write-tests`     | Add/extend Vitest coverage for economy, saves, migrations, pure helpers              |
-| `check-quality`   | Full pre-ship pipeline (orchestrator)                                                |
+| Skill             | Use when                                                                                       |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| `git-workflow`    | Commits, push, amend/reset, PR merge rules; issue-linked commit message format                 |
+| `create-issue`    | Create/update GitHub issues for phases and bugs (labels, templates)                            |
+| `implement-issue` | Implement an issue: execution checklist in issue body → item-by-item proof → PR link           |
+| `create-pr`       | Open PRs after check-quality; structured body + agent/human test plans                         |
+| `create-release`  | Version bump, changelog, GitHub release, tag; **deferred** while roadmap forbids Releases/tags |
+| `update-docs`     | Sync TECHNICAL/PRODUCT/module docs / AGENTS/REVIEW when decisions or APIs change               |
+| `write-tests`     | Add/extend Vitest coverage for economy, saves, migrations, pure helpers                        |
+| `check-quality`   | Full pre-ship pipeline (orchestrator)                                                          |
 
 #### Check-quality tiers (commands + shared reference)
 
@@ -309,7 +309,7 @@ Ship skills early (scaffold / first issues), then deepen them for this single-pa
 4. Full `check-quality` before PR
 5. `create-pr` — open PR, link back on the issue
 6. `update-docs` when behavior/contracts change
-7. `create-release` when shipping a versioned milestone
+7. `create-release` when shipping a versioned milestone (**deferred** — do not use yet)
 
 ## 6. Testing strategy (v1)
 
@@ -370,9 +370,9 @@ Product + technical decisions are locked. Next: scaffold and issues.
 5. **Prestige (Rewrite)** — soft reset + Rewrites bank/shop per PRODUCT §7 + `prestige.md` + migration if needed
 6. **Contributor skins** — static pipeline + `contributors.md`
 7. **Quave staging deploy** — Dockerfile + deploy workflow → `joaovictornsv-ship-it-staging`
-8. **Agent hardening** — flesh out create-issue / implement-issue / create-pr / create-release / check-quality against real workflow
+8. **Agent hardening** — flesh out create-issue / implement-issue / create-pr / check-quality (+ write-tests, update-docs, domain skills) against real workflow; `create-release` stays deferred while Releases/tags are forbidden
 
-Ready to open GitHub issues for these phases when you ask.
+Phase 8 delivery skills and the issue→PR loop are documented in `AGENTS.md` (roadmap #13).
 
 ---
 
