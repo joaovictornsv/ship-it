@@ -8,6 +8,7 @@ import {
   getPrestigeUpgrade,
   type PrestigeUpgradeId,
 } from '../data/prestigeUpgrades';
+import { DEFAULT_ROOM_ID, type RoomId } from '../data/rooms';
 import {
   type ShipUpgradeId,
   getShipUpgrade,
@@ -37,8 +38,16 @@ import {
   shipUpgradesUnlocked,
   tokensPerSecond,
 } from './economy';
+import {
+  activeRoomAfterUnlocks,
+  ensureOfficeUnlocked,
+  mergeUnlockedRooms,
+  newlyUnlockedRooms,
+  resolveActiveRoom,
+  roomSnapshotFromState,
+} from './rooms';
 import { applyProductionTick, resumeWithoutAccrual } from './tick';
-import type { GameState, OwnedAchievements, Tokens } from './types';
+import type { GameState, OwnedAchievements, OwnedRooms, Tokens } from './types';
 
 export const initialGameState: GameState = {
   tokens: 0,
@@ -52,44 +61,62 @@ export const initialGameState: GameState = {
   lifetimeClicks: 0,
   lifetimePurchases: 0,
   achievementsUnlocked: {},
+  roomsUnlocked: { [DEFAULT_ROOM_ID]: true },
+  activeRoom: DEFAULT_ROOM_ID,
   lastTickAt: 0,
 };
 
 /** Ephemeral HUD toast queue — not persisted. */
 const MAX_TOAST_QUEUE = 5;
 
-type AchievementPatch = {
+type ProgressPatch = {
   achievementsUnlocked: OwnedAchievements;
+  roomsUnlocked: OwnedRooms;
+  activeRoom: RoomId;
   achievementToastQueue: AchievementId[];
 };
 
-function withAchievementUnlocks(
+function withProgressUnlocks(
   state: GameState & { achievementToastQueue: AchievementId[] },
   patch: Partial<GameState>,
-): Partial<GameState> & AchievementPatch {
+): Partial<GameState> & ProgressPatch {
   const next: GameState = { ...state, ...patch };
-  const newly = newlyUnlockedAchievements(
+  const newlyAchievements = newlyUnlockedAchievements(
     achievementSnapshotFromState(next),
     next.achievementsUnlocked,
   );
-  if (newly.length === 0) {
-    return {
-      ...patch,
-      achievementsUnlocked: next.achievementsUnlocked,
-      achievementToastQueue: state.achievementToastQueue,
-    };
-  }
-  const queue = [...state.achievementToastQueue, ...newly].slice(
-    0,
-    MAX_TOAST_QUEUE,
+  const newlyRooms = newlyUnlockedRooms(
+    roomSnapshotFromState(next),
+    next.roomsUnlocked,
   );
+  const roomsUnlocked = ensureOfficeUnlocked(
+    mergeUnlockedRooms(next.roomsUnlocked, newlyRooms),
+  );
+  const activeRoom = activeRoomAfterUnlocks(
+    next.activeRoom,
+    newlyRooms,
+    roomsUnlocked,
+  );
+
+  let achievementToastQueue = state.achievementToastQueue;
+  let achievementsUnlocked = next.achievementsUnlocked;
+  if (newlyAchievements.length > 0) {
+    achievementsUnlocked = mergeUnlockedAchievements(
+      next.achievementsUnlocked,
+      newlyAchievements,
+    );
+    achievementToastQueue = [
+      ...state.achievementToastQueue,
+      ...newlyAchievements,
+    ].slice(0, MAX_TOAST_QUEUE);
+  }
+
   return {
     ...patch,
-    achievementsUnlocked: mergeUnlockedAchievements(
-      next.achievementsUnlocked,
-      newly,
-    ),
-    achievementToastQueue: queue,
+    achievementsUnlocked,
+    roomsUnlocked,
+    activeRoom,
+    achievementToastQueue,
   };
 }
 
@@ -141,6 +168,8 @@ type GameActions = {
   dismissSaveWarning: () => void;
   /** Pop the front achievement toast after it auto-dismisses. */
   dismissAchievementToast: () => void;
+  /** Switch the viewed room (must already be unlocked). */
+  setActiveRoom: (id: RoomId) => boolean;
 };
 
 export type GameStore = GameState &
@@ -162,7 +191,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get();
     const earned = clickPower(state.shipOwned, state.prestigeOwned);
     set(
-      withAchievementUnlocks(state, {
+      withProgressUnlocks(state, {
         tokens: state.tokens + earned,
         tokensEarnedThisRun: state.tokensEarnedThisRun + earned,
         lifetimeTokensEarned: state.lifetimeTokensEarned + earned,
@@ -182,7 +211,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return false;
     }
     set(
-      withAchievementUnlocks(state, {
+      withProgressUnlocks(state, {
         tokens: state.tokens - cost,
         owned: { ...state.owned, [id]: ownedCount + quantity },
         lifetimePurchases: state.lifetimePurchases + quantity,
@@ -213,7 +242,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Touch catalog so a typo id throws before mutating state.
     getShipUpgrade(id);
     set(
-      withAchievementUnlocks(state, {
+      withProgressUnlocks(state, {
         tokens: state.tokens - cost,
         shipOwned: { ...state.shipOwned, [id]: true },
         lifetimePurchases: state.lifetimePurchases + 1,
@@ -235,7 +264,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     const cost = buildingUpgradeCost(id);
     set(
-      withAchievementUnlocks(state, {
+      withProgressUnlocks(state, {
         tokens: state.tokens - cost,
         buildingOwned: { ...state.buildingOwned, [id]: true },
         lifetimePurchases: state.lifetimePurchases + 1,
@@ -268,17 +297,29 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     const gained = rewritesGained(state.tokensEarnedThisRun);
     set(
-      withAchievementUnlocks(state, {
+      withProgressUnlocks(state, {
         tokens: 0,
         owned: ownedAfterRewrite(state.prestigeOwned),
         shipOwned: {},
         buildingOwned: {},
         tokensEarnedThisRun: 0,
         rewrites: state.rewrites + gained,
-        // prestigeOwned, lifetime*, achievementsUnlocked kept via spread base
+        // prestigeOwned, lifetime*, achievementsUnlocked, rooms* kept via base
       }),
     );
     return gained;
+  },
+  setActiveRoom: (id) => {
+    const state = get();
+    const unlocked = ensureOfficeUnlocked(state.roomsUnlocked);
+    if (unlocked[id] !== true) {
+      return false;
+    }
+    set({
+      roomsUnlocked: unlocked,
+      activeRoom: resolveActiveRoom(id, unlocked),
+    });
+    return true;
   },
   tick: (nowMs) => {
     const state = get();
@@ -288,7 +329,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     const earned = result.earned > 0 ? result.earned : 0;
     set(
-      withAchievementUnlocks(state, {
+      withProgressUnlocks(state, {
         tokens: result.tokens,
         lastTickAt: result.lastTickAt,
         tokensEarnedThisRun: state.tokensEarnedThisRun + earned,
@@ -307,10 +348,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
   hydrateFromSave: (saved, { untrusted, nowMs }) => {
     // Catch up unlocks from current counters silently (no HUD toast spam on load).
-    const newly = newlyUnlockedAchievements(
+    const newlyAchievements = newlyUnlockedAchievements(
       achievementSnapshotFromState(saved),
       saved.achievementsUnlocked,
     );
+    const roomsBase = ensureOfficeUnlocked(saved.roomsUnlocked ?? {});
+    const newlyRooms = newlyUnlockedRooms(
+      roomSnapshotFromState(saved),
+      roomsBase,
+    );
+    const roomsUnlocked = mergeUnlockedRooms(roomsBase, newlyRooms);
     set({
       tokens: saved.tokens,
       owned: { ...saved.owned },
@@ -324,8 +371,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       lifetimePurchases: saved.lifetimePurchases,
       achievementsUnlocked: mergeUnlockedAchievements(
         saved.achievementsUnlocked,
-        newly,
+        newlyAchievements,
       ),
+      roomsUnlocked,
+      activeRoom: resolveActiveRoom(saved.activeRoom, roomsUnlocked),
       lastTickAt: nowMs,
       saveUntrusted: untrusted,
       achievementToastQueue: [],
@@ -371,6 +420,8 @@ export function selectPersistedState(state: GameState): GameState {
     lifetimeClicks: state.lifetimeClicks,
     lifetimePurchases: state.lifetimePurchases,
     achievementsUnlocked: state.achievementsUnlocked,
+    roomsUnlocked: state.roomsUnlocked,
+    activeRoom: state.activeRoom,
     lastTickAt: state.lastTickAt,
   };
 }

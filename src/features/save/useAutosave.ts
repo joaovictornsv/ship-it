@@ -103,7 +103,9 @@ export function useAutosave(enabled: boolean = true): void {
         state.lifetimeTokensEarned === prev.lifetimeTokensEarned &&
         state.lifetimeClicks === prev.lifetimeClicks &&
         state.lifetimePurchases === prev.lifetimePurchases &&
-        state.achievementsUnlocked === prev.achievementsUnlocked
+        state.achievementsUnlocked === prev.achievementsUnlocked &&
+        state.roomsUnlocked === prev.roomsUnlocked &&
+        state.activeRoom === prev.activeRoom
       ) {
         return;
       }

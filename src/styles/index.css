@@ -362,6 +362,91 @@ button:disabled {
   );
 }
 
+/* Unlockable rooms — local floor/wall tints (not shell --ship-* tokens). */
+.office-room-break-room {
+  --office-mug: #c47a3a;
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-warm) 38%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-espresso) 10%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-review-lab {
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-upgrade-code-review) 28%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-code-review) 8%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-upgrade-code-review) 18%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-ops-bay {
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-upgrade-ci-cd) 22%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-on-call) 10%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-ops-bay .office-props-rail,
+.office-room-datacenter .office-props-rail {
+  gap: 0.45rem;
+  padding-block: 0.55rem;
+}
+
+.office-room-datacenter {
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-ink) 12%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-accent) 10%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-ink) 22%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-datacenter .office-desk-farm {
+  min-height: 13rem;
+}
+
+@media (min-width: 640px) {
+  .office-room-datacenter .office-desk-farm {
+    min-height: 15rem;
+  }
+}
+
+.office-room-tab:focus-visible {
+  outline: 2px solid var(--ship-accent);
+  outline-offset: 2px;
+}
+
 .office-sky {
   background: linear-gradient(
     180deg,

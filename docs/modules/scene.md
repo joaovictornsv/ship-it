@@ -1,17 +1,19 @@
 # Scene
 
-DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), rooms, animation / `prefers-reduced-motion`.
+DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), **unlockable rooms**, animation / `prefers-reduced-motion`.
 
-**Status:** active — desk-grid office + emoji sprites + richer talk bubbles (#28 / #31); mobile sprite lean from #8.
+**Status:** active — desk-grid office + emoji sprites + richer talk bubbles (#28 / #31); mobile sprite lean from #8; unlockable rooms + prestige keep-list (#11).
 
 ## Owned by
 
-- `src/features/scene/` — `OfficeScene`, `DevSprite`, `OfficeTalkBubbles`, `devTalk`, `specialtyTalk`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
+- `src/features/scene/` — `OfficeScene`, `RoomSwitcher`, `DevSprite`, `OfficeTalkBubbles`, `devTalk`, `specialtyTalk`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
+- `src/data/rooms.ts` — unlockable room catalog (`Rooms` / `createEnum`)
+- `src/game/rooms.ts` — pure unlock + active-room helpers
 - `src/data/openIssues.ts` — build-time open-issue snapshot for rare GitHub talk (`pnpm snapshot:issues`)
 - `src/data/contributors.ts` — opt-in contributor skins + talk name-drops (`pnpm generate:contributors`)
 - `src/data/talkNames.ts` — re-exports talk names from the skins catalog
 - `src/app/breakpoints.ts` / `useMediaQuery` — desktop vs mobile sprite budget
-- `src/styles/index.css` — `.office-*` desk farm, stage density, bob / spawn / stage flash / talk
+- `src/styles/index.css` — `.office-*` desk farm, room tints, stage density, bob / spawn / stage flash / talk
 - `src/app/PlayView.tsx` — mounts `OfficeScene` as the play stage above the HUD + Ship It cluster
 - `src/app/CreditsView.tsx` — contributor skin attribution (`#/credits`)
 
@@ -22,8 +24,9 @@ DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), room
 | Zustand `owned[dev]`           | `OfficeScene` subscribes; hydrate / buy both update the crowd |
 | `onUpgradeOwnedChanged(id, n)` | Notifies `sceneEvents` → spawn pop on Dev buy                 |
 | `owned[espresso-machine]` etc. | Emoji prop chips in the props rail (espresso, PR, CI, pager)  |
+| `roomsUnlocked` / `activeRoom` | Room map tabs + per-room floor/wall tint; kept across Rewrite |
 
-Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap).
+Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap). Non-Dev producers densify the props rail; later rooms (`ops-bay`, `datacenter`) tighten prop spacing for a busier map.
 
 ## Desk farm + sprites
 
@@ -59,9 +62,27 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 `DevSprite` resolves desk index via `resolveDevSkin` against the opt-in pool in `src/data/contributors.ts` — each contributor avatar appears at most once on screen; overflow desks use emoji glyphs with a stable fake name from `FAKE_DEV_NAMES`. Hover / focus shows a portaled name tip (contributor = GitHub login; fallback = fake name) in talk-bubble shape with **inverted** ink/elevated colors so it does not read as speech — simpler than the shop ⓘ details tip (no pin). Human skins are links to `https://github.com/{login}` (`target="_blank"` + `rel="noopener noreferrer"`); `kind: 'bot'` skins show a name but are not links. Avatars are static files under `public/contributors/avatars/`; bake with `pnpm generate:contributors`. Credits / attribution: `#/credits` (`CreditsView`). See `docs/modules/contributors.md`.
 
+## Unlockable rooms
+
+Data-driven map spaces in `src/data/rooms.ts`. Unlock once → sticky in `roomsUnlocked` (save **v6**); **kept** across Rewrite. `RoomSwitcher` tabs appear once ≥2 rooms are unlocked so minute-1 stays a single office stage.
+
+| ID           | Label      | Unlock                  | Feel                                    |
+| ------------ | ---------- | ----------------------- | --------------------------------------- |
+| `office`     | Office     | Always                  | Starting desks + sky wash               |
+| `break-room` | Break room | Own ≥1 Espresso machine | Warm espresso tint                      |
+| `review-lab` | Review lab | Own ≥1 Code review      | Cool review-blue wall/floor             |
+| `ops-bay`    | Ops bay    | Own ≥1 CI / CD          | Green/amber ops wash; denser props rail |
+| `datacenter` | Datacenter | Bank ≥1 Rewrite         | Cooler denser floor; taller desk farm   |
+
+- Pure helpers: `newlyUnlockedRooms` / `resolveActiveRoom` / `roomSceneClass` in `src/game/rooms.ts` (unit-tested).
+- CSS modifiers: `.office-room-{id}` override local `--office-*` vars (not shell `--ship-*`).
+- New unlocks auto-focus the highest newly unlocked room; player can switch via tabs.
+- Empty-state hint copy is per-room (`emptyHint` on the catalog entry).
+- Prestige keep-list: see `prestige.md`.
+
 ## Milestone densification
 
-Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold shifts the office (empty desk count / floor tint), not only +1 sprite. Stage changes briefly flash the panel (`.office-stage-flash`).
+Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold shifts the office (empty desk count / floor tint), not only +1 sprite. Stage changes briefly flash the panel (`.office-stage-flash`). Room changes reuse the same flash.
 
 | Owned Devs | Stage name   | Feel                                         |
 | ---------- | ------------ | -------------------------------------------- |
@@ -77,15 +98,15 @@ Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold sh
 
 ## Empty office (0 Devs)
 
-When `devOwned === 0` (`office-stage-empty`), the stage shows a vacant-office empty state:
+When `devOwned === 0` (`office-stage-empty`), the stage shows a vacant empty state:
 
-| Element     | Behavior                                                     |
-| ----------- | ------------------------------------------------------------ |
-| Empty desks | 4 desk chips at readable opacity (`.office-stage-empty`)     |
-| Hint        | Centered copy: “Empty office — hire Devs to fill the desks.” |
-| Exit        | Hint disappears once the first Dev is owned (stage → `solo`) |
+| Element     | Behavior                                                                |
+| ----------- | ----------------------------------------------------------------------- |
+| Empty desks | 4 desk chips at readable opacity (`.office-stage-empty`)                |
+| Hint        | Centered copy from the active room’s `emptyHint` (office default above) |
+| Exit        | Hint disappears once the first Dev is owned (stage → `solo`)            |
 
-The play-tip below Ship It stays about clicking / tokens; this hint is place-specific to the office stage.
+The play-tip below Ship It stays about clicking / tokens; this hint is place-specific to the active room stage.
 
 ## Motion
 
@@ -101,6 +122,5 @@ Shell motion (`ship-press`, `floater-rise`, `shop-drawer-up`, atmosphere, HUD pu
 
 ## Out of scope (here)
 
-- Unlockable rooms / prestige keep-list (#11)
 - Pixel art pipeline
 - Rare / unlockable skins tied to milestones

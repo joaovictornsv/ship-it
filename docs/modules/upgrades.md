@@ -2,7 +2,7 @@
 
 Producer IDs (Dev, Espresso machine, …), **Ship upgrades** (click power), and **building upgrades** (per-producer tokens/s mults).
 
-**Status:** active — early ladder through On-call (#6); Dev / Espresso scene (#7); Ship upgrades one-shot track (#30); building upgrades (#37); prestige shop (#9).
+**Status:** active — early ladder through On-call (#6); Dev / Espresso scene (#7); Ship upgrades one-shot track (#30); building upgrades (#37); prestige shop (#9); unlockable rooms (#11).
 
 ## Owned by
 
@@ -10,10 +10,11 @@ Producer IDs (Dev, Espresso machine, …), **Ship upgrades** (click power), and 
 - `src/data/shipUpgrades.ts` — Ship upgrade (click-power) catalog
 - `src/data/buildingUpgrades.ts` — building upgrade (per-producer tokens/s) catalog
 - `src/data/prestigeUpgrades.ts` — Rewrites prestige catalog
+- `src/data/rooms.ts` — unlockable scene rooms (sticky map cosmetics)
 - `src/features/shop/` — `ShopRail` / `ShopRow` / `ShopShipTile` / `ShopBuildingTile` / `ShopPrestigeRow`
 - `src/game/economy.ts` — cost + tokens/s + `clickPower` + prestige helpers
-- `src/game/state.ts` — `owned` / `shipOwned` / `buildingOwned` / `prestigeOwned` + buy / rewrite actions
-- `src/features/scene/` — `OfficeScene` from producer owned; `onUpgradeOwnedChanged` on buy
+- `src/game/state.ts` — `owned` / `shipOwned` / `buildingOwned` / `prestigeOwned` / `roomsUnlocked` + buy / rewrite actions
+- `src/features/scene/` — `OfficeScene` from producer owned + active room; `onUpgradeOwnedChanged` on buy
 
 ## Split (locked)
 
@@ -148,10 +149,11 @@ Owned map: `GameState.buildingOwned: Partial<Record<BuildingUpgradeId, true>>`.
 - `GameState.owned` — producer counts (missing key = 0)
 - `GameState.shipOwned` — one-shot Ship flags (missing key = not owned)
 - `GameState.buildingOwned` — one-shot building-upgrade flags (missing key = not owned)
+- `GameState.roomsUnlocked` / `activeRoom` — sticky scene rooms (see `scene.md`); not purchased — unlocked by owned / Rewrites thresholds
 
 ## Scene hooks
 
-`onUpgradeOwnedChanged(id, owned)` fans out spawn FX for **producers** only. Ship / building upgrades do not spawn office props in v1.
+`onUpgradeOwnedChanged(id, owned)` fans out spawn FX for **producers** only. Ship / building upgrades do not spawn office props in v1. Buying Espresso / Code review / CI (and banking a Rewrite) also unlocks map rooms via `newlyUnlockedRooms` — see `scene.md`.
 
 ## Notes
 

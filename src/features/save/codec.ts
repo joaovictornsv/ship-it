@@ -35,6 +35,8 @@ function readRawGameState(raw: unknown): GameState {
     lifetimeClicks,
     lifetimePurchases,
     achievementsUnlocked,
+    roomsUnlocked,
+    activeRoom,
   } = raw;
   if (typeof tokens !== 'number' || !Number.isFinite(tokens)) {
     throw new Error('Save state.tokens must be a finite number');
@@ -154,6 +156,26 @@ function readRawGameState(raw: unknown): GameState {
       }
     }
     base.achievementsUnlocked = unlocked;
+  }
+
+  if (roomsUnlocked !== undefined) {
+    if (!isRecord(roomsUnlocked)) {
+      throw new Error('Save state.roomsUnlocked must be an object');
+    }
+    const unlocked: GameState['roomsUnlocked'] = {};
+    for (const [id, flag] of Object.entries(roomsUnlocked)) {
+      if (flag === true || flag === 1) {
+        unlocked[id as keyof GameState['roomsUnlocked']] = true;
+      }
+    }
+    base.roomsUnlocked = unlocked;
+  }
+
+  if (activeRoom !== undefined) {
+    if (typeof activeRoom !== 'string' || activeRoom.length === 0) {
+      throw new Error('Save state.activeRoom must be a non-empty string');
+    }
+    base.activeRoom = activeRoom as GameState['activeRoom'];
   }
 
   return base;
