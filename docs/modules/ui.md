@@ -125,7 +125,7 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 | `buy-spend-flash`                | `.buy-spend-flash`                             | Brief brightness flash on buy / spend                                                           |
 | `office-dev-bob`                 | `.office-dev`                                  | Light Dev idle bob; off under reduced motion                                                    |
 | `office-spawn-pop`               | `.office-dev-spawn`                            | Buy spawn celebration on new Dev sprite                                                         |
-| `office-stage-flash`             | `.office-stage-flash`                          | Optional inset flash when milestone stage changes                                               |
+| `office-stage-flash`             | `.office-stage-flash`                          | Optional inset flash when milestone stage change                                                |
 | `shop-drawer-up`                 | `.shop-drawer-panel`                           | Mobile shop bottom sheet enter (~220ms); off under reduced motion                               |
 | `app-menu-drawer-in`             | `.app-menu-drawer`                             | Mobile header menu right sheet enter (~220ms); off under reduced motion                         |
 | `tip-fade-in`                    | `.play-tip`                                    | Ephemeral play tip enter                                                                        |

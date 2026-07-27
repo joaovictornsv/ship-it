@@ -12,6 +12,7 @@ import {
 import { roomSceneClass } from '../../game/rooms';
 import { selectTokensPerSecond, useGameStore } from '../../game/state';
 import { DevSprite } from './DevSprite';
+import { DeskStack } from './DeskStack';
 import { lodBadgeCount, sceneSpriteCap, visibleDevCount } from './lod';
 import { OfficeTalkBubbles } from './OfficeTalkBubbles';
 import { RoomSwitcher } from './RoomSwitcher';
@@ -82,8 +83,6 @@ export function OfficeScene() {
     });
   }, [stage.name, activeRoomId]);
 
-  const isEmptyOffice = devOwned === 0;
-  const deskCount = Math.max(visible, stage.emptyDesks);
   const props: PropChip[] = [
     {
       emoji: ESPRESSO_MACHINE.emoji,
@@ -106,6 +105,9 @@ export function OfficeScene() {
       label: 'On-call',
     },
   ].filter((prop) => prop.owned > 0);
+
+  const isEmptyOffice = devOwned === 0;
+  const deskCount = Math.max(visible, stage.emptyDesks);
 
   return (
     <section
@@ -177,6 +179,7 @@ export function OfficeScene() {
                 {occupied ? (
                   <DevSprite
                     index={index}
+                    roomId={activeRoomId}
                     spawn={spawnIndex === index}
                     onSpawnEnd={() => {
                       if (spawnIndex === index) {
@@ -185,7 +188,7 @@ export function OfficeScene() {
                     }}
                   />
                 ) : null}
-                <div className="office-desk-surface" />
+                <DeskStack occupied={occupied} index={index} />
               </div>
             );
           })}

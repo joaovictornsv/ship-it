@@ -4,6 +4,7 @@
  */
 
 import { createEnum, getEnumByName } from '../lib/createEnum';
+import { PEOPLE_DEV_EMOJIS } from './devEmojis';
 import {
   CI_CD_ID,
   CODE_REVIEW_ID,
@@ -26,6 +27,8 @@ export type RoomFields = {
   emoji: string;
   /** Empty-office hint when this room is active and Dev owned = 0. */
   emptyHint: string;
+  /** Emoji pool for fallback Dev sprites in this room (people only). */
+  devEmojis: readonly string[];
   unlock: RoomUnlockGoal;
 };
 
@@ -35,6 +38,7 @@ export const Rooms = createEnum({
     blurb: 'Where features pretend to ship.',
     emoji: '🏢',
     emptyHint: 'Empty office — hire Devs to fill the desks.',
+    devEmojis: PEOPLE_DEV_EMOJIS.slice(0, 6),
     unlock: { kind: 'always' },
   },
   'break-room': {
@@ -42,6 +46,7 @@ export const Rooms = createEnum({
     blurb: 'Espresso first, standup later.',
     emoji: '☕',
     emptyHint: 'Quiet break room — hire Devs to fill the seats.',
+    devEmojis: ['👨‍💻', '👩‍💻', '🧑‍💻', '🧘', '😴', '🤓'],
     unlock: {
       kind: 'owned',
       upgradeId: ESPRESSO_MACHINE_ID,
@@ -53,6 +58,7 @@ export const Rooms = createEnum({
     blurb: 'Two eyes, one LGTM.',
     emoji: '👀',
     emptyHint: 'Review lab is empty — hire Devs to fill the desks.',
+    devEmojis: ['🤔', '🧐', '👨‍💻', '👩‍💻', '🧑‍💻', '🤓'],
     unlock: {
       kind: 'owned',
       upgradeId: CODE_REVIEW_ID,
@@ -64,6 +70,7 @@ export const Rooms = createEnum({
     blurb: 'Green checks and pager jokes.',
     emoji: '🚨',
     emptyHint: 'Ops bay is quiet — hire Devs before the pager rings.',
+    devEmojis: ['👩‍💻', '🧑‍🔧', '👨‍💻', '👩‍🔧', '👨‍🔧', '🧑‍💻'],
     unlock: {
       kind: 'owned',
       upgradeId: CI_CD_ID,
@@ -75,6 +82,7 @@ export const Rooms = createEnum({
     blurb: 'Permanent floor after a Rewrite.',
     emoji: '🖥️',
     emptyHint: 'Datacenter racks wait — hire Devs to fill the floor.',
+    devEmojis: ['🧑‍💻', '👨‍💻', '👩‍💻', '🤓', '🧑‍🔧', '👩‍🔧'],
     unlock: { kind: 'rewrites', threshold: 1 },
   },
 });

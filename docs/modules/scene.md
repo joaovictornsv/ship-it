@@ -8,11 +8,13 @@ DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), **un
 
 - `src/features/scene/` — `OfficeScene`, `RoomSwitcher`, `DevSprite`, `OfficeTalkBubbles`, `devTalk`, `specialtyTalk`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
 - `src/data/rooms.ts` — unlockable room catalog (`Rooms` / `createEnum`)
+- `src/data/devTitles.ts` — stable cosmetic job titles for emoji desks
 - `src/game/rooms.ts` — pure unlock + active-room helpers
 - `src/data/openIssues.ts` — build-time open-issue snapshot for rare GitHub talk (`pnpm snapshot:issues`)
 - `src/data/contributors.ts` — opt-in contributor skins + talk name-drops (`pnpm generate:contributors`)
 - `src/data/talkNames.ts` — re-exports talk names from the skins catalog
 - `src/app/breakpoints.ts` / `useMediaQuery` — desktop vs mobile sprite budget
+- `docs/plans/office-visual-upgrades.md` — office flavor + two-layer background art prompts (pending wiring)
 - `src/styles/index.css` — `.office-*` desk farm, room tints, stage density, bob / spawn / stage flash / talk
 - `src/app/PlayView.tsx` — mounts `OfficeScene` as the play stage above the HUD + Ship It cluster
 - `src/app/CreditsView.tsx` — contributor skin attribution (`#/credits`)
@@ -30,19 +32,20 @@ Buying a Dev increases tokens/s **and** spawns a visible character (until the LO
 
 ## Desk farm + sprites
 
-| Rule               | Value                                                                                                                                                                                                                                                                         |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Layout             | Props rail above `.office-stage-body` (floor + talk + CSS Grid desk farm)                                                                                                                                                                                                     |
-| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                                                                                                                                                                                    |
-| Dev sprite         | Opt-in contributor avatar when catalog non-empty; else emoji (`upgradeEmoji` / `DEV_EMOJIS`). Hover / focus shows an inverted-color name tip (GitHub username + **Contributor** label for skins; stable fake name for fallback). No outbound click. Avatar `onError` → emoji. |
-| Talk bubbles       | See **Talk bubbles** below — scoped to `.office-stage-body` (desk band) so `overflow-hidden` on the stage does not clip them                                                                                                                                                  |
-| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                                                                                                                                                                                     |
-| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                                                                                                                                                                                                                             |
-| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                                                                                                                                                                                   |
-| Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                                                                                                                                                                                   |
-| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                                                                                                                                                                                       |
-| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                                                                                                                                                                                    |
-| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                                                                                                                                                                                 |
+| Rule               | Value                                                                                                                                                                                                                                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout             | Props rail above `.office-stage-body` (floor + talk + CSS Grid desk farm)                                                                                                                                                                                                                                |
+| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                                                                                                                                                                                                               |
+| Occupied desks     | `DeskStack` — flex desk bar: center laptop (overflows top) · right snack/drink; vacant desks keep a dim surface only                                                                                                                                                                                     |
+| Dev sprite         | Opt-in contributor avatar when catalog non-empty; else per-room emoji pool (`upgradeEmoji` / `rooms.devEmojis`). Hover / focus shows an inverted-color name tip (GitHub username + **Contributor** for skins; fake name + **cosmetic title** for fallback). No outbound click. Avatar `onError` → emoji. |
+| Talk bubbles       | See **Talk bubbles** below — scoped to `.office-stage-body` (desk band) so `overflow-hidden` on the stage does not clip them                                                                                                                                                                             |
+| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                                                                                                                                                                                                                |
+| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                                                                                                                                                                                                                                                        |
+| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                                                                                                                                                                                                              |
+| Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                                                                                                                                                                                                              |
+| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                                                                                                                                                                                                                  |
+| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                                                                                                                                                                                                               |
+| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                                                                                                                                                                                                            |
 
 Helpers: `src/features/scene/lod.ts` (unit-tested).
 
@@ -60,7 +63,7 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 ### Contributor skins
 
-`DevSprite` resolves desk index via `resolveDevSkin` against the opt-in pool in `src/data/contributors.ts` — each contributor avatar appears at most once on screen; overflow desks use emoji glyphs with a stable fake name from `FAKE_DEV_NAMES`. Hover / focus shows a portaled name tip (contributor = GitHub login + **Contributor** label; fallback = fake name) in talk-bubble shape with **inverted** ink/elevated colors so it does not read as speech — simpler than the shop ⓘ details tip (no pin). Contributor desks are not outbound links; they behave like normal office Devs. Avatars are static files under `public/contributors/avatars/`; bake with `pnpm generate:contributors`. Credits / attribution: `#/credits` (`CreditsView`). See `docs/modules/contributors.md`.
+`DevSprite` resolves desk index via `resolveDevSkin` against the opt-in pool in `src/data/contributors.ts` — each contributor avatar appears at most once on screen; overflow desks use per-room emoji glyphs with a stable fake name from `FAKE_DEV_NAMES` and cosmetic title from `devTitles.ts`. Hover / focus shows a portaled name tip (contributor = GitHub login + **Contributor** label only; fallback = fake name + title) in talk-bubble shape with **inverted** ink/elevated colors so it does not read as speech — simpler than the shop ⓘ details tip (no pin). Contributor desks are not outbound links; they behave like normal office Devs. Avatars are static files under `public/contributors/avatars/`; bake with `pnpm generate:contributors`. Credits / attribution: `#/credits` (`CreditsView`). See `docs/modules/contributors.md`.
 
 ## Unlockable rooms
 
@@ -73,6 +76,9 @@ Data-driven map spaces in `src/data/rooms.ts`. Unlock once → sticky in `roomsU
 | `review-lab` | Review lab | Own ≥1 Code review      | Cool review-blue wall/floor |
 | `ops-bay`    | Ops bay    | Own ≥1 CI / CD          | Green/amber ops wash        |
 | `datacenter` | Datacenter | Bank ≥1 Rewrite         | Cooler denser floor tint    |
+
+- Per-room **Dev emoji pools** (`devEmojis`) — people-only fallback sprites; contributor avatars unchanged. Room tint carries place identity — not food/object glyphs as Devs.
+- **Room backgrounds (planned):** two strips per room — **minimalist wall** on `.office-sky` + **floor** on `.office-floor` (`backgroundWallSrc` / `backgroundFloorSrc` on catalog entries). Not one full-stage plate (trial `office.jpeg` to be replaced). Art specs + AI prompts: [`docs/plans/office-visual-upgrades.md`](../plans/office-visual-upgrades.md). CSS gradients remain fallback when unset.
 
 - Pure helpers: `newlyUnlockedRooms` / `resolveActiveRoom` / `roomSceneClass` in `src/game/rooms.ts` (unit-tested).
 - CSS modifiers: `.office-room-{id}` override local **tint** vars only (`--office-wall` / `--office-floor` / `--office-desk` / `--office-mug`). Do **not** change padding or min-height per room.
@@ -123,5 +129,5 @@ Shell motion (`ship-press`, `floater-rise`, `shop-drawer-up`, atmosphere, HUD pu
 
 ## Out of scope (here)
 
-- Pixel art pipeline
+- Buyable office themes (#34)
 - Rare / unlockable skins tied to milestones

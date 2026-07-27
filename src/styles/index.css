@@ -491,17 +491,73 @@ button:disabled {
   min-height: 3.25rem;
 }
 
+.office-desk-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .office-desk-surface {
+  position: relative;
   width: 100%;
   height: 0.45rem;
+  max-height: 0.5rem;
   border-radius: 0.2rem;
   background: var(--office-desk);
   opacity: 0.35;
   transition: opacity 160ms ease-out;
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--ship-ink) 8%, transparent);
 }
 
-.office-desk-cell-occupied .office-desk-surface {
+.office-desk-surface-occupied {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.04rem;
+  padding: 0 0.1rem;
   opacity: 0.95;
+  height: 0.5rem;
+  max-height: 0.5rem;
+  overflow: visible;
+  border-radius: 0.22rem 0.22rem 0.15rem 0.15rem;
+  box-shadow:
+    inset 0 -1px 0 color-mix(in srgb, var(--ship-ink) 12%, transparent),
+    0 1px 0 color-mix(in srgb, var(--office-desk) 60%, transparent);
+}
+
+.office-desk-slot {
+  flex: 1 1 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+  max-height: 0.5rem;
+}
+
+.office-desk-slot-center {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.office-desk-slot-right {
+  justify-content: flex-end;
+}
+
+.office-desk-slot-icon {
+  font-size: 0.42rem;
+  line-height: 1;
+  opacity: 0.9;
+  transform: translateY(-0.04rem);
+}
+
+.office-desk-notebook {
+  font-size: 0.72rem;
+  line-height: 1;
+  transform: translateY(-35%);
+  pointer-events: none;
 }
 
 .office-stage-empty .office-desk-cell-empty .office-desk-surface,
