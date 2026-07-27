@@ -1,3 +1,4 @@
+import type { AchievementId } from '../data/achievements';
 import type { PrestigeUpgradeId } from '../data/prestigeUpgrades';
 import type { ShipUpgradeId } from '../data/shipUpgrades';
 import type { UpgradeId } from '../data/upgrades';
@@ -16,6 +17,12 @@ export type OwnedShipUpgrades = Partial<Record<ShipUpgradeId, true>>;
 
 /** Prestige shop owned counts (missing key = 0). Persist across Rewrite. */
 export type OwnedPrestigeUpgrades = Partial<Record<PrestigeUpgradeId, number>>;
+
+/**
+ * Unlocked achievement badges (missing key = locked).
+ * Value is always `true` when present — cosmetics kept across Rewrite.
+ */
+export type OwnedAchievements = Partial<Record<AchievementId, true>>;
 
 export type GameState = {
   /** Spendable token bank. */
@@ -36,6 +43,20 @@ export type GameState = {
   rewrites: Tokens;
   /** Prestige shop owned counts — kept across Rewrite. */
   prestigeOwned: OwnedPrestigeUpgrades;
+  /**
+   * All-time tokens earned (clicks + passive across Rewrites).
+   * Kept across Rewrite — achievement counter.
+   */
+  lifetimeTokensEarned: Tokens;
+  /** All-time Ship It presses. Kept across Rewrite. */
+  lifetimeClicks: number;
+  /**
+   * All-time shop purchases (producer units + Ship upgrades).
+   * Kept across Rewrite.
+   */
+  lifetimePurchases: number;
+  /** Unlocked achievement ids — cosmetics kept across Rewrite. */
+  achievementsUnlocked: OwnedAchievements;
   /**
    * Epoch ms of the last applied production tick.
    * On tab resume, set to now without granting away-time tokens (no offline accrual).

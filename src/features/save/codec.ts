@@ -30,6 +30,10 @@ function readRawGameState(raw: unknown): GameState {
     tokensEarnedThisRun,
     rewrites,
     prestigeOwned,
+    lifetimeTokensEarned,
+    lifetimeClicks,
+    lifetimePurchases,
+    achievementsUnlocked,
   } = raw;
   if (typeof tokens !== 'number' || !Number.isFinite(tokens)) {
     throw new Error('Save state.tokens must be a finite number');
@@ -91,6 +95,51 @@ function readRawGameState(raw: unknown): GameState {
       }
     }
     base.prestigeOwned = prestigeCounts;
+  }
+
+  if (lifetimeTokensEarned !== undefined) {
+    if (
+      typeof lifetimeTokensEarned !== 'number' ||
+      !Number.isFinite(lifetimeTokensEarned)
+    ) {
+      throw new Error(
+        'Save state.lifetimeTokensEarned must be a finite number',
+      );
+    }
+    base.lifetimeTokensEarned = lifetimeTokensEarned;
+  }
+
+  if (lifetimeClicks !== undefined) {
+    if (
+      typeof lifetimeClicks !== 'number' ||
+      !Number.isFinite(lifetimeClicks)
+    ) {
+      throw new Error('Save state.lifetimeClicks must be a finite number');
+    }
+    base.lifetimeClicks = lifetimeClicks;
+  }
+
+  if (lifetimePurchases !== undefined) {
+    if (
+      typeof lifetimePurchases !== 'number' ||
+      !Number.isFinite(lifetimePurchases)
+    ) {
+      throw new Error('Save state.lifetimePurchases must be a finite number');
+    }
+    base.lifetimePurchases = lifetimePurchases;
+  }
+
+  if (achievementsUnlocked !== undefined) {
+    if (!isRecord(achievementsUnlocked)) {
+      throw new Error('Save state.achievementsUnlocked must be an object');
+    }
+    const unlocked: GameState['achievementsUnlocked'] = {};
+    for (const [id, flag] of Object.entries(achievementsUnlocked)) {
+      if (flag === true || flag === 1) {
+        unlocked[id as keyof GameState['achievementsUnlocked']] = true;
+      }
+    }
+    base.achievementsUnlocked = unlocked;
   }
 
   return base;

@@ -236,6 +236,17 @@ button:disabled {
   }
 }
 
+@keyframes achievement-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes office-talk-in {
   from {
     opacity: 0;
@@ -281,6 +292,10 @@ button:disabled {
 
 .play-tip {
   animation: tip-fade-in 220ms ease-out;
+}
+
+.achievement-toast {
+  animation: achievement-toast-in 220ms ease-out;
 }
 
 .office-talk-bubble {
@@ -476,6 +491,7 @@ button:disabled {
   .tokens-tps-pulse,
   .buy-spend-flash,
   .play-tip,
+  .achievement-toast,
   .office-talk-bubble,
   .office-talk-bubble-out {
     animation: none;

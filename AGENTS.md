@@ -15,17 +15,17 @@ Lefthook runs format + lint (staged) + typecheck on pre-commit (`pnpm exec lefth
 
 ## Architecture map
 
-| Area           | Path                                                         |
-| -------------- | ------------------------------------------------------------ |
-| App shell      | `src/app/`                                                   |
-| Features       | `src/features/{click,shop,scene,save}/`                      |
-| Pure game      | `src/game/` (`economy`, `tick`, `state`, `types`)            |
-| Static data    | `src/data/`                                                  |
-| Shared lib     | `src/lib/` (`createEnum`, …)                                 |
-| Styles         | `src/styles/` + [`docs/modules/ui.md`](./docs/modules/ui.md) |
-| Module docs    | `docs/modules/*.md`                                          |
-| Product / tech | `docs/PRODUCT.md`, `docs/TECHNICAL.md`                       |
-| Roadmap issues | `docs/ISSUES.md`                                             |
+| Area           | Path                                                              |
+| -------------- | ----------------------------------------------------------------- |
+| App shell      | `src/app/`                                                        |
+| Features       | `src/features/{click,shop,scene,save,achievements}/`              |
+| Pure game      | `src/game/` (`economy`, `achievements`, `tick`, `state`, `types`) |
+| Static data    | `src/data/`                                                       |
+| Shared lib     | `src/lib/` (`createEnum`, …)                                      |
+| Styles         | `src/styles/` + [`docs/modules/ui.md`](./docs/modules/ui.md)      |
+| Module docs    | `docs/modules/*.md`                                               |
+| Product / tech | `docs/PRODUCT.md`, `docs/TECHNICAL.md`                            |
+| Roadmap issues | `docs/ISSUES.md`                                                  |
 
 **Stack (locked):** Vite, React 19, TypeScript strict, Tailwind, Zustand, Vitest, pnpm, Lefthook, Node 24 CI. Scene = DOM + CSS. Saves = versioned + SHA-256 + base64. English-only UI copy.
 

@@ -10,8 +10,9 @@ function getPersistedSnapshot() {
 }
 
 /**
- * Trailing autosave ~1.5s after tokens / owned / shipOwned / prestige changes, plus sync
- * flush on `visibilitychange` (hidden) and `pagehide` via a warmed base64 blob.
+ * Trailing autosave ~1.5s after tokens / owned / shipOwned / prestige /
+ * achievement counter changes, plus sync flush on `visibilitychange` (hidden)
+ * and `pagehide` via a warmed base64 blob.
  *
  * `lastTickAt`-only updates do not schedule a save. Token accrual from the
  * production tick does schedule, but an already-pending timer is not reset —
@@ -89,14 +90,18 @@ export function useAutosave(enabled: boolean = true): void {
     });
 
     const unsub = useGameStore.subscribe((state, prev) => {
-      // Ignore lastTickAt-only noise from the production tick clock.
+      // Ignore lastTickAt-only / toast-queue noise from the production tick clock.
       if (
         state.tokens === prev.tokens &&
         state.owned === prev.owned &&
         state.shipOwned === prev.shipOwned &&
         state.tokensEarnedThisRun === prev.tokensEarnedThisRun &&
         state.rewrites === prev.rewrites &&
-        state.prestigeOwned === prev.prestigeOwned
+        state.prestigeOwned === prev.prestigeOwned &&
+        state.lifetimeTokensEarned === prev.lifetimeTokensEarned &&
+        state.lifetimeClicks === prev.lifetimeClicks &&
+        state.lifetimePurchases === prev.lifetimePurchases &&
+        state.achievementsUnlocked === prev.achievementsUnlocked
       ) {
         return;
       }
