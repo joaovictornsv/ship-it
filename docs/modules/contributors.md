@@ -1,14 +1,14 @@
 # Contributors
 
-Static skin pipeline, opt-in, fallbacks, attribution.
+Static skin pipeline, opt-in, fallbacks, attribution, office hover names.
 
-**Status:** active — issue #10. Office Devs show each opt-in avatar at most once; extra desks use emoji glyphs; Credits page lists them.
+**Status:** active — issues #10 / #48. Office Devs show each opt-in avatar at most once; extra desks use emoji glyphs + fake names; Credits page lists skins.
 
 ## Owned by
 
-- `src/data/contributors.ts` — opt-in skin catalog, `resolveDevSkin` / `resolveDevSkinFromPool`, talk name-drops
+- `src/data/contributors.ts` — opt-in skin catalog, `FAKE_DEV_NAMES`, `resolveDevSkin` / `resolveDevSkinFromPool`, profile URL helper, talk name-drops
 - `src/data/talkNames.ts` — re-exports `TALK_CONTRIBUTOR_NAMES` from the skins catalog
-- `src/features/scene/DevSprite.tsx` — avatar or emoji; `title` = contributor name; `onError` → emoji
+- `src/features/scene/DevSprite.tsx` — avatar or emoji; native `title` hover; human skins link to GitHub; `onError` → emoji
 - `src/app/CreditsView.tsx` — attribution UI (`#/credits`)
 - `public/contributors/opt-in.json` — consent list (source for generate)
 - `public/contributors/avatars/*.png` — static public avatars (as-is for v1)
@@ -22,14 +22,27 @@ Static skin pipeline, opt-in, fallbacks, attribution.
 | Bake    | `pnpm generate:contributors` downloads `https://github.com/{login}.png` → `public/contributors/avatars/{id}.png`. **No token.** |
 | Catalog | Keep `CONTRIBUTOR_SKINS` in `src/data/contributors.ts` aligned with opt-in (ids, display names, `avatarFile`).                  |
 | Runtime | Desk index `i < pool.length` → unique contributor; overflow / empty / img failure → `devEmojiForIndex` fallback.                |
+| Hover   | See **Office hover + links** below.                                                                                             |
 | Talk    | `TALK_CONTRIBUTOR_NAMES` derived from the same catalog so bubbles name-drop skins.                                              |
 | Credits | Header **Credits** (Users icon) → `#/credits` lists opt-in skins + tribute copy.                                                |
+
+## Office hover + links
+
+| Desk kind              | Hover (`title`)             | Click                                                                                  |
+| ---------------------- | --------------------------- | -------------------------------------------------------------------------------------- |
+| Human contributor skin | GitHub username (`skin.id`) | `<a href="https://github.com/{id}">` (`target="_blank"` + `rel="noopener noreferrer"`) |
+| Bot contributor skin   | GitHub username (`skin.id`) | **No link** (`kind: 'bot'` → `profileUrl: null`)                                       |
+| Fallback / emoji desk  | Stable fake name from pool  | **No link**                                                                            |
+
+- Fake names live in `FAKE_DEV_NAMES` / `fakeDevNameForIndex(index)` in `src/data/contributors.ts` (English-only ordinary + joke names). Desk index maps stably into the pool (modulo).
+- Prefer native `title` over a second portaled tooltip system (shop ⓘ stays separate).
+- Link chrome must not invent new colors/fonts — inherit office sprite layout (`docs/modules/ui.md`).
 
 ## Fallback rules
 
 - Each opt-in skin appears **at most once** among visible desks (no A/B/A/B repeats).
-- Empty `CONTRIBUTOR_SKINS` or desks beyond the pool size → generic emoji glyphs.
-- Avatar 404 / decode error → that sprite switches to emoji (other desks unaffected).
+- Empty `CONTRIBUTOR_SKINS` or desks beyond the pool size → generic emoji glyphs + fake-name hover.
+- Avatar 404 / decode error → that sprite switches to emoji (other desks unaffected); contributor hover/link rules still apply when the skin resolved.
 - No private profile APIs in the client; no `VITE_*` secrets for this path.
 
 ## Out of scope (here)
