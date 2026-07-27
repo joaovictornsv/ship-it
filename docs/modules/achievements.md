@@ -43,6 +43,8 @@ Starter set covers **tokens**, **clicks**, **owned**, **purchases**, and **rewri
 | Unlock toast       | Fixed top HUD banner; FIFO queue (cap 5); auto-dismiss ~3.2s; `aria-live`  |
 | Motion             | `achievement-toast-in`; off under `prefers-reduced-motion`                 |
 
+**Locked vs unlocked (panel):** unlocked = solid elevated surface, accent inset bar, Check glyph, accent status chip; locked = dashed border, muted ink wash, Lock glyph, muted title/progress. Same `--ship-*` tokens only.
+
 Toast is non-blocking (no focus steal, `pointer-events-none`). Chrome uses `--ship-*` tokens only.
 
 ## Navigation

@@ -1,3 +1,4 @@
+import { Check, Lock } from 'lucide-react';
 import { achievements } from '../data/achievements';
 import {
   achievementProgressLabel,
@@ -61,34 +62,82 @@ export function AchievementsView() {
             return (
               <li key={item.name}>
                 <article
+                  aria-label={`${item.title}, ${unlocked ? 'unlocked' : 'locked'}`}
                   className={[
-                    'rounded-xl border px-3 py-2.5',
+                    'flex gap-3 rounded-xl border px-3 py-2.5',
                     unlocked
-                      ? 'border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_88%,transparent)]'
-                      : 'border-dashed border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_70%,transparent)] opacity-90',
+                      ? [
+                          'border-[color-mix(in_srgb,var(--ship-accent)_35%,var(--ship-line))]',
+                          'bg-[var(--ship-bg-elevated)]',
+                          'shadow-[inset_3px_0_0_0_var(--ship-accent)]',
+                        ].join(' ')
+                      : [
+                          'border-dashed border-[var(--ship-line)]',
+                          'bg-[color-mix(in_srgb,var(--ship-ink)_4%,transparent)]',
+                        ].join(' '),
                   ].join(' ')}
                 >
-                  <div className="flex items-baseline justify-between gap-2">
-                    <h3 className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]">
-                      {item.title}
-                    </h3>
-                    <span
+                  <div
+                    className={[
+                      'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border',
+                      unlocked
+                        ? 'border-[color-mix(in_srgb,var(--ship-accent)_28%,var(--ship-line))] bg-[color-mix(in_srgb,var(--ship-accent)_14%,transparent)] text-[var(--ship-accent-deep)]'
+                        : 'border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_60%,transparent)] text-[var(--ship-muted)]',
+                    ].join(' ')}
+                    aria-hidden
+                  >
+                    {unlocked ? (
+                      <Check className="size-4" strokeWidth={2.5} />
+                    ) : (
+                      <Lock className="size-4" strokeWidth={2} />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3
+                        className={[
+                          'text-sm font-semibold tracking-tight',
+                          unlocked
+                            ? 'text-[var(--ship-ink)]'
+                            : 'text-[var(--ship-muted)]',
+                        ].join(' ')}
+                      >
+                        {item.title}
+                      </h3>
+                      <span
+                        className={[
+                          'shrink-0 rounded-md px-1.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide',
+                          unlocked
+                            ? 'bg-[color-mix(in_srgb,var(--ship-accent)_16%,transparent)] text-[var(--ship-accent-deep)]'
+                            : 'bg-[color-mix(in_srgb,var(--ship-ink)_6%,transparent)] text-[var(--ship-muted)]',
+                        ].join(' ')}
+                      >
+                        {unlocked ? 'Unlocked' : 'Locked'}
+                      </span>
+                    </div>
+                    <p
                       className={[
-                        'shrink-0 text-xs font-semibold',
+                        'mt-0.5 text-xs',
+                        unlocked
+                          ? 'text-[var(--ship-muted)]'
+                          : 'text-[color-mix(in_srgb,var(--ship-muted)_78%,transparent)]',
+                      ].join(' ')}
+                    >
+                      {item.blurb}
+                    </p>
+                    <p
+                      className={[
+                        'mt-1 text-xs font-semibold tabular-nums',
                         unlocked
                           ? 'text-[var(--ship-accent-deep)]'
                           : 'text-[var(--ship-muted)]',
                       ].join(' ')}
                     >
-                      {unlocked ? 'Unlocked' : 'Locked'}
-                    </span>
+                      {unlocked
+                        ? 'Complete'
+                        : achievementProgressLabel(item, snap)}
+                    </p>
                   </div>
-                  <p className="mt-0.5 text-xs text-[var(--ship-muted)]">
-                    {item.blurb}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold tabular-nums text-[var(--ship-ink)]">
-                    {unlocked ? 'Done' : achievementProgressLabel(item, snap)}
-                  </p>
                 </article>
               </li>
             );
