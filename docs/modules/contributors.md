@@ -8,7 +8,7 @@ Static skin pipeline, opt-in, fallbacks, attribution, office hover names.
 
 - `src/data/contributors.ts` — opt-in skin catalog, `FAKE_DEV_NAMES`, `resolveDevSkin` / `resolveDevSkinFromPool`, profile URL helper, talk name-drops
 - `src/data/talkNames.ts` — re-exports `TALK_CONTRIBUTOR_NAMES` from the skins catalog
-- `src/features/scene/DevSprite.tsx` — avatar or emoji; native `title` hover; human skins link to GitHub; `onError` → emoji
+- `src/features/scene/DevSprite.tsx` — avatar or emoji; talk-bubble name tip on hover/focus; human skins link to GitHub; `onError` → emoji
 - `src/app/CreditsView.tsx` — attribution UI (`#/credits`)
 - `public/contributors/opt-in.json` — consent list (source for generate)
 - `public/contributors/avatars/*.png` — static public avatars (as-is for v1)
@@ -28,14 +28,14 @@ Static skin pipeline, opt-in, fallbacks, attribution, office hover names.
 
 ## Office hover + links
 
-| Desk kind              | Hover (`title`)             | Click                                                                                  |
+| Desk kind              | Hover name tip              | Click                                                                                  |
 | ---------------------- | --------------------------- | -------------------------------------------------------------------------------------- |
 | Human contributor skin | GitHub username (`skin.id`) | `<a href="https://github.com/{id}">` (`target="_blank"` + `rel="noopener noreferrer"`) |
 | Bot contributor skin   | GitHub username (`skin.id`) | **No link** (`kind: 'bot'` → `profileUrl: null`)                                       |
 | Fallback / emoji desk  | Stable fake name from pool  | **No link**                                                                            |
 
 - Fake names live in `FAKE_DEV_NAMES` / `fakeDevNameForIndex(index)` in `src/data/contributors.ts` (English-only ordinary + joke names). Desk index maps stably into the pool (modulo).
-- Prefer native `title` over a second portaled tooltip system (shop ⓘ stays separate).
+- Name tip is a **simple talk-shaped chip** (same size/radius as office talk, but **inverted**: `--ship-ink` fill + `--ship-bg-elevated` text) portaled to `body` so stage `overflow-hidden` does not clip it. Hover / focus only — no ⓘ pin like the shop details tip. Inverted colors keep it distinct from speech bubbles.
 - Link chrome must not invent new colors/fonts — inherit office sprite layout (`docs/modules/ui.md`).
 
 ## Fallback rules
