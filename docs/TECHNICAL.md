@@ -216,7 +216,7 @@ On PR + `main`:
 4. Quave env name: **`joaovictornsv-ship-it-staging`** (locked with game name in [PRODUCT.md](./PRODUCT.md)).
 5. **No custom domain** for v1.
 6. **No Quave production env for now** — only staging on Quave ONE; promote to production later when ready.
-7. Document the live staging URL in [README.md](../README.md) after the first green deploy.
+7. Live staging URL (documented in [README.md](../README.md)): https://ship-it-staging-joaovictornsv.svc-us5.zcloud.ws/
 
 ### Environments
 
