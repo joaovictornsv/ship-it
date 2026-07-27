@@ -60,6 +60,8 @@ Defined on `:root` in `src/styles/index.css`. Prefer these over raw hex in compo
 | `--ship-prestige-muscle`        | `#0f7a74`              | Prestige: Muscle memory                               |
 | `--ship-prestige-stub`          | `#c47a3a`              | Prestige: Stub repo                                   |
 | `--ship-rewrite`                | `#5b6b7c`              | Rewrites currency numeral (distinct from token gold)  |
+| `--ship-talk-angry`             | `#c44536`              | Occasional angry peak talk bubble (critic / bug)      |
+| `--ship-talk-happy`             | `#2a9d6e`              | Occasional happy peak talk bubble (ship / promo)      |
 
 **Do not** reintroduce coffee-brown shell chrome (`#8b5a2b`, cream `#f3eee4`, etc.). Scene mug tint (`--office-mug`) stays local on `.office-scene`.
 
@@ -122,6 +124,7 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 | `atmosphere-drift`               | `.ship-atmosphere-blob`                        | Slow backdrop drift; **off** under reduced motion                                               |
 | `tps-tick-pulse`                 | `.tokens-tps-pulse`                            | Soft opacity nudge on tokens/s (~1.6s throttle); off under reduced motion                       |
 | `office-talk-in`                 | `.office-talk-bubble` / `.office-dev-name-tip` | Occasional Dev speech bubble; also Dev name tip fade (name tip uses inverted ink/elevated fill) |
+| `office-talk` peaks              | `.office-talk-bubble-angry` / `-happy`         | Rare emotional peaks: thick border + bold; red critic / green ship (see `--ship-talk-*`)        |
 | `buy-spend-flash`                | `.buy-spend-flash`                             | Brief brightness flash on buy / spend                                                           |
 | `office-dev-bob`                 | `.office-dev`                                  | Light Dev idle bob; off under reduced motion                                                    |
 | `office-spawn-pop`               | `.office-dev-spawn`                            | Buy spawn celebration on new Dev sprite                                                         |

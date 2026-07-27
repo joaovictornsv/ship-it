@@ -6,7 +6,7 @@ DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), **un
 
 ## Owned by
 
-- `src/features/scene/` — `OfficeScene`, `RoomSwitcher`, `DevSprite`, `OfficeTalkBubbles`, `devTalk`, `specialtyTalk`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
+- `src/features/scene/` — `OfficeScene`, `RoomSwitcher`, `DevSprite`, `OfficeTalkBubbles`, `devTalk`, `roomTalk`, `specialtyTalk`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
 - `src/data/rooms.ts` — unlockable room catalog (`Rooms` / `createEnum`)
 - `src/data/devTitles.ts` — stable cosmetic job titles for emoji desks
 - `src/game/rooms.ts` — pure unlock + active-room helpers
@@ -50,15 +50,17 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 ### Talk bubbles
 
-| Piece             | Behavior                                                                                                                                                                                     |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UI                | `OfficeTalkBubbles` — up to 4 bubbles over the desk band (not the props rail); inset placement; slow spawn (~5–8s), long dwell (~7–10s); **off** under `prefers-reduced-motion`              |
-| Majority copy     | `devTalk.ts` — generic `DEV_LINES` + `DEV_DIALOGUES`                                                                                                                                         |
-| Rare specialty    | `specialtyTalk.ts` — ~14% of non-dialogue spawns (`SPECIALTY_LINE_CHANCE`)                                                                                                                   |
-| Specialty buckets | Open GitHub issues (build-time snapshot), contributor name-drops, calendar (weekday / time-of-day), owned-upgrade props (Espresso / CI / on-call / code review), office stage, tokens/s band |
-| Issue data        | `src/data/openIssues.ts` via `pnpm snapshot:issues` (server/CI; optional `SHIP_IT_GITHUB_TOKEN`; **no client secrets**). Stale-OK; empty snapshot → skip GitHub bucket                       |
-| Contributor names | `src/data/contributors.ts` opt-in skins → `TALK_CONTRIBUTOR_NAMES` (re-exported via `talkNames.ts`)                                                                                          |
-| Motion / chrome   | Reuses `.office-talk-bubble` tokens from `ui.md` — specialty is **copy/selection only**                                                                                                      |
+| Piece             | Behavior                                                                                                                                                                                 |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI                | `OfficeTalkBubbles` — up to 4 bubbles over the desk band (not the props rail); inset placement; slow spawn (~5–8s), long dwell (~7–10s); **off** under `prefers-reduced-motion`          |
+| Majority copy     | `roomTalk.ts` / `devTalk.ts` — **per-room** lines + dialogues (office / break-room / review-lab / ops-bay / datacenter)                                                                  |
+| Rare specialty    | `specialtyTalk.ts` — ~14% of non-dialogue spawns (`SPECIALTY_LINE_CHANCE`); category preference skewed by active room                                                                    |
+| Specialty buckets | Open GitHub issues (build-time snapshot), contributor name-drops, calendar, owned-upgrade props, office stage, tokens/s band, room flavor                                                |
+| Issue / names     | Room-flavored templates (e.g. ops-bay pages `#N`; break-room AFKs a contributor; review-lab asks for LGTM) — same snapshots, different jokes                                             |
+| Emotional peaks   | ~10% of non-dialogue spawns (`EMOTIONAL_PEAK_CHANCE`): **angry** (critic / bug, red thick border + bold) or **happy** (ship / promo, green thick border + bold); may cite issues / names |
+| Issue data        | `src/data/openIssues.ts` via `pnpm snapshot:issues` (server/CI; optional `SHIP_IT_GITHUB_TOKEN`; **no client secrets**). Stale-OK; empty snapshot → skip GitHub bucket                   |
+| Contributor names | `src/data/contributors.ts` opt-in skins → `TALK_CONTRIBUTOR_NAMES` (re-exported via `talkNames.ts`)                                                                                      |
+| Motion / chrome   | Neutral bubbles reuse `.office-talk-bubble`; peaks use `.office-talk-bubble-angry` / `-happy` (`--ship-talk-angry` / `--ship-talk-happy`)                                                |
 
 ### Contributor skins
 
@@ -117,13 +119,13 @@ The play-tip below Ship It stays about clicking / tokens; this hint is place-spe
 
 ## Motion
 
-| Name                     | Where                  | Notes                                                            |
-| ------------------------ | ---------------------- | ---------------------------------------------------------------- |
-| `office-dev-bob`         | `.office-dev`          | Light idle bob (~2.4s); **off** under `prefers-reduced-motion`   |
-| `office-spawn-pop`       | `.office-dev-spawn`    | Short celebration when a Dev is bought                           |
-| `office-stage-flash`     | `.office-stage-flash`  | Inset flash on milestone stage change                            |
-| `office-talk-in` / `out` | `.office-talk-bubble`  | Soft opacity fade; slow spawn (~5–8s), long dwell (~7–10s)       |
-| Desk opacity             | `.office-desk-surface` | Short opacity ease when stage changes; none under reduced motion |
+| Name                     | Where                                               | Notes                                                                          |
+| ------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `office-dev-bob`         | `.office-dev`                                       | Light idle bob (~2.4s); **off** under `prefers-reduced-motion`                 |
+| `office-spawn-pop`       | `.office-dev-spawn`                                 | Short celebration when a Dev is bought                                         |
+| `office-stage-flash`     | `.office-stage-flash`                               | Inset flash on milestone stage change                                          |
+| `office-talk-in` / `out` | `.office-talk-bubble` (+ `-angry` / `-happy` peaks) | Soft opacity fade; slow spawn (~5–8s), long dwell (~7–10s); peaks linger +1.2s |
+| Desk opacity             | `.office-desk-surface`                              | Short opacity ease when stage changes; none under reduced motion               |
 
 Shell motion (`ship-press`, `floater-rise`, `shop-drawer-up`, atmosphere, HUD pulse) stays documented in `ui.md`. Scene mug tint (`--office-mug`) is **local** to `.office-scene` — not a global shell token. Upgrade prop hues use `--ship-upgrade-*`.
 

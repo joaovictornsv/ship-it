@@ -40,6 +40,9 @@
   --ship-prestige-stub: #c47a3a;
   /* Prestige currency numeral (distinct from token gold). */
   --ship-rewrite: #5b6b7c;
+  /* Occasional emotional-peak talk bubbles (scene juice, not shell chrome). */
+  --ship-talk-angry: #c44536;
+  --ship-talk-happy: #2a9d6e;
 }
 
 html,
@@ -335,6 +338,33 @@ button:disabled {
 
 .office-talk-bubble-out {
   animation: office-talk-out 700ms ease-in forwards;
+}
+
+/* Rare emotional peaks — thick border + bold copy (angry critic / happy ship). */
+.office-talk-bubble-peak {
+  border-style: solid;
+  border-width: 2.5px;
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--ship-ink) 12%, transparent);
+}
+
+.office-talk-bubble-angry {
+  border-color: var(--ship-talk-angry);
+  color: color-mix(in srgb, var(--ship-talk-angry) 72%, var(--ship-ink));
+  background: color-mix(
+    in srgb,
+    var(--ship-talk-angry) 14%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-talk-bubble-happy {
+  border-color: var(--ship-talk-happy);
+  color: color-mix(in srgb, var(--ship-talk-happy) 55%, var(--ship-ink));
+  background: color-mix(
+    in srgb,
+    var(--ship-talk-happy) 14%,
+    var(--ship-bg-elevated)
+  );
 }
 
 /* Dev name tip — same fade as talk, inverted ink/elevated so it ≠ speech. */

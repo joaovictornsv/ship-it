@@ -156,6 +156,7 @@ export function OfficeScene() {
         <OfficeTalkBubbles
           visibleDevs={visible}
           stageId={stage.name}
+          roomId={activeRoomId}
           tokensPerSecond={tokensPerSecond}
           espressoOwned={espressoOwned}
           codeReviewOwned={codeReviewOwned}
