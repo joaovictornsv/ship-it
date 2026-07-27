@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import type { AchievementId } from '../data/achievements';
 import {
+  getBuildingUpgrade,
+  type BuildingUpgradeId,
+} from '../data/buildingUpgrades';
+import {
   getPrestigeUpgrade,
   type PrestigeUpgradeId,
 } from '../data/prestigeUpgrades';
@@ -16,8 +20,11 @@ import {
   newlyUnlockedAchievements,
 } from './achievements';
 import {
+  buildingUpgradeCost,
+  canBuyBuildingUpgrade,
   canBuyPrestigeUpgrade,
   clickPower,
+  hasBuildingUpgrade,
   hasShipUpgrade,
   isRewriteAvailable,
   nextPrestigeUpgradeCost,
@@ -37,6 +44,7 @@ export const initialGameState: GameState = {
   tokens: 0,
   owned: {},
   shipOwned: {},
+  buildingOwned: {},
   tokensEarnedThisRun: 0,
   rewrites: 0,
   prestigeOwned: {},
@@ -98,6 +106,11 @@ type GameActions = {
    * Returns true when the purchase succeeded.
    */
   buyShipUpgrade: (id: ShipUpgradeId) => boolean;
+  /**
+   * Buy a one-shot building upgrade if unlocked and affordable.
+   * Returns true when the purchase succeeded.
+   */
+  buyBuildingUpgrade: (id: BuildingUpgradeId) => boolean;
   /**
    * Spend Rewrites on a prestige upgrade. Never spends tokens.
    * Returns true when the purchase succeeded.
@@ -208,6 +221,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
     );
     return true;
   },
+  buyBuildingUpgrade: (id) => {
+    const state = get();
+    // Touch catalog so a typo id throws before mutating state.
+    getBuildingUpgrade(id);
+    if (
+      !canBuyBuildingUpgrade(id, state.owned, state.buildingOwned, state.tokens)
+    ) {
+      return false;
+    }
+    if (hasBuildingUpgrade(state.buildingOwned, id)) {
+      return false;
+    }
+    const cost = buildingUpgradeCost(id);
+    set(
+      withAchievementUnlocks(state, {
+        tokens: state.tokens - cost,
+        buildingOwned: { ...state.buildingOwned, [id]: true },
+        lifetimePurchases: state.lifetimePurchases + 1,
+      }),
+    );
+    return true;
+  },
   buyPrestigeUpgrade: (id) => {
     const state = get();
     // Touch catalog so a typo id throws before mutating state.
@@ -237,6 +272,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         tokens: 0,
         owned: ownedAfterRewrite(state.prestigeOwned),
         shipOwned: {},
+        buildingOwned: {},
         tokensEarnedThisRun: 0,
         rewrites: state.rewrites + gained,
         // prestigeOwned, lifetime*, achievementsUnlocked kept via spread base
@@ -279,6 +315,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       tokens: saved.tokens,
       owned: { ...saved.owned },
       shipOwned: { ...saved.shipOwned },
+      buildingOwned: { ...saved.buildingOwned },
       tokensEarnedThisRun: saved.tokensEarnedThisRun,
       rewrites: saved.rewrites,
       prestigeOwned: { ...saved.prestigeOwned },
@@ -308,7 +345,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
 /** Selector helpers used by UI. */
 export function selectTokensPerSecond(state: GameState): number {
-  return tokensPerSecond(state.owned, state.rewrites, state.prestigeOwned);
+  return tokensPerSecond(
+    state.owned,
+    state.rewrites,
+    state.prestigeOwned,
+    state.buildingOwned,
+  );
 }
 
 export function selectEspressoOwned(state: GameState): number {
@@ -321,6 +363,7 @@ export function selectPersistedState(state: GameState): GameState {
     tokens: state.tokens,
     owned: state.owned,
     shipOwned: state.shipOwned,
+    buildingOwned: state.buildingOwned,
     tokensEarnedThisRun: state.tokensEarnedThisRun,
     rewrites: state.rewrites,
     prestigeOwned: state.prestigeOwned,

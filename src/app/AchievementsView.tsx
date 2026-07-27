@@ -1,19 +1,24 @@
 import { Check, Lock } from 'lucide-react';
 import { achievements } from '../data/achievements';
 import {
+  buildingUpgradeEffectLabel,
+  buildingUpgrades,
+} from '../data/buildingUpgrades';
+import {
   achievementProgressLabel,
   achievementSnapshotFromState,
 } from '../game/achievements';
 import { shipUpgradeEffectLabel, shipUpgrades } from '../data/shipUpgrades';
-import { hasShipUpgrade } from '../game/economy';
+import { hasBuildingUpgrade, hasShipUpgrade } from '../game/economy';
 import { useGameStore } from '../game/state';
 
 /**
  * Achievements screen: milestone badges (unlocked + locked progress) and
- * this-run Ship upgrades gallery.
+ * this-run Ship / building upgrades galleries.
  */
 export function AchievementsView() {
   const shipOwned = useGameStore((s) => s.shipOwned);
+  const buildingOwned = useGameStore((s) => s.buildingOwned);
   const achievementsUnlocked = useGameStore((s) => s.achievementsUnlocked);
   const lifetimeTokensEarned = useGameStore((s) => s.lifetimeTokensEarned);
   const lifetimeClicks = useGameStore((s) => s.lifetimeClicks);
@@ -29,7 +34,12 @@ export function AchievementsView() {
     rewrites,
   });
 
-  const ownedList = shipUpgrades.filter((u) => hasShipUpgrade(shipOwned, u.id));
+  const ownedShipList = shipUpgrades.filter((u) =>
+    hasShipUpgrade(shipOwned, u.id),
+  );
+  const ownedBuildingList = buildingUpgrades.filter((u) =>
+    hasBuildingUpgrade(buildingOwned, u.id),
+  );
   const unlockedCount = achievements.filter(
     (a) => achievementsUnlocked[a.name] === true,
   ).length;
@@ -158,15 +168,75 @@ export function AchievementsView() {
         <p className="mt-1 text-xs text-[var(--ship-muted)]">
           This-run click-power track — resets on Rewrite.
         </p>
-        {ownedList.length === 0 ? (
+        {ownedShipList.length === 0 ? (
           <p className="mt-2 text-sm text-[var(--ship-muted)]">
             None yet — buy a building, then pick up Ship upgrades in the shop
             queue.
           </p>
         ) : (
           <ul className="mt-3 flex list-none flex-col gap-2 p-0 sm:grid sm:grid-cols-2 sm:gap-3">
-            {ownedList.map((upgrade) => {
+            {ownedShipList.map((upgrade) => {
               const effect = shipUpgradeEffectLabel(upgrade.effect);
+              return (
+                <li key={upgrade.id}>
+                  <article
+                    className={[
+                      'flex items-start gap-3 rounded-xl border border-[var(--ship-line)]',
+                      'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_88%,transparent)] px-3 py-2.5',
+                    ].join(' ')}
+                  >
+                    <div
+                      className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--ship-line)] text-lg"
+                      style={{
+                        background: `color-mix(in srgb, var(${upgrade.colorVar}) 14%, transparent)`,
+                      }}
+                      aria-hidden
+                    >
+                      {upgrade.emoji}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]">
+                        {upgrade.name}
+                      </h3>
+                      <p className="mt-0.5 text-xs text-[var(--ship-muted)]">
+                        {upgrade.blurb}
+                      </p>
+                      <p className="mt-1 text-xs font-semibold tabular-nums text-[var(--ship-ink)]">
+                        {effect}
+                      </p>
+                    </div>
+                  </article>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      <section
+        aria-labelledby="owned-building-upgrades-heading"
+        className="text-left"
+      >
+        <h2
+          id="owned-building-upgrades-heading"
+          className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]"
+        >
+          Building upgrades owned
+        </h2>
+        <p className="mt-1 text-xs text-[var(--ship-muted)]">
+          This-run per-building tokens/s mults — resets on Rewrite.
+        </p>
+        {ownedBuildingList.length === 0 ? (
+          <p className="mt-2 text-sm text-[var(--ship-muted)]">
+            None yet — own a building, then buy its boost in the upgrades queue.
+          </p>
+        ) : (
+          <ul className="mt-3 flex list-none flex-col gap-2 p-0 sm:grid sm:grid-cols-2 sm:gap-3">
+            {ownedBuildingList.map((upgrade) => {
+              const effect = buildingUpgradeEffectLabel(
+                upgrade.effect,
+                upgrade.targetId,
+              );
               return (
                 <li key={upgrade.id}>
                   <article

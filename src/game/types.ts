@@ -1,4 +1,5 @@
 import type { AchievementId } from '../data/achievements';
+import type { BuildingUpgradeId } from '../data/buildingUpgrades';
 import type { PrestigeUpgradeId } from '../data/prestigeUpgrades';
 import type { ShipUpgradeId } from '../data/shipUpgrades';
 import type { UpgradeId } from '../data/upgrades';
@@ -14,6 +15,12 @@ export type OwnedUpgrades = Partial<Record<UpgradeId, number>>;
  * Value is always `true` when present — count is never > 1.
  */
 export type OwnedShipUpgrades = Partial<Record<ShipUpgradeId, true>>;
+
+/**
+ * One-shot building upgrades owned this run (missing key = not owned).
+ * Value is always `true` when present — count is never > 1.
+ */
+export type OwnedBuildingUpgrades = Partial<Record<BuildingUpgradeId, true>>;
 
 /** Prestige shop owned counts (missing key = 0). Persist across Rewrite. */
 export type OwnedPrestigeUpgrades = Partial<Record<PrestigeUpgradeId, number>>;
@@ -35,6 +42,11 @@ export type GameState = {
    */
   shipOwned: OwnedShipUpgrades;
   /**
+   * Purchased building upgrades (per-producer tokens/s mults) for this run.
+   * Resets on Rewrite.
+   */
+  buildingOwned: OwnedBuildingUpgrades;
+  /**
    * Lifetime tokens earned this run (clicks + passive). Not the bank —
    * spending must not delay Rewrite unlock.
    */
@@ -51,7 +63,7 @@ export type GameState = {
   /** All-time Ship It presses. Kept across Rewrite. */
   lifetimeClicks: number;
   /**
-   * All-time shop purchases (producer units + Ship upgrades).
+   * All-time shop purchases (producer units + Ship / building upgrades).
    * Kept across Rewrite.
    */
   lifetimePurchases: number;

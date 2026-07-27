@@ -10,7 +10,8 @@ function getPersistedSnapshot() {
 }
 
 /**
- * Trailing autosave ~1.5s after tokens / owned / shipOwned / prestige /
+ * Trailing autosave ~1.5s after tokens / owned / shipOwned / buildingOwned /
+ * prestige /
  * achievement counter changes, plus sync flush on `visibilitychange` (hidden)
  * and `pagehide` via a warmed base64 blob.
  *
@@ -95,6 +96,7 @@ export function useAutosave(enabled: boolean = true): void {
         state.tokens === prev.tokens &&
         state.owned === prev.owned &&
         state.shipOwned === prev.shipOwned &&
+        state.buildingOwned === prev.buildingOwned &&
         state.tokensEarnedThisRun === prev.tokensEarnedThisRun &&
         state.rewrites === prev.rewrites &&
         state.prestigeOwned === prev.prestigeOwned &&

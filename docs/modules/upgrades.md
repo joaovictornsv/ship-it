@@ -1,28 +1,30 @@
 # Upgrades
 
-Producer IDs (Dev, Espresso machine, …) and the separate **Ship upgrades** click-power track.
+Producer IDs (Dev, Espresso machine, …), **Ship upgrades** (click power), and **building upgrades** (per-producer tokens/s mults).
 
-**Status:** active — early ladder through On-call (#6); Dev / Espresso scene (#7); Ship upgrades one-shot track (#30); prestige shop (#9).
+**Status:** active — early ladder through On-call (#6); Dev / Espresso scene (#7); Ship upgrades one-shot track (#30); building upgrades (#37); prestige shop (#9).
 
 ## Owned by
 
 - `src/data/upgrades.ts` — producer catalog
 - `src/data/shipUpgrades.ts` — Ship upgrade (click-power) catalog
+- `src/data/buildingUpgrades.ts` — building upgrade (per-producer tokens/s) catalog
 - `src/data/prestigeUpgrades.ts` — Rewrites prestige catalog
-- `src/features/shop/` — `ShopRail` / `ShopRow` / `ShopShipTile` / `ShopPrestigeRow`
+- `src/features/shop/` — `ShopRail` / `ShopRow` / `ShopShipTile` / `ShopBuildingTile` / `ShopPrestigeRow`
 - `src/game/economy.ts` — cost + tokens/s + `clickPower` + prestige helpers
-- `src/game/state.ts` — `owned` / `shipOwned` / `prestigeOwned` + buy / rewrite actions
+- `src/game/state.ts` — `owned` / `shipOwned` / `buildingOwned` / `prestigeOwned` + buy / rewrite actions
 - `src/features/scene/` — `OfficeScene` from producer owned; `onUpgradeOwnedChanged` on buy
 
 ## Split (locked)
 
-| Track         | Job                                    | Cost model            | Resets on Rewrite |
-| ------------- | -------------------------------------- | --------------------- | ----------------- |
-| Buildings     | tokens/s + scene presence              | Cookie `×1.15` owned  | Yes (run state)   |
-| Ship upgrades | tokens per click + light CTA evolution | One-shot fixed ladder | Yes (run state)   |
-| Prestige      | permanent power (Rewrites currency)    | Rising Rewrites cost  | No (keep)         |
+| Track             | Job                                    | Cost model            | Resets on Rewrite |
+| ----------------- | -------------------------------------- | --------------------- | ----------------- |
+| Buildings         | tokens/s + scene presence              | Cookie `×1.15` owned  | Yes (run state)   |
+| Ship upgrades     | tokens per click + light CTA evolution | One-shot fixed ladder | Yes (run state)   |
+| Building upgrades | per-producer tokens/s multipliers      | One-shot fixed costs  | Yes (run state)   |
+| Prestige          | permanent power (Rewrites currency)    | Rising Rewrites cost  | No (keep)         |
 
-Espresso is **never** a click-power building. No producer row gains click side-effects.
+Espresso is **never** a click-power building. No producer row gains click side-effects. Building upgrades multiply a named producer’s tokens/s in place — they are **not** Dev tier promotion (junior → mid).
 
 ## Producer catalog
 
@@ -38,14 +40,14 @@ Constants: `ESPRESSO_MACHINE_ID`, `DEV_ID`, `CODE_REVIEW_ID`, `CI_CD_ID`, `ON_CA
 
 Each producer def owns **`emoji`** and **`colorVar`** (shop / scene accents). Do not add parallel id→glyph or id→color maps in features.
 
-**Catalog shape (intentional):** producers and Ship upgrades stay as **typed def objects + ordered arrays** (`upgrades`, `shipUpgrades`). Stable save `id` is a field on the def (not the `createEnum` key) so display `name` does not collide with enum `name`. Discrete sets (AppViews, SceneStages, effect kinds, upcoming achievements) use `createEnum`.
+**Catalog shape (intentional):** producers, Ship upgrades, and building upgrades stay as **typed def objects + ordered arrays** (`upgrades`, `shipUpgrades`, `buildingUpgrades`). Stable save `id` is a field on the def (not the `createEnum` key) so display `name` does not collide with enum `name`. Discrete sets (AppViews, SceneStages, effect kinds, upcoming achievements) use `createEnum`.
 
 Shop order follows the table (early → late). Costs / rates are playtest starting points.
 
 ### Espresso machine (locked role)
 
 - Buys with tokens; Cookie-style rising cost for owned count.
-- Each owned unit adds **0.1 tokens/s** (playtest starting point).
+- Each owned unit adds **0.1 tokens/s** (playtest starting point), then × building-upgrade mults for that producer.
 - Shop copy should read naturally in tokens (“15 tokens”, not abstract CPS).
 - Scene presence: minimal coffee prop in `OfficeScene` when owned ≥ 1.
 
@@ -66,7 +68,7 @@ Shop order follows the table (early → late). Costs / rates are playtest starti
 
 ## Ship upgrades (click-power track)
 
-One-shot ladder in `src/data/shipUpgrades.ts`. Buy once → unlock next. Soft unlock after **any** producer is owned (`shipUpgradesUnlocked`). Shop queue (`visibleShipUpgradeQueue`) shows **only the next available (not owned)** upgrade — owned and locked stay hidden; empty when none available (see Achievements for owned).
+One-shot ladder in `src/data/shipUpgrades.ts`. Buy once → unlock next. Soft unlock after **any** producer is owned (`shipUpgradesUnlocked`). Combined shop queue (`visibleOneShotQueue`) shows the **next available (not owned)** Ship upgrade interleaved by cost with available building upgrades — owned and locked stay hidden; empty when none available (see Achievements for owned).
 
 | ID                    | Name                | Effect   | cost       | CTA label (when highest) | icon key              |
 | --------------------- | ------------------- | -------- | ---------- | ------------------------ | --------------------- |
@@ -110,14 +112,46 @@ Owned map: `GameState.shipOwned: Partial<Record<ShipUpgradeId, true>>`.
 | `readme-driven`       | Document it first. Implement never. Ship anyway. |
 | `ship-it-friday`      | No review Friday. Weekend on-call included.      |
 
+## Building upgrades (per-producer tokens/s)
+
+One-shot multipliers in `src/data/buildingUpgrades.ts` (Cookie “grandma / building upgrade” pattern). Soft unlock when the player owns **`unlockAt`** of the target producer (v1: `1` for each). Buy once; several can appear in the queue at once (unlike the Ship ladder). Reuse the target producer’s **`colorVar`** / emoji warmth — no new shell tokens.
+
+| ID               | Name           | Target           | Unlock | Effect | cost      |
+| ---------------- | -------------- | ---------------- | ------ | ------ | --------- |
+| `double-shot`    | Double shot    | Espresso machine | 1      | ×2     | 500       |
+| `second-monitor` | Second monitor | Dev              | 1      | ×2     | 5_000     |
+| `rubber-stamp`   | Rubber stamp   | Code review      | 1      | ×2     | 55_000    |
+| `matrix-builds`  | Matrix builds  | CI / CD          | 1      | ×2     | 600_000   |
+| `follow-the-sun` | Follow-the-sun | On-call          | 1      | ×2     | 6_500_000 |
+
+Effect labels / folding: `BuildingUpgradeEffectKinds` + `buildingUpgradeEffectLabel` / `applyBuildingUpgradeEffect` / `producerTokensPerSecondMult`.
+
+```text
+producerRate = owned × baseRate × Π buildingMults(target)
+tokens/s = Σ producerRate × prestigeMult
+```
+
+Owned map: `GameState.buildingOwned: Partial<Record<BuildingUpgradeId, true>>`.
+
+### Building upgrade copy
+
+| ID               | Blurb                                              |
+| ---------------- | -------------------------------------------------- |
+| `double-shot`    | Twice the drip. Same tiny machine. Somehow louder. |
+| `second-monitor` | Twice the tabs. Same one brain cell.               |
+| `rubber-stamp`   | LGTM, but louder. Tests still optional.            |
+| `matrix-builds`  | Parallel pipelines. Parallel blame.                |
+| `follow-the-sun` | Someone is always awake. Usually you.              |
+
 ## Owned state
 
 - `GameState.owned` — producer counts (missing key = 0)
-- `GameState.shipOwned` — one-shot flags (missing key = not owned)
+- `GameState.shipOwned` — one-shot Ship flags (missing key = not owned)
+- `GameState.buildingOwned` — one-shot building-upgrade flags (missing key = not owned)
 
 ## Scene hooks
 
-`onUpgradeOwnedChanged(id, owned)` fans out spawn FX for **producers** only. Ship upgrades do not spawn office props in v1.
+`onUpgradeOwnedChanged(id, owned)` fans out spawn FX for **producers** only. Ship / building upgrades do not spawn office props in v1.
 
 ## Notes
 

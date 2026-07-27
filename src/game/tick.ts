@@ -18,7 +18,12 @@ export type TickResult = {
 export function applyProductionTick(
   state: Pick<
     GameState,
-    'tokens' | 'owned' | 'lastTickAt' | 'rewrites' | 'prestigeOwned'
+    | 'tokens'
+    | 'owned'
+    | 'lastTickAt'
+    | 'rewrites'
+    | 'prestigeOwned'
+    | 'buildingOwned'
   >,
   nowMs: number,
 ): TickResult {
@@ -28,7 +33,12 @@ export function applyProductionTick(
   }
 
   const earned = tokensFromDelta(
-    tokensPerSecond(state.owned, state.rewrites, state.prestigeOwned),
+    tokensPerSecond(
+      state.owned,
+      state.rewrites,
+      state.prestigeOwned,
+      state.buildingOwned,
+    ),
     deltaMs,
   );
   return {

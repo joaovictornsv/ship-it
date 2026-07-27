@@ -1,7 +1,7 @@
 import type { GameState } from '../../game/types';
 
 /** Current on-disk / export schema version. Bump with an explicit migrator. */
-export const CURRENT_SAVE_VERSION = 4;
+export const CURRENT_SAVE_VERSION = 5;
 
 /** localStorage key for the single save slot. */
 export const SAVE_STORAGE_KEY = 'ship-it.save';

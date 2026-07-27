@@ -1,48 +1,47 @@
 import { prestigeUpgrades } from '../../data/prestigeUpgrades';
-import { visibleShipUpgradeQueue } from '../../data/shipUpgrades';
 import { upgrades } from '../../data/upgrades';
-import {
-  prestigeTokensPerSecondMult,
-  shipUpgradesUnlocked,
-} from '../../game/economy';
+import { prestigeTokensPerSecondMult } from '../../game/economy';
 import { formatTokensCompact } from '../../game/format';
 import { useGameStore } from '../../game/state';
+import { ShopBuildingTile } from './ShopBuildingTile';
 import { ShopBuyModeControl } from './ShopBuyModeControl';
 import { ShopPrestigeRow } from './ShopPrestigeRow';
 import { ShopRow } from './ShopRow';
 import { ShopShipTile } from './ShopShipTile';
 import { useBuyMode } from './useBuyMode';
+import { visibleOneShotQueue } from './visibleOneShotQueue';
 
 /** Shared catalog for the desktop rail and mobile drawer. */
 export function ShopCatalog() {
   const owned = useGameStore((s) => s.owned);
   const shipOwned = useGameStore((s) => s.shipOwned);
+  const buildingOwned = useGameStore((s) => s.buildingOwned);
   const rewrites = useGameStore((s) => s.rewrites);
   const prestigeOwned = useGameStore((s) => s.prestigeOwned);
-  const unlocked = shipUpgradesUnlocked(owned);
-  const queue = unlocked ? visibleShipUpgradeQueue(shipOwned) : [];
+  const queue = visibleOneShotQueue(owned, shipOwned, buildingOwned);
   const [buyMode, setBuyMode] = useBuyMode();
   const tpsMult = prestigeTokensPerSecondMult(rewrites, prestigeOwned);
+  const hasAnyBuilding = Object.values(owned).some((n) => (n ?? 0) > 0);
 
   return (
     <div className="flex flex-col gap-5">
-      <section aria-labelledby="shop-ship-upgrades-heading">
+      <section aria-labelledby="shop-upgrades-heading">
         <div className="mb-2 px-0.5">
           <h3
-            id="shop-ship-upgrades-heading"
+            id="shop-upgrades-heading"
             className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]"
           >
-            Ship upgrades
+            Upgrades
           </h3>
           <p className="text-xs text-[var(--ship-muted)]">
-            tokens per click · one-shot queue
+            click power + building boosts · one-shot queue
           </p>
         </div>
         {queue.length === 0 ? (
           <p className="px-0.5 text-xs text-[var(--ship-muted)]">
-            {unlocked
-              ? 'No Ship upgrades available. Check Achievements for what you own.'
-              : 'Buy a building to unlock the Ship upgrades queue.'}
+            {hasAnyBuilding
+              ? 'No upgrades available. Check Achievements for what you own.'
+              : 'Buy a building to unlock the upgrades queue.'}
           </p>
         ) : (
           <ul
@@ -52,9 +51,16 @@ export function ShopCatalog() {
               '[-ms-overflow-style:none] [scrollbar-width:thin]',
             ].join(' ')}
           >
-            {queue.map((upgrade) => (
-              <li key={upgrade.id} className="snap-start">
-                <ShopShipTile upgrade={upgrade} />
+            {queue.map((item) => (
+              <li
+                key={`${item.kind}-${item.upgrade.id}`}
+                className="snap-start"
+              >
+                {item.kind === 'ship' ? (
+                  <ShopShipTile upgrade={item.upgrade} />
+                ) : (
+                  <ShopBuildingTile upgrade={item.upgrade} />
+                )}
               </li>
             ))}
           </ul>

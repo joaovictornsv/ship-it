@@ -35,8 +35,8 @@ Track **`tokensEarnedThisRun`** (clicks + passive), not the spendable bank — b
 | Token bank                                | Rewrites bank                                                                |
 | Owned buildings (`owned`)                 | Prestige shop upgrades (Postmortem / Muscle memory / Stub repo)              |
 | Ship upgrades (`shipOwned`) — click track | Cosmetics / rooms (when rooms exist)                                         |
-| `tokensEarnedThisRun`                     | Banked Rewrites passive tokens/s mult                                        |
-|                                           | Achievements + lifetime counters (`achievementsUnlocked`, `lifetime*`) — #33 |
+| Building upgrades (`buildingOwned`)       | Banked Rewrites passive tokens/s mult                                        |
+| `tokensEarnedThisRun`                     | Achievements + lifetime counters (`achievementsUnlocked`, `lifetime*`) — #33 |
 
 **Stub repo:** after Rewrite, `owned` starts with **1 Espresso machine** when owned.
 

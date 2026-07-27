@@ -2,16 +2,17 @@
 
 Formulas, cost curves, tokens/s, click power, prestige mults, number formatting (K/M/B).
 
-**Status:** active — producer tokens/s + Ship upgrade click-power track (issue #30); bulk cost-for-N / max-affordable (issue #38); Rewrite prestige (issue #9).
+**Status:** active — producer tokens/s + Ship upgrade click-power track (issue #30); building-upgrade per-producer mults (#37); bulk cost-for-N / max-affordable (issue #38); Rewrite prestige (issue #9).
 
 ## Owned by
 
 - `src/game/economy.ts` — pure formulas
 - `src/game/format.ts` — `formatTokensCompact` (K / M / B)
 - `src/game/tick.ts` — pure production tick / resume helpers
-- `src/game/state.ts` — Zustand store (`tokens`, `owned`, `shipOwned`, prestige fields, actions)
+- `src/game/state.ts` — Zustand store (`tokens`, `owned`, `shipOwned`, `buildingOwned`, prestige fields, actions)
 - `src/game/types.ts` — shared `Tokens` / owned maps / `GameState`
 - `src/data/prestigeUpgrades.ts` — prestige catalog
+- `src/data/buildingUpgrades.ts` — building-upgrade catalog
 - `src/features/click/` — Ship It button + bank UI (tokens + tokens/s)
 - `src/features/shop/` — shop rail + prestige + Rewrite UI + `useProductionTick`
 - related Vitest coverage (`economy.test.ts`, `format.test.ts`, `tick.test.ts`, `state.test.ts`)
@@ -28,10 +29,10 @@ Formulas, cost curves, tokens/s, click power, prestige mults, number formatting 
 | Prestige      | Muscle memory permanent % on top: `× (1 + levels × 0.10)`                                         |
 | Earn tracking | `tokensEarnedThisRun` += every click / tick grant (not spends) — drives Rewrite                   |
 | Persistence   | Versioned save via `src/features/save/` (see `saves.md`)                                          |
-| UI rate label | **tokens/s** (`tokensPerSecond(owned, rewrites, prestigeOwned)` in header)                        |
+| UI rate label | **tokens/s** (`tokensPerSecond(owned, rewrites, prestigeOwned, buildingOwned)` in header)         |
 | UI amounts    | `formatTokensCompact` — floor, then plain / K / M / B (no scientific)                             |
 
-Soft unlock: `shipUpgradesUnlocked(owned)` is true when any producer count is > 0.
+Soft unlock: `shipUpgradesUnlocked(owned)` is true when any producer count is > 0. Building upgrades unlock per catalog `unlockAt` on the target producer.
 
 ## Number formatting
 
@@ -59,7 +60,7 @@ cost(owned) = ceil(baseCost × 1.15 ^ owned)
 - Bulk: `upgradeCostForN(baseCost, owned, n)` / `nextUpgradeCostForN(id, owned, n)` — sum of the next `n` rising costs
 - Max buy: `maxAffordableUpgrades(baseCost, owned, tokens)` / `maxAffordableOf(id, owned, tokens)` — largest `n ≥ 1` that fits (else `0`)
 
-Ship upgrades use **fixed one-shot costs** from the catalog (not `×1.15`). Shop bulk modes apply to **buildings only** (see `shop.md`).
+Ship upgrades and building upgrades use **fixed one-shot costs** from their catalogs (not `×1.15`). Shop bulk modes apply to **buildings only** (see `shop.md`).
 
 ## Prestige (Rewrite)
 
@@ -75,21 +76,22 @@ See `prestige.md` for full contract. Helpers in `economy.ts`:
 | `ownedAfterRewrite`            | Stub repo → 1 Espresso                            |
 
 ```text
-tokens/s = Σ(owned × rate) × prestigeTokensPerSecondMult(rewrites, prestigeOwned)
+tokens/s = Σ(owned × rate × Π buildingMults) × prestigeTokensPerSecondMult(rewrites, prestigeOwned)
 ```
 
 ## Tokens/s + tick
 
-| Concept          | Contract                                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------ |
-| Rate             | `tokensPerSecond(owned, rewrites, prestigeOwned)`                                                      |
-| Accrual          | `tokensFromDelta(tps, deltaMs)` → `tps × deltaMs / 1000`                                               |
-| Open-tab tick    | `applyProductionTick(state, nowMs)` via store `tick(nowMs)` (~100ms); increments `tokensEarnedThisRun` |
-| Clock            | Injectable `nowMs` / `Clock` — tests pass fake times                                                   |
-| Offline / resume | **No accrual.** `resumeWithoutAccrual(nowMs)` / `resumeFromHidden` only advances `lastTickAt`          |
-| Visibility       | On `hidden`: flush tick; on `visible`: resume without grant                                            |
+| Concept           | Contract                                                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Rate              | `tokensPerSecond(owned, rewrites, prestigeOwned, buildingOwned)`                                                               |
+| Per-building mult | `producerTokensPerSecondMult(buildingOwned, producerId)` — Π of owned building-upgrade mults for that producer (`1` when none) |
+| Accrual           | `tokensFromDelta(tps, deltaMs)` → `tps × deltaMs / 1000`                                                                       |
+| Open-tab tick     | `applyProductionTick(state, nowMs)` via store `tick(nowMs)` (~100ms); increments `tokensEarnedThisRun`                         |
+| Clock             | Injectable `nowMs` / `Clock` — tests pass fake times                                                                           |
+| Offline / resume  | **No accrual.** `resumeWithoutAccrual(nowMs)` / `resumeFromHidden` only advances `lastTickAt`                                  |
+| Visibility        | On `hidden`: flush tick; on `visible`: resume without grant                                                                    |
 
-Ship upgrades **never** contribute tokens/s. Producers **never** grant click power (Espresso included).
+Ship upgrades **never** contribute tokens/s. Producers **never** grant click power (Espresso included). Building upgrades **only** multiply their target producer’s tokens/s.
 
 ## Notes
 

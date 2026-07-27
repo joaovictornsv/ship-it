@@ -5,6 +5,7 @@ import {
   STUB_REPO_ID,
 } from '../data/prestigeUpgrades';
 import { RUBBER_DUCK, RUBBER_DUCK_ID } from '../data/shipUpgrades';
+import { DOUBLE_SHOT, DOUBLE_SHOT_ID } from '../data/buildingUpgrades';
 import { ESPRESSO_MACHINE, ESPRESSO_MACHINE_ID } from '../data/upgrades';
 import { espressoMachineCost, REWRITE_K } from './economy';
 import { initialGameState, useGameStore } from './state';
@@ -15,6 +16,7 @@ describe('useGameStore', () => {
       ...initialGameState,
       owned: {},
       shipOwned: {},
+      buildingOwned: {},
       prestigeOwned: {},
       tokensEarnedThisRun: 0,
       rewrites: 0,
@@ -32,6 +34,7 @@ describe('useGameStore', () => {
     expect(state.tokens).toBe(0);
     expect(state.owned).toEqual({});
     expect(state.shipOwned).toEqual({});
+    expect(state.buildingOwned).toEqual({});
     expect(state.tokensEarnedThisRun).toBe(0);
     expect(state.rewrites).toBe(0);
     expect(state.prestigeOwned).toEqual({});
@@ -157,6 +160,28 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().buyShipUpgrade(RUBBER_DUCK_ID)).toBe(false);
   });
 
+  it('buyBuildingUpgrade requires the target producer and buys once', () => {
+    useGameStore.setState({ tokens: 1_000 });
+    expect(useGameStore.getState().buyBuildingUpgrade(DOUBLE_SHOT_ID)).toBe(
+      false,
+    );
+
+    useGameStore.setState({
+      tokens: 1_000,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+    });
+    expect(useGameStore.getState().buyBuildingUpgrade(DOUBLE_SHOT_ID)).toBe(
+      true,
+    );
+    expect(useGameStore.getState().buildingOwned[DOUBLE_SHOT_ID]).toBe(true);
+    expect(useGameStore.getState().tokens).toBe(1_000 - DOUBLE_SHOT.cost);
+    expect(useGameStore.getState().lifetimePurchases).toBe(1);
+
+    expect(useGameStore.getState().buyBuildingUpgrade(DOUBLE_SHOT_ID)).toBe(
+      false,
+    );
+  });
+
   it('buyPrestigeUpgrade spends Rewrites never tokens', () => {
     useGameStore.setState({ tokens: 50, rewrites: 3 });
     expect(useGameStore.getState().buyPrestigeUpgrade(POSTMORTEM_ID)).toBe(
@@ -203,6 +228,7 @@ describe('useGameStore', () => {
       tokens: 500,
       owned: { [ESPRESSO_MACHINE_ID]: 4 },
       shipOwned: { [RUBBER_DUCK_ID]: true },
+      buildingOwned: { [DOUBLE_SHOT_ID]: true },
       tokensEarnedThisRun: REWRITE_K,
       rewrites: 1,
       prestigeOwned: { [POSTMORTEM_ID]: 1, [STUB_REPO_ID]: 1 },
@@ -217,6 +243,7 @@ describe('useGameStore', () => {
     expect(state.tokens).toBe(0);
     expect(state.owned).toEqual({ [ESPRESSO_MACHINE_ID]: 1 });
     expect(state.shipOwned).toEqual({});
+    expect(state.buildingOwned).toEqual({});
     expect(state.tokensEarnedThisRun).toBe(0);
     expect(state.rewrites).toBe(2);
     expect(state.prestigeOwned).toEqual({
@@ -255,12 +282,13 @@ describe('useGameStore', () => {
     );
   });
 
-  it('hydrateFromSave restores bank/owned/shipOwned/prestige and marks untrusted when asked', () => {
+  it('hydrateFromSave restores bank/owned/shipOwned/buildingOwned/prestige and marks untrusted when asked', () => {
     useGameStore.getState().hydrateFromSave(
       {
         tokens: 50,
         owned: { [ESPRESSO_MACHINE_ID]: 3 },
         shipOwned: { [RUBBER_DUCK_ID]: true },
+        buildingOwned: { [DOUBLE_SHOT_ID]: true },
         tokensEarnedThisRun: 80,
         rewrites: 4,
         prestigeOwned: { [MUSCLE_MEMORY_ID]: 2 },
@@ -276,6 +304,7 @@ describe('useGameStore', () => {
     expect(state.tokens).toBe(50);
     expect(state.owned[ESPRESSO_MACHINE_ID]).toBe(3);
     expect(state.shipOwned[RUBBER_DUCK_ID]).toBe(true);
+    expect(state.buildingOwned[DOUBLE_SHOT_ID]).toBe(true);
     expect(state.tokensEarnedThisRun).toBe(80);
     expect(state.rewrites).toBe(4);
     expect(state.prestigeOwned[MUSCLE_MEMORY_ID]).toBe(2);

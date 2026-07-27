@@ -7,6 +7,13 @@ import {
   type PrestigeUpgradeId,
 } from '../data/prestigeUpgrades';
 import {
+  applyBuildingUpgradeEffect,
+  buildingUpgrades,
+  getBuildingUpgrade,
+  isBuildingUpgradeUnlocked,
+  type BuildingUpgradeId,
+} from '../data/buildingUpgrades';
+import {
   applyShipUpgradeEffect,
   getShipUpgrade,
   shipUpgrades,
@@ -19,6 +26,7 @@ import {
   upgrades,
 } from '../data/upgrades';
 import type {
+  OwnedBuildingUpgrades,
   OwnedPrestigeUpgrades,
   OwnedShipUpgrades,
   OwnedUpgrades,
@@ -81,6 +89,60 @@ export function nextShipUpgradeId(
 /** Fixed one-shot cost for a Ship upgrade (not Cookie rising). */
 export function shipUpgradeCost(id: ShipUpgradeId): Tokens {
   return getShipUpgrade(id).cost;
+}
+
+/** Whether a building upgrade has been purchased this run. */
+export function hasBuildingUpgrade(
+  buildingOwned: OwnedBuildingUpgrades,
+  id: BuildingUpgradeId,
+): boolean {
+  return buildingOwned[id] === true;
+}
+
+/** Fixed one-shot cost for a building upgrade (not Cookie rising). */
+export function buildingUpgradeCost(id: BuildingUpgradeId): Tokens {
+  return getBuildingUpgrade(id).cost;
+}
+
+/**
+ * Whether a building upgrade can be bought: unlocked by owning the target
+ * producer threshold, not already owned.
+ */
+export function canBuyBuildingUpgrade(
+  id: BuildingUpgradeId,
+  owned: OwnedUpgrades,
+  buildingOwned: OwnedBuildingUpgrades,
+  tokens: Tokens,
+): boolean {
+  if (hasBuildingUpgrade(buildingOwned, id)) {
+    return false;
+  }
+  const def = getBuildingUpgrade(id);
+  if (!isBuildingUpgradeUnlocked(def, owned)) {
+    return false;
+  }
+  return tokens >= def.cost;
+}
+
+/**
+ * Tokens/s multiplier for one producer from owned building upgrades.
+ * `1` when none apply. Multiple owned mults for the same target stack (Π).
+ */
+export function producerTokensPerSecondMult(
+  buildingOwned: OwnedBuildingUpgrades,
+  producerId: UpgradeId,
+): number {
+  const acc = { mult: 1 };
+  for (const def of buildingUpgrades) {
+    if (def.targetId !== producerId) {
+      continue;
+    }
+    if (!hasBuildingUpgrade(buildingOwned, def.id)) {
+      continue;
+    }
+    applyBuildingUpgradeEffect(acc, def.effect);
+  }
+  return acc.mult;
 }
 
 /**
@@ -418,17 +480,29 @@ function ownedCount(owned: OwnedUpgrades, id: UpgradeId): number {
 }
 
 /**
- * Total passive tokens/s from owned producers × prestige mult
- * (banked Rewrites + Postmortem). Ship upgrades never contribute here.
+ * Total passive tokens/s from owned producers × per-building mults × prestige
+ * mult (banked Rewrites + Postmortem). Ship upgrades never contribute here.
+ *
+ * ```text
+ * tokens/s = Σ(owned × rate × Π buildingMults) × prestigeMult
+ * ```
  */
 export function tokensPerSecond(
   owned: OwnedUpgrades,
   rewrites: number = 0,
   prestigeOwned: OwnedPrestigeUpgrades = {},
+  buildingOwned: OwnedBuildingUpgrades = {},
 ): number {
   let total = 0;
   for (const def of upgrades) {
-    total += ownedCount(owned, def.id) * def.tokensPerSecond;
+    const count = ownedCount(owned, def.id);
+    if (count <= 0) {
+      continue;
+    }
+    total +=
+      count *
+      def.tokensPerSecond *
+      producerTokensPerSecondMult(buildingOwned, def.id);
   }
   return total * prestigeTokensPerSecondMult(rewrites, prestigeOwned);
 }
