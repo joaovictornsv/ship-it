@@ -8,7 +8,7 @@ import {
   ESPRESSO_MACHINE,
   ON_CALL,
 } from '../../data/upgrades';
-import { useGameStore } from '../../game/state';
+import { selectTokensPerSecond, useGameStore } from '../../game/state';
 import { DevSprite } from './DevSprite';
 import { lodBadgeCount, sceneSpriteCap, visibleDevCount } from './lod';
 import { OfficeTalkBubbles } from './OfficeTalkBubbles';
@@ -34,6 +34,7 @@ export function OfficeScene() {
   const codeReviewOwned = useGameStore((s) => s.owned[CODE_REVIEW.id] ?? 0);
   const ciOwned = useGameStore((s) => s.owned[CI_CD.id] ?? 0);
   const onCallOwned = useGameStore((s) => s.owned[ON_CALL.id] ?? 0);
+  const tokensPerSecond = useGameStore(selectTokensPerSecond);
   const stage = sceneStageForOwned(devOwned);
   const visible = visibleDevCount(devOwned, cap);
   const badge = lodBadgeCount(devOwned, cap);
@@ -115,9 +116,6 @@ export function OfficeScene() {
       }}
     >
       <div className="office-sky pointer-events-none absolute inset-x-0 top-0 h-1/3" />
-      <div className="office-floor pointer-events-none absolute inset-x-0 bottom-0 h-2/3" />
-
-      <OfficeTalkBubbles visibleDevs={visible} />
 
       {props.length > 0 ? (
         <div className="office-props-rail relative z-[1]" aria-hidden>
@@ -134,54 +132,70 @@ export function OfficeScene() {
         </div>
       ) : null}
 
-      <div className="office-desk-farm relative z-[1]">
-        {Array.from({ length: deskCount }, (_, index) => {
-          const occupied = index < visible;
-          return (
-            <div
-              key={index}
+      {/* Floor + chatter + desks share one band so the divider never bisects sprites
+          and talk bubbles stay inside the overflow-clipped stage. */}
+      <div className="office-stage-body relative z-[1]">
+        <div className="office-floor pointer-events-none absolute inset-0" />
+
+        <OfficeTalkBubbles
+          visibleDevs={visible}
+          stageId={stage.name}
+          tokensPerSecond={tokensPerSecond}
+          espressoOwned={espressoOwned}
+          codeReviewOwned={codeReviewOwned}
+          ciOwned={ciOwned}
+          onCallOwned={onCallOwned}
+        />
+
+        <div className="office-desk-farm relative z-[1]">
+          {Array.from({ length: deskCount }, (_, index) => {
+            const occupied = index < visible;
+            return (
+              <div
+                key={index}
+                className={[
+                  'office-desk-cell',
+                  occupied
+                    ? 'office-desk-cell-occupied'
+                    : 'office-desk-cell-empty',
+                ].join(' ')}
+              >
+                {occupied ? (
+                  <DevSprite
+                    index={index}
+                    spawn={spawnIndex === index}
+                    onSpawnEnd={() => {
+                      if (spawnIndex === index) {
+                        setSpawnIndex(null);
+                      }
+                    }}
+                  />
+                ) : null}
+                <div className="office-desk-surface" />
+              </div>
+            );
+          })}
+
+          {badge !== null ? (
+            <span
               className={[
-                'office-desk-cell',
-                occupied
-                  ? 'office-desk-cell-occupied'
-                  : 'office-desk-cell-empty',
+                'absolute right-3 top-3 rounded-lg',
+                'border border-[var(--ship-line)]',
+                'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_90%,transparent)]',
+                'px-2 py-1 text-sm font-bold tabular-nums text-[var(--ship-ink)]',
               ].join(' ')}
+              aria-label={`${badge} Devs total`}
             >
-              {occupied ? (
-                <DevSprite
-                  index={index}
-                  spawn={spawnIndex === index}
-                  onSpawnEnd={() => {
-                    if (spawnIndex === index) {
-                      setSpawnIndex(null);
-                    }
-                  }}
-                />
-              ) : null}
-              <div className="office-desk-surface" />
-            </div>
-          );
-        })}
+              ×{badge}
+            </span>
+          ) : null}
 
-        {badge !== null ? (
-          <span
-            className={[
-              'absolute right-3 top-3 rounded-lg',
-              'border border-[var(--ship-line)]',
-              'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_90%,transparent)]',
-              'px-2 py-1 text-sm font-bold tabular-nums text-[var(--ship-ink)]',
-            ].join(' ')}
-            aria-label={`${badge} Devs total`}
-          >
-            ×{badge}
-          </span>
-        ) : null}
-
-        {isEmptyOffice ? (
-          <p className="office-empty-hint text-sm text-[var(--ship-muted)]">
-            Empty office — hire Devs to fill the desks.
-          </p>
-        ) : null}
+          {isEmptyOffice ? (
+            <p className="office-empty-hint text-sm text-[var(--ship-muted)]">
+              Empty office — hire Devs to fill the desks.
+            </p>
+          ) : null}
+        </div>
       </div>
 
       <p className="sr-only">
