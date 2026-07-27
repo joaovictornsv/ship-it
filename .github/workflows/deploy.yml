@@ -1,37 +1,39 @@
-# Deploy to Quave Cloud staging — wired in roadmap issue #12.
-# Placeholder only: do not enable until Dockerfile + secrets are ready.
-#
-# name: Deploy staging
-# on:
-#   push:
-#     branches: [main]
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: pnpm/action-setup@v4
-#         with:
-#           version: 10
-#       - uses: actions/setup-node@v4
-#         with:
-#           node-version: 24
-#           cache: pnpm
-#       - run: pnpm install --frozen-lockfile
-#       - run: pnpm build
-#       - uses: zcloud-ws/zcloud-deploy-action@main
-#         with:
-#           token: ${{ secrets.QUAVE_CLOUD_ENV_TOKEN }}
-#           # env: joaovictornsv-ship-it-staging
-
-name: Deploy staging (stub)
+name: Deploy staging
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
 jobs:
-  stub:
+  deploy:
+    name: Build and deploy to Quave Cloud
     runs-on: ubuntu-latest
     steps:
-      - name: Not wired yet
-        run: echo "Deploy workflow lands in issue #12 (Quave staging)."
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy to Quave Cloud
+        uses: zcloud-ws/zcloud-deploy-action@main
+        with:
+          env-token: ${{ secrets.QUAVE_CLOUD_ENV_TOKEN }}
+          env: joaovictornsv-ship-it-staging
