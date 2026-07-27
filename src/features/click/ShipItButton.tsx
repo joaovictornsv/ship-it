@@ -60,9 +60,8 @@ export function ShipItButton() {
       <button
         type="button"
         className={[
-          'ship-it-button relative z-10 w-full max-w-sm min-h-36 rounded-2xl bg-[var(--ship-accent)] px-10 py-10',
-          'text-3xl font-bold tracking-tight text-white',
-          'sm:min-h-32 sm:px-12 sm:py-9 sm:text-[1.75rem]',
+          'ship-it-button relative z-10 w-full max-w-md min-h-48 rounded-2xl bg-[var(--ship-accent)] px-10 py-12',
+          'text-4xl font-bold tracking-tight text-white',
           'lg:w-auto lg:min-h-28 lg:min-w-56 lg:max-w-none lg:px-12 lg:py-8 lg:text-2xl',
           'transition-[filter,background-color] duration-200 hover:brightness-110',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ship-accent)]',

@@ -102,7 +102,7 @@ Each owned Ship upgrade evolves the CTA via `shipItCta` (highest owned wins):
 - **Glyph** — emoji from that upgrade beside the label
 - **Accent** — button background mixes the upgrade’s `--ship-upgrade-*` hue with deploy teal
 
-Press still uses `ship-press` / `floater-rise`. Size hierarchy unchanged; Ship It stays the dominant primary action. Building upgrades do **not** change the CTA.
+Press still uses `ship-press` / `floater-rise`. Mobile CTA is a large tap target (`min-h-48` / `max-w-md` / `text-4xl`); desktop stays compact — see `ui.md`. Ship It stays the dominant primary action. Building upgrades do **not** change the CTA.
 
 ## Related views
 

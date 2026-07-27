@@ -81,7 +81,7 @@ For translucent mixes, use `color-mix` with underscores in arbitrary values, e.g
 | Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy                                                                                                    |
 | Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                                                                                                                         |
 | Numbers (bank, costs, rates) | `tabular-nums`                                                                                                                                                                           |
-| Hierarchy (shell today)      | Brand `text-lg`; HUD bank `text-3xl`→`text-4xl`; Ship It CTA `text-3xl` (mobile) → `text-2xl` (`lg+`); shop name `text-sm`; meta `text-xs`; header Achievements + Credits + Save = icons |
+| Hierarchy (shell today)      | Brand `text-lg`; HUD bank `text-3xl`→`text-4xl`; Ship It CTA `text-4xl` (mobile) → `text-2xl` (`lg+`); shop name `text-sm`; meta `text-xs`; header Achievements + Credits + Save = icons |
 
 Do not add Inter / Roboto / Arial as the primary UI face. Do not introduce a second display font without updating this doc.
 
@@ -101,7 +101,7 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 | Content max   | `max-w-6xl` (shell), office stage `max-w-xl`→`max-w-2xl`, shop rail `lg:w-80`                                                                                                                         | Scene reads as a stage, not a tiny card                                   |
 | Room tabs     | Compact `text-xs` tab strip inside the stage (`.office-room-tab`); only unlocked rooms; hidden when only Office. Shared inset `--office-pad-x` (0.85rem) with props + desk farm — same for every room | Map switcher — not header chrome                                          |
 | Main vertical | `py-8`; below `lg` add `pb-28` for the fixed Shop trigger                                                                                                                                             | Primary play area + mobile shop clearance                                 |
-| Ship It CTA   | Mobile: `min-h-36` + `w-full max-w-sm` + `text-3xl`; `lg+`: `min-h-28 min-w-56 text-2xl`                                                                                                              | Large phone tap target; desktop stays compact                             |
+| Ship It CTA   | Mobile: `min-h-48` + `w-full max-w-md` + `text-4xl` (no mid-breakpoint shrink); `lg+`: `min-h-28 min-w-56 text-2xl`                                                                                   | Large multi-finger phone tap target; desktop stays compact                |
 | Shop drawer   | Fixed bottom trigger (`max-w-md`); sheet `max-h-[min(78dvh,36rem)]`, `rounded-t-2xl`; `overflow-x-hidden`; closed trigger may show accent affordability dot                                           | Below `lg` only; closed by default so Ship It owns first paint            |
 | Atmosphere    | `.ship-atmosphere` fixed blobs behind `.ship-shell`                                                                                                                                                   | Fills dead space; static under reduced motion                             |
 
