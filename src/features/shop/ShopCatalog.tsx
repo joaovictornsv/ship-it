@@ -17,7 +17,7 @@ export function ShopCatalog() {
   const hasAnyBuilding = Object.values(owned).some((n) => (n ?? 0) > 0);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex min-w-0 flex-col gap-5">
       <section aria-labelledby="shop-upgrades-heading">
         <div className="mb-2 px-0.5">
           <h3
@@ -37,18 +37,9 @@ export function ShopCatalog() {
               : 'Buy a building to unlock the upgrades queue.'}
           </p>
         ) : (
-          <ul
-            className={[
-              'flex list-none gap-2 overflow-x-auto p-0 pb-1',
-              'snap-x snap-mandatory',
-              '[-ms-overflow-style:none] [scrollbar-width:thin]',
-            ].join(' ')}
-          >
+          <ul className="flex list-none flex-wrap gap-2 p-0 pt-1 pr-1">
             {queue.map((item) => (
-              <li
-                key={`${item.kind}-${item.upgrade.id}`}
-                className="snap-start"
-              >
+              <li key={`${item.kind}-${item.upgrade.id}`}>
                 {item.kind === 'ship' ? (
                   <ShopShipTile upgrade={item.upgrade} />
                 ) : (
