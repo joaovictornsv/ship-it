@@ -16,15 +16,15 @@ Static skin pipeline, opt-in, fallbacks, attribution, office hover names.
 
 ## Pipeline
 
-| Step    | Detail                                                                                                                          |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Opt-in  | Add `{ login, displayName, kind }` to `opt-in.json` **with consent**. Bots (`dependabot`) OK as joke skins.                     |
-| Bake    | `pnpm generate:contributors` downloads `https://github.com/{login}.png` → `public/contributors/avatars/{id}.png`. **No token.** |
-| Catalog | Keep `CONTRIBUTOR_SKINS` in `src/data/contributors.ts` aligned with opt-in (ids, display names, `avatarFile`).                  |
-| Runtime | Desk index `i < pool.length` → unique contributor; overflow / empty / img failure → `devEmojiForIndex` fallback.                |
-| Hover   | See **Office hover** below.                                                                                                     |
-| Talk    | `TALK_CONTRIBUTOR_NAMES` derived from the same catalog so bubbles name-drop skins.                                              |
-| Credits | Desktop header **Credits** (Users) / mobile Menu → `#/credits` lists opt-in skins + tribute copy.                               |
+| Step    | Detail                                                                                                                                                                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Opt-in  | Add `{ login, displayName, kind }` to `opt-in.json` **with consent**. Bots (`dependabot`) OK as joke skins.                                                                            |
+| Bake    | `pnpm generate:contributors` downloads `https://github.com/{login}.png` → `public/contributors/avatars/{id}.png`. **No token.**                                                        |
+| Catalog | Keep `CONTRIBUTOR_SKINS` in `src/data/contributors.ts` aligned with opt-in (ids, display names, `avatarFile`).                                                                         |
+| Runtime | Desk index `i < pool.length` → unique contributor; overflow / empty / img failure → `devEmojiForIndex` fallback.                                                                       |
+| Hover   | See **Office hover** below.                                                                                                                                                            |
+| Talk    | `TALK_CONTRIBUTOR_NAMES` derived from the same catalog so bubbles name-drop skins.                                                                                                     |
+| Credits | Desktop header **Credits** (Users) / mobile Menu → `#/credits` lists opt-in skins + tribute copy; intro links to the GitHub repo; each skin card links to that login’s GitHub profile. |
 
 ## Office hover
 
@@ -36,7 +36,7 @@ Static skin pipeline, opt-in, fallbacks, attribution, office hover names.
 
 - Fake names live in `FAKE_DEV_NAMES` / `fakeDevNameForIndex(index)` in `src/data/contributors.ts` (English-only ordinary + joke names). Desk index maps stably into the pool (modulo).
 - Name tip is a **simple talk-shaped chip** (same size/radius as office talk, but **inverted**: `--ship-ink` fill + `--ship-bg-elevated` text) portaled to `body` so stage `overflow-hidden` does not clip it. Hover / focus only — no ⓘ pin like the shop details tip. Inverted colors keep it distinct from speech bubbles.
-- Contributor desks are **not** GitHub links — they behave like normal office Devs; tribute stays in the tip label + Credits page.
+- Contributor desks are **not** GitHub links — they behave like normal office Devs; tribute stays in the tip label + Credits page (where cards link out to profiles).
 - Tip chrome must not invent new colors/fonts — inherit office sprite layout (`docs/modules/ui.md`).
 
 ## Fallback rules

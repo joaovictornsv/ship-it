@@ -88,6 +88,13 @@ Sorted by ascending cost (then id). Empty state copy when the queue has nothing 
 | Primary   | Glyph · short name · cost                                       | Whole tile is the buy control                                                               |
 | Details   | ⓘ tooltip: blurb + effect (click power **or** named building ×) | Hover / keyboard focus / touch toggle; portaled to `body` so shop overflow does not clip it |
 
+**Affordable vs cannot-afford** (same chrome for Ship + building tiles; mirrors Achievements locked/unlocked contrast):
+
+| State         | Border               | Surface        | Glyph                    | Name / cost                 |
+| ------------- | -------------------- | -------------- | ------------------------ | --------------------------- |
+| Affordable    | Solid accent-mixed   | Elevated fill  | Colored wash             | Ink name + accent-deep cost |
+| Cannot afford | Dashed `--ship-line` | Muted ink wash | Grayscale + neutral wash | Muted name + muted cost     |
+
 Successful buy flashes the tile (`buy-spend-flash`). Ship glyphs/hues live on each Ship def (`--ship-upgrade-*`); building tiles **reuse** the target producer’s `--ship-upgrade-*` hue.
 
 ## Copy

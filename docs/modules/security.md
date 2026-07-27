@@ -38,7 +38,7 @@ Office Dev skins celebrate opt-in repo contributors (and joke bots). Rules:
 | Consent | Pool is opt-in (`public/contributors/opt-in.json`); do not scrape private profiles or add people without consent          |
 | Bake    | Optional `pnpm generate:contributors` fetches public `github.com/{login}.png` in CI/local scripts only — **not** `VITE_*` |
 | Failure | Missing or unloadable avatar → generic Dev emoji glyph; empty pool → all emoji. Scene never calls GitHub at runtime       |
-| Credits | `#/credits` attributes skins honestly (tribute framing)                                                                   |
+| Credits | `#/credits` attributes skins honestly (tribute framing); cards link to public GitHub profiles only                        |
 
 See `docs/modules/contributors.md`.
 
