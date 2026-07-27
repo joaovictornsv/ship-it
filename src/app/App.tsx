@@ -38,9 +38,9 @@ export function App() {
       {error ? (
         <div
           role="alert"
-          className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_94%,transparent)] px-4 py-2 text-sm text-[var(--ship-ink)]"
+          className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_94%,transparent)] py-2 text-sm text-[var(--ship-ink)]"
         >
-          <p className="mx-auto max-w-6xl text-left">
+          <p className="mx-auto max-w-6xl px-4 text-left">
             Could not restore the previous save ({error}). Starting fresh —
             export backups if you need them.
           </p>
