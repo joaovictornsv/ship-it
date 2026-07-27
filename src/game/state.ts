@@ -425,3 +425,14 @@ export function selectPersistedState(state: GameState): GameState {
     lastTickAt: state.lastTickAt,
   };
 }
+
+/** DevTools cheat hook — same store instance the UI uses (DEV only). */
+declare global {
+  interface Window {
+    __shipIt?: typeof useGameStore;
+  }
+}
+
+if (import.meta.env.DEV) {
+  window.__shipIt = useGameStore;
+}

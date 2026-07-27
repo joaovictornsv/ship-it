@@ -26,7 +26,7 @@ DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), **un
 | `owned[espresso-machine]` etc. | Emoji prop chips in the props rail (espresso, PR, CI, pager)  |
 | `roomsUnlocked` / `activeRoom` | Room map tabs + per-room floor/wall tint; kept across Rewrite |
 
-Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap). Non-Dev producers densify the props rail; later rooms (`ops-bay`, `datacenter`) tighten prop spacing for a busier map.
+Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap). Non-Dev producers densify the props rail; rooms share the same chrome padding and differ by floor/wall tint.
 
 ## Desk farm + sprites
 
@@ -66,16 +66,17 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 Data-driven map spaces in `src/data/rooms.ts`. Unlock once → sticky in `roomsUnlocked` (save **v6**); **kept** across Rewrite. `RoomSwitcher` tabs appear once ≥2 rooms are unlocked so minute-1 stays a single office stage.
 
-| ID           | Label      | Unlock                  | Feel                                    |
-| ------------ | ---------- | ----------------------- | --------------------------------------- |
-| `office`     | Office     | Always                  | Starting desks + sky wash               |
-| `break-room` | Break room | Own ≥1 Espresso machine | Warm espresso tint                      |
-| `review-lab` | Review lab | Own ≥1 Code review      | Cool review-blue wall/floor             |
-| `ops-bay`    | Ops bay    | Own ≥1 CI / CD          | Green/amber ops wash; denser props rail |
-| `datacenter` | Datacenter | Bank ≥1 Rewrite         | Cooler denser floor; taller desk farm   |
+| ID           | Label      | Unlock                  | Feel                        |
+| ------------ | ---------- | ----------------------- | --------------------------- |
+| `office`     | Office     | Always                  | Starting desks + sky wash   |
+| `break-room` | Break room | Own ≥1 Espresso machine | Warm espresso tint          |
+| `review-lab` | Review lab | Own ≥1 Code review      | Cool review-blue wall/floor |
+| `ops-bay`    | Ops bay    | Own ≥1 CI / CD          | Green/amber ops wash        |
+| `datacenter` | Datacenter | Bank ≥1 Rewrite         | Cooler denser floor tint    |
 
 - Pure helpers: `newlyUnlockedRooms` / `resolveActiveRoom` / `roomSceneClass` in `src/game/rooms.ts` (unit-tested).
-- CSS modifiers: `.office-room-{id}` override local `--office-*` vars (not shell `--ship-*`).
+- CSS modifiers: `.office-room-{id}` override local **tint** vars only (`--office-wall` / `--office-floor` / `--office-desk` / `--office-mug`). Do **not** change padding or min-height per room.
+- Shared chrome inset lives on `.office-scene`: `--office-pad-x` (0.85rem) for tabs, props rail, and desk farm; `--office-props-pad-bottom` (0.55rem) under the upgrade prop chips before the stage divider. Rooms must keep that standard.
 - New unlocks auto-focus the highest newly unlocked room; player can switch via tabs.
 - Empty-state hint copy is per-room (`emptyHint` on the catalog entry).
 - Prestige keep-list: see `prestige.md`.

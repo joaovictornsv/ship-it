@@ -18,7 +18,7 @@ export function RoomSwitcher() {
 
   return (
     <div
-      className="office-room-switcher relative z-[2] flex flex-wrap gap-1.5 px-3 pt-2.5"
+      className="office-room-switcher relative z-[2] flex flex-wrap gap-1.5"
       role="tablist"
       aria-label="Unlocked rooms"
     >
