@@ -1,6 +1,7 @@
 import type { AchievementId } from '../data/achievements';
 import type { BuildingUpgradeId } from '../data/buildingUpgrades';
 import type { PrestigeUpgradeId } from '../data/prestigeUpgrades';
+import type { RoomId } from '../data/rooms';
 import type { ShipUpgradeId } from '../data/shipUpgrades';
 import type { UpgradeId } from '../data/upgrades';
 
@@ -30,6 +31,12 @@ export type OwnedPrestigeUpgrades = Partial<Record<PrestigeUpgradeId, number>>;
  * Value is always `true` when present — cosmetics kept across Rewrite.
  */
 export type OwnedAchievements = Partial<Record<AchievementId, true>>;
+
+/**
+ * Unlocked scene rooms (missing key = locked).
+ * Value is always `true` when present — kept across Rewrite (PRODUCT).
+ */
+export type OwnedRooms = Partial<Record<RoomId, true>>;
 
 export type GameState = {
   /** Spendable token bank. */
@@ -69,6 +76,13 @@ export type GameState = {
   lifetimePurchases: number;
   /** Unlocked achievement ids — cosmetics kept across Rewrite. */
   achievementsUnlocked: OwnedAchievements;
+  /**
+   * Unlocked room ids — map cosmetics kept across Rewrite.
+   * Office is always present after normalize / hydrate.
+   */
+  roomsUnlocked: OwnedRooms;
+  /** Currently viewed room (must be in `roomsUnlocked`). Kept across Rewrite. */
+  activeRoom: RoomId;
   /**
    * Epoch ms of the last applied production tick.
    * On tab resume, set to now without granting away-time tokens (no offline accrual).

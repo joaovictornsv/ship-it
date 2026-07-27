@@ -3,6 +3,7 @@ import type {
   OwnedAchievements,
   OwnedBuildingUpgrades,
   OwnedPrestigeUpgrades,
+  OwnedRooms,
   OwnedShipUpgrades,
   OwnedUpgrades,
 } from '../../game/types';
@@ -12,10 +13,12 @@ import type { BuildingUpgradeId } from '../../data/buildingUpgrades';
 import { buildingUpgrades } from '../../data/buildingUpgrades';
 import type { PrestigeUpgradeId } from '../../data/prestigeUpgrades';
 import { prestigeUpgrades } from '../../data/prestigeUpgrades';
+import { getRoomByName, rooms, type RoomId } from '../../data/rooms';
 import type { ShipUpgradeId } from '../../data/shipUpgrades';
 import { shipUpgrades } from '../../data/shipUpgrades';
 import type { UpgradeId } from '../../data/upgrades';
 import { upgrades } from '../../data/upgrades';
+import { ensureOfficeUnlocked, resolveActiveRoom } from '../../game/rooms';
 
 const knownUpgradeIds = new Set<string>(upgrades.map((u) => u.id));
 const knownShipUpgradeIds = new Set<string>(shipUpgrades.map((u) => u.id));
@@ -26,6 +29,7 @@ const knownPrestigeUpgradeIds = new Set<string>(
   prestigeUpgrades.map((u) => u.id),
 );
 const knownAchievementIds = new Set<string>(achievements.map((a) => a.name));
+const knownRoomIds = new Set<string>(rooms.map((r) => r.name));
 
 /**
  * Soft-normalize a game state for play.
@@ -136,6 +140,36 @@ export function normalizeGameState(state: GameState): {
     achievementsUnlocked[id as AchievementId] = true;
   }
 
+  const roomsUnlocked: OwnedRooms = {};
+  const rawRooms = state.roomsUnlocked ?? {};
+  for (const [id, flag] of Object.entries(rawRooms)) {
+    if (flag !== true && flag !== 1) {
+      warnings.push(`roomsUnlocked.${id} is not owned-true; skipped`);
+      continue;
+    }
+    if (!knownRoomIds.has(id)) {
+      warnings.push(`unknown room id "${id}"; kept for forward-compat`);
+    }
+    roomsUnlocked[id as RoomId] = true;
+  }
+  const safeRooms = ensureOfficeUnlocked(roomsUnlocked);
+  const activeRoom = resolveActiveRoom(state.activeRoom, safeRooms);
+  if (
+    state.activeRoom != null &&
+    getRoomByName(String(state.activeRoom)) == null
+  ) {
+    warnings.push(
+      `unknown activeRoom "${String(state.activeRoom)}"; fell back to ${activeRoom}`,
+    );
+  } else if (
+    state.activeRoom != null &&
+    safeRooms[state.activeRoom as RoomId] !== true
+  ) {
+    warnings.push(
+      `activeRoom "${String(state.activeRoom)}" is locked; fell back to ${activeRoom}`,
+    );
+  }
+
   return {
     state: {
       tokens: state.tokens,
@@ -149,6 +183,8 @@ export function normalizeGameState(state: GameState): {
       lifetimeClicks: Math.max(0, Math.floor(state.lifetimeClicks ?? 0)),
       lifetimePurchases: Math.max(0, Math.floor(state.lifetimePurchases ?? 0)),
       achievementsUnlocked,
+      roomsUnlocked: safeRooms,
+      activeRoom,
       lastTickAt: state.lastTickAt,
     },
     warnings,

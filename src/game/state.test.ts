@@ -42,6 +42,8 @@ describe('useGameStore', () => {
     expect(state.lifetimeClicks).toBe(0);
     expect(state.lifetimePurchases).toBe(0);
     expect(state.achievementsUnlocked).toEqual({});
+    expect(state.roomsUnlocked).toEqual({ office: true });
+    expect(state.activeRoom).toBe('office');
   });
 
   it('shipIt adds clickPower tokens and returns the amount earned', () => {
@@ -236,6 +238,12 @@ describe('useGameStore', () => {
       lifetimeClicks: 40,
       lifetimePurchases: 12,
       achievementsUnlocked: { 'espresso-drip': true, 'first-ship': true },
+      roomsUnlocked: {
+        office: true,
+        'break-room': true,
+        datacenter: true,
+      },
+      activeRoom: 'datacenter',
       lastTickAt: 99,
     });
     expect(useGameStore.getState().rewrite()).toBe(1);
@@ -256,6 +264,23 @@ describe('useGameStore', () => {
     expect(state.achievementsUnlocked['espresso-drip']).toBe(true);
     expect(state.achievementsUnlocked['first-ship']).toBe(true);
     expect(state.achievementsUnlocked['rewrite-ready']).toBe(true);
+    expect(state.roomsUnlocked).toEqual({
+      office: true,
+      'break-room': true,
+      datacenter: true,
+    });
+    expect(state.activeRoom).toBe('datacenter');
+  });
+
+  it('buying espresso unlocks break-room and switches active room', () => {
+    useGameStore.setState({ tokens: 100 });
+    expect(useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID)).toBe(true);
+    const state = useGameStore.getState();
+    expect(state.roomsUnlocked['break-room']).toBe(true);
+    expect(state.activeRoom).toBe('break-room');
+    expect(state.setActiveRoom('office')).toBe(true);
+    expect(useGameStore.getState().activeRoom).toBe('office');
+    expect(useGameStore.getState().setActiveRoom('ops-bay')).toBe(false);
   });
 
   it('rewrite refuses when projected gain is below 1', () => {
@@ -296,6 +321,8 @@ describe('useGameStore', () => {
         lifetimeClicks: 5,
         lifetimePurchases: 3,
         achievementsUnlocked: { 'first-ship': true },
+        roomsUnlocked: { office: true, 'break-room': true },
+        activeRoom: 'break-room',
         lastTickAt: 1,
       },
       { untrusted: true, nowMs: 9_000 },
@@ -315,6 +342,9 @@ describe('useGameStore', () => {
     expect(state.achievementsUnlocked['espresso-drip']).toBe(true);
     expect(state.achievementsUnlocked['pocket-change']).toBe(true);
     expect(state.achievementsUnlocked['rewrite-ready']).toBe(true);
+    expect(state.roomsUnlocked['break-room']).toBe(true);
+    expect(state.roomsUnlocked.datacenter).toBe(true);
+    expect(state.activeRoom).toBe('break-room');
     expect(state.achievementToastQueue).toEqual([]);
     expect(state.lastTickAt).toBe(9_000);
     expect(state.saveUntrusted).toBe(true);

@@ -210,7 +210,7 @@ No huge heavenly tree in v1 — three upgrades is enough. Expand later if needed
 - [x] Light motion polish (**no audio** yet) — absorbed by #28 game UI redesign
 - [ ] **Rewrite** prestige + **Rewrites** bank mult + small prestige shop (Postmortem / Muscle memory / Stub repo)
 - [x] Contributor skin pipeline (**static** JSON/assets + fallback skins; opt-in; hover names; bots OK)
-- [ ] Empty → busy office; **unlockable rooms**
+- [x] Empty → busy office; **unlockable rooms**
 - [ ] Quave Cloud **staging** deploy (`joaovictornsv-ship-it-staging`)
 - [x] Attribution for contributor skins
 

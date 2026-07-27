@@ -34,7 +34,7 @@ Track **`tokensEarnedThisRun`** (clicks + passive), not the spendable bank — b
 | ----------------------------------------- | ---------------------------------------------------------------------------- |
 | Token bank                                | Rewrites bank                                                                |
 | Owned buildings (`owned`)                 | Prestige shop upgrades (Postmortem / Muscle memory / Stub repo)              |
-| Ship upgrades (`shipOwned`) — click track | Cosmetics / rooms (when rooms exist)                                         |
+| Ship upgrades (`shipOwned`) — click track | Cosmetics / **unlocked rooms** (`roomsUnlocked` + `activeRoom`)              |
 | Building upgrades (`buildingOwned`)       | Banked Rewrites passive tokens/s mult                                        |
 | `tokensEarnedThisRun`                     | Achievements + lifetime counters (`achievementsUnlocked`, `lifetime*`) — #33 |
 
@@ -66,4 +66,4 @@ click    = (1 + Σ flat) × Π mult × (1 + Muscle memory %)
 
 ## Save
 
-Schema **v3** adds `tokensEarnedThisRun`, `rewrites`, `prestigeOwned`. Achievement keep fields land in **v4** — see `saves.md` / `achievements.md`.
+Schema **v3** adds `tokensEarnedThisRun`, `rewrites`, `prestigeOwned`. Achievement keep fields land in **v4** — see `saves.md` / `achievements.md`. Unlockable rooms (`roomsUnlocked`, `activeRoom`) land in **v6** — see `scene.md` / `saves.md`.

@@ -360,6 +360,88 @@ button:disabled {
     var(--ship-ink) 14%,
     var(--ship-bg-elevated)
   );
+  /* Shared chrome inset — all rooms; do not override per `.office-room-*`. */
+  --office-pad-x: 0.85rem;
+  --office-chrome-pad-top: 0.55rem;
+  --office-props-pad-y: 0.45rem;
+  /* Space under prop chips before the stage divider (the “upgrades” rail). */
+  --office-props-pad-bottom: 0.55rem;
+  --office-desk-pad-top: 0.85rem;
+  --office-desk-pad-bottom: 0.9rem;
+}
+
+/* Unlockable rooms — local floor/wall tints only (not shell --ship-* tokens).
+   Never change padding / min-height here — chrome inset is shared above. */
+.office-room-break-room {
+  --office-mug: #c47a3a;
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-warm) 38%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-espresso) 10%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-review-lab {
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-upgrade-code-review) 28%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-code-review) 8%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-upgrade-code-review) 18%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-ops-bay {
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-upgrade-ci-cd) 22%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-on-call) 10%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-datacenter {
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-ink) 12%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-accent) 10%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-ink) 22%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-switcher {
+  padding: var(--office-chrome-pad-top) var(--office-pad-x) 0;
+}
+
+.office-room-tab:focus-visible {
+  outline: 2px solid var(--ship-accent);
+  outline-offset: 2px;
 }
 
 .office-sky {
@@ -387,7 +469,8 @@ button:disabled {
   grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
   gap: 0.55rem 0.45rem;
   align-content: end;
-  padding: 0.85rem 0.85rem 0.9rem;
+  padding: var(--office-desk-pad-top) var(--office-pad-x)
+    var(--office-desk-pad-bottom);
   min-height: 12rem;
 }
 
@@ -476,7 +559,8 @@ button:disabled {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem 0.5rem;
-  padding: 0.45rem 0.75rem 0;
+  padding: var(--office-props-pad-y) var(--office-pad-x)
+    var(--office-props-pad-bottom);
 }
 
 .office-prop {

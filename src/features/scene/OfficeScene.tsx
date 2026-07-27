@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { DESKTOP_MEDIA_QUERY } from '../../app/breakpoints';
 import { useMediaQuery } from '../../app/useMediaQuery';
+import { getRoom } from '../../data/rooms';
 import {
   CI_CD,
   CODE_REVIEW,
@@ -8,10 +9,12 @@ import {
   ESPRESSO_MACHINE,
   ON_CALL,
 } from '../../data/upgrades';
+import { roomSceneClass } from '../../game/rooms';
 import { selectTokensPerSecond, useGameStore } from '../../game/state';
 import { DevSprite } from './DevSprite';
 import { lodBadgeCount, sceneSpriteCap, visibleDevCount } from './lod';
 import { OfficeTalkBubbles } from './OfficeTalkBubbles';
+import { RoomSwitcher } from './RoomSwitcher';
 import { isDevSpawnEvent, subscribeUpgradeOwnedChanged } from './sceneEvents';
 import { sceneStageForOwned } from './stages';
 
@@ -23,7 +26,7 @@ type PropChip = {
 
 /**
  * Shared DOM+CSS living office: Devs spawn from owned count, LOD-capped,
- * CSS Grid desk farm, discrete milestone stages (not continuous morphs).
+ * CSS Grid desk farm, discrete milestone stages + unlockable rooms (#11).
  * Below `lg`, uses the leaner mobile sprite budget.
  */
 export function OfficeScene() {
@@ -35,12 +38,15 @@ export function OfficeScene() {
   const ciOwned = useGameStore((s) => s.owned[CI_CD.id] ?? 0);
   const onCallOwned = useGameStore((s) => s.owned[ON_CALL.id] ?? 0);
   const tokensPerSecond = useGameStore(selectTokensPerSecond);
+  const activeRoomId = useGameStore((s) => s.activeRoom);
+  const room = getRoom(activeRoomId);
   const stage = sceneStageForOwned(devOwned);
   const visible = visibleDevCount(devOwned, cap);
   const badge = lodBadgeCount(devOwned, cap);
   const [spawnIndex, setSpawnIndex] = useState<number | null>(null);
   const [stageFlash, setStageFlash] = useState(false);
   const prevStageRef = useRef(stage.name);
+  const prevRoomRef = useRef(activeRoomId);
   const bootedRef = useRef(false);
 
   useEffect(() => {
@@ -60,17 +66,21 @@ export function OfficeScene() {
     if (!bootedRef.current) {
       bootedRef.current = true;
       prevStageRef.current = stage.name;
+      prevRoomRef.current = activeRoomId;
       return;
     }
-    if (prevStageRef.current === stage.name) {
-      return;
-    }
+    const stageChanged = prevStageRef.current !== stage.name;
+    const roomChanged = prevRoomRef.current !== activeRoomId;
     prevStageRef.current = stage.name;
+    prevRoomRef.current = activeRoomId;
+    if (!stageChanged && !roomChanged) {
+      return;
+    }
     setStageFlash(false);
     requestAnimationFrame(() => {
       setStageFlash(true);
     });
-  }, [stage.name]);
+  }, [stage.name, activeRoomId]);
 
   const isEmptyOffice = devOwned === 0;
   const deskCount = Math.max(visible, stage.emptyDesks);
@@ -104,10 +114,12 @@ export function OfficeScene() {
         'border border-[var(--ship-line)]',
         'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_92%,transparent)]',
         `office-stage-${stage.name}`,
+        roomSceneClass(activeRoomId),
         stageFlash ? 'office-stage-flash' : '',
       ].join(' ')}
-      aria-label={`Office — ${stage.label}, ${devOwned} Dev${devOwned === 1 ? '' : 's'}`}
+      aria-label={`${room.label} — ${stage.label}, ${devOwned} Dev${devOwned === 1 ? '' : 's'}`}
       data-stage={stage.name}
+      data-room={activeRoomId}
       data-dev-owned={devOwned}
       onAnimationEnd={(event) => {
         if (event.animationName === 'office-stage-flash') {
@@ -115,6 +127,8 @@ export function OfficeScene() {
         }
       }}
     >
+      <RoomSwitcher />
+
       <div className="office-sky pointer-events-none absolute inset-x-0 top-0 h-1/3" />
 
       {props.length > 0 ? (
@@ -192,14 +206,15 @@ export function OfficeScene() {
 
           {isEmptyOffice ? (
             <p className="office-empty-hint text-sm text-[var(--ship-muted)]">
-              Empty office — hire Devs to fill the desks.
+              {room.emptyHint}
             </p>
           ) : null}
         </div>
       </div>
 
       <p className="sr-only">
-        {stage.label}. {devOwned} Dev{devOwned === 1 ? '' : 's'} owned
+        {room.label}. {stage.label}. {devOwned} Dev
+        {devOwned === 1 ? '' : 's'} owned
         {badge !== null ? `, showing ${visible} on screen` : ''}.
       </p>
     </section>

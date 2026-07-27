@@ -98,7 +98,7 @@ export function RewriteConfirmDialog({
             <p className="mt-1 text-xs text-[var(--ship-muted)]">
               {isShop
                 ? 'Permanent power for the next run. Spend now, or wait for the next Rewrite.'
-                : "Soft reset — keep Rewrites power, lose this run's grind."}
+                : "Soft reset — keep Rewrites power and unlocked rooms, lose this run's grind."}
             </p>
           </div>
           <button

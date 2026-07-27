@@ -31,6 +31,8 @@ function sampleState(overrides: Partial<GameState> = {}): GameState {
     lifetimeClicks: 0,
     lifetimePurchases: 0,
     achievementsUnlocked: {},
+    roomsUnlocked: { office: true },
+    activeRoom: 'office',
     lastTickAt: 1_700_000_000_000,
     ...overrides,
   };
@@ -129,7 +131,7 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(5);
+    expect(outcome.result.file.v).toBe(6);
     expect(outcome.result.file.state.shipOwned).toEqual({});
     expect(outcome.result.file.state.buildingOwned).toEqual({});
     expect(outcome.result.file.state.tokensEarnedThisRun).toBe(0);
@@ -139,6 +141,8 @@ describe('checksum + codec', () => {
     expect(outcome.result.file.state.lifetimeClicks).toBe(0);
     expect(outcome.result.file.state.lifetimePurchases).toBe(0);
     expect(outcome.result.file.state.achievementsUnlocked).toEqual({});
+    expect(outcome.result.file.state.roomsUnlocked).toEqual({ office: true });
+    expect(outcome.result.file.state.activeRoom).toBe('office');
     expect(outcome.result.file.state.tokens).toBe(12);
   });
 
@@ -162,7 +166,7 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(5);
+    expect(outcome.result.file.v).toBe(6);
     expect(outcome.result.file.state.tokensEarnedThisRun).toBe(0);
     expect(outcome.result.file.state.rewrites).toBe(0);
     expect(outcome.result.file.state.prestigeOwned).toEqual({});
@@ -194,7 +198,7 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(5);
+    expect(outcome.result.file.v).toBe(6);
     expect(outcome.result.file.state.lifetimeTokensEarned).toBe(55);
     expect(outcome.result.file.state.lifetimeClicks).toBe(0);
     expect(outcome.result.file.state.lifetimePurchases).toBe(0);
@@ -216,10 +220,12 @@ describe('checksum + codec', () => {
       lifetimeClicks: 0,
       lifetimePurchases: 0,
       achievementsUnlocked: {},
+      roomsUnlocked: { office: true },
+      activeRoom: 'office',
     });
     const b = await checksumState(
       JSON.parse(
-        `{"achievementsUnlocked":{},"buildingOwned":{},"lastTickAt":0,"lifetimeClicks":0,"lifetimePurchases":0,"lifetimeTokensEarned":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"prestigeOwned":{},"rewrites":0,"shipOwned":{},"tokens":1,"tokensEarnedThisRun":0}`,
+        `{"achievementsUnlocked":{},"activeRoom":"office","buildingOwned":{},"lastTickAt":0,"lifetimeClicks":0,"lifetimePurchases":0,"lifetimeTokensEarned":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"prestigeOwned":{},"rewrites":0,"roomsUnlocked":{"office":true},"shipOwned":{},"tokens":1,"tokensEarnedThisRun":0}`,
       ) as GameState,
     );
     expect(a).toBe(b);
@@ -237,7 +243,7 @@ describe('migrateSaveFile', () => {
     expect(migrateSaveFile(file)).toEqual(file);
   });
 
-  it('migrates v1 saves through v2–v5 defaults', () => {
+  it('migrates v1 saves through v2–v6 defaults', () => {
     const v1State = {
       tokens: 10,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -249,7 +255,7 @@ describe('migrateSaveFile', () => {
       state: v1State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(5);
+    expect(migrated.v).toBe(6);
     expect(migrated.state.shipOwned).toEqual({});
     expect(migrated.state.buildingOwned).toEqual({});
     expect(migrated.state.tokensEarnedThisRun).toBe(0);
@@ -259,6 +265,8 @@ describe('migrateSaveFile', () => {
     expect(migrated.state.lifetimeClicks).toBe(0);
     expect(migrated.state.lifetimePurchases).toBe(0);
     expect(migrated.state.achievementsUnlocked).toEqual({});
+    expect(migrated.state.roomsUnlocked).toEqual({ office: true });
+    expect(migrated.state.activeRoom).toBe('office');
     expect(migrated.state.tokens).toBe(10);
     expect(migrated.state.owned[ESPRESSO_MACHINE_ID]).toBe(1);
   });
@@ -276,16 +284,18 @@ describe('migrateSaveFile', () => {
       state: v2State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(5);
+    expect(migrated.v).toBe(6);
     expect(migrated.state.tokensEarnedThisRun).toBe(0);
     expect(migrated.state.rewrites).toBe(0);
     expect(migrated.state.prestigeOwned).toEqual({});
     expect(migrated.state.lifetimeTokensEarned).toBe(0);
     expect(migrated.state.achievementsUnlocked).toEqual({});
     expect(migrated.state.buildingOwned).toEqual({});
+    expect(migrated.state.roomsUnlocked).toEqual({ office: true });
+    expect(migrated.state.activeRoom).toBe('office');
   });
 
-  it('migrates v3 saves by seeding lifetime tokens then adding buildingOwned', () => {
+  it('migrates v3 saves by seeding lifetime tokens then adding buildingOwned + rooms', () => {
     const v3State = {
       tokens: 10,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -301,14 +311,16 @@ describe('migrateSaveFile', () => {
       state: v3State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(5);
+    expect(migrated.v).toBe(6);
     expect(migrated.state.lifetimeTokensEarned).toBe(40);
     expect(migrated.state.lifetimeClicks).toBe(0);
     expect(migrated.state.achievementsUnlocked).toEqual({});
     expect(migrated.state.buildingOwned).toEqual({});
+    expect(migrated.state.roomsUnlocked).toEqual({ office: true });
+    expect(migrated.state.activeRoom).toBe('office');
   });
 
-  it('migrates v4 saves by adding buildingOwned', () => {
+  it('migrates v4 saves by adding buildingOwned then rooms', () => {
     const v4State = {
       tokens: 10,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -328,9 +340,37 @@ describe('migrateSaveFile', () => {
       state: v4State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(5);
+    expect(migrated.v).toBe(6);
     expect(migrated.state.buildingOwned).toEqual({});
     expect(migrated.state.lifetimeTokensEarned).toBe(40);
+    expect(migrated.state.roomsUnlocked).toEqual({ office: true });
+    expect(migrated.state.activeRoom).toBe('office');
+  });
+
+  it('migrates v5 saves by adding roomsUnlocked + activeRoom', () => {
+    const v5State = {
+      tokens: 10,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+      shipOwned: {},
+      buildingOwned: {},
+      tokensEarnedThisRun: 40,
+      rewrites: 0,
+      prestigeOwned: {},
+      lifetimeTokensEarned: 40,
+      lifetimeClicks: 0,
+      lifetimePurchases: 0,
+      achievementsUnlocked: {},
+      lastTickAt: 99,
+    } as GameState;
+    const migrated = migrateSaveFile({
+      v: 5,
+      savedAt: 1,
+      state: v5State,
+      checksum: 'abc',
+    });
+    expect(migrated.v).toBe(6);
+    expect(migrated.state.roomsUnlocked).toEqual({ office: true });
+    expect(migrated.state.activeRoom).toBe('office');
   });
 
   it('rejects newer-than-supported versions', () => {

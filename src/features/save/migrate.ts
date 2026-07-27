@@ -73,6 +73,22 @@ const migrators: Record<number, Migrator> = {
       buildingOwned: legacy.buildingOwned ?? {},
     };
   },
+  /**
+   * v5 → v6: unlockable rooms (sticky map cosmetics).
+   * Always seed office; no retroactive mid-ladder unlock credit beyond what
+   * hydrate/live play will catch up from current owned / Rewrites.
+   */
+  5: (state) => {
+    const legacy = state as GameState & {
+      roomsUnlocked?: GameState['roomsUnlocked'];
+      activeRoom?: GameState['activeRoom'];
+    };
+    return {
+      ...legacy,
+      roomsUnlocked: legacy.roomsUnlocked ?? { office: true },
+      activeRoom: legacy.activeRoom ?? 'office',
+    };
+  },
 };
 
 /**
