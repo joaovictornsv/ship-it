@@ -5,7 +5,6 @@ import {
   TALK_CONTRIBUTOR_NAMES,
   contributorAvatarSrc,
   contributorDisplayNames,
-  contributorProfileUrl,
   fakeDevNameForIndex,
   resolveDevSkin,
   resolveDevSkinFromPool,
@@ -21,12 +20,10 @@ describe('resolveDevSkin', () => {
       mode: 'contributor',
       label: CONTRIBUTOR_SKINS[0]!.id,
       avatarSrc: contributorAvatarSrc(CONTRIBUTOR_SKINS[0]!),
-      profileUrl: `https://github.com/${CONTRIBUTOR_SKINS[0]!.id}`,
     });
     expect(second).toMatchObject({
       mode: 'contributor',
       label: CONTRIBUTOR_SKINS[1]!.id,
-      profileUrl: null,
     });
     expect(third).toEqual({
       mode: 'fallback',
@@ -53,7 +50,7 @@ describe('resolveDevSkin', () => {
     });
   });
 
-  it('labels contributors with GitHub username and links only humans', () => {
+  it('labels contributors with GitHub username (no profile link)', () => {
     const human = CONTRIBUTOR_SKINS.find((s) => s.kind === 'human')!;
     const bot = CONTRIBUTOR_SKINS.find((s) => s.kind === 'bot')!;
     const humanIndex = CONTRIBUTOR_SKINS.indexOf(human);
@@ -65,13 +62,13 @@ describe('resolveDevSkin', () => {
     expect(humanSkin).toMatchObject({
       mode: 'contributor',
       label: human.id,
-      profileUrl: `https://github.com/${human.id}`,
     });
     expect(botSkin).toMatchObject({
       mode: 'contributor',
       label: bot.id,
-      profileUrl: null,
     });
+    expect(humanSkin).not.toHaveProperty('profileUrl');
+    expect(botSkin).not.toHaveProperty('profileUrl');
   });
 });
 
@@ -87,15 +84,6 @@ describe('fakeDevNameForIndex', () => {
 
   it('covers the desktop LOD cap without exhausting uniqueness early', () => {
     expect(FAKE_DEV_NAMES.length).toBeGreaterThanOrEqual(32);
-  });
-});
-
-describe('contributorProfileUrl', () => {
-  it('builds a GitHub URL for humans and null for bots', () => {
-    expect(contributorProfileUrl(CONTRIBUTOR_SKINS[0]!)).toBe(
-      'https://github.com/joaovictornsv',
-    );
-    expect(contributorProfileUrl(CONTRIBUTOR_SKINS[1]!)).toBeNull();
   });
 });
 
