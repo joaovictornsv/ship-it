@@ -1,16 +1,35 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { ShoppingBag, X } from 'lucide-react';
+import { useGameStore } from '../../game/state';
 import { ShopCatalog } from './ShopCatalog';
+import { hasAffordableShopPurchase } from './shopAffordability';
+import { useBuyMode } from './useBuyMode';
 
 /**
  * Mobile shop: closed by default so Ship It stays the first-paint primary action.
  * Opens as a bottom sheet / drawer below the Tailwind `lg` breakpoint.
+ * Closed trigger shows a small affordability cue when something is buyable (#53).
  */
 export function ShopDrawer() {
   const [open, setOpen] = useState(false);
+  const [buyMode] = useBuyMode();
   const titleId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+
+  const tokens = useGameStore((s) => s.tokens);
+  const owned = useGameStore((s) => s.owned);
+  const shipOwned = useGameStore((s) => s.shipOwned);
+  const buildingOwned = useGameStore((s) => s.buildingOwned);
+  const hasAffordable = hasAffordableShopPurchase({
+    tokens,
+    owned,
+    shipOwned,
+    buildingOwned,
+    buyMode,
+  });
+  // Cue only while closed — open drawer shows the catalog itself.
+  const showAffordableCue = !open && hasAffordable;
 
   useEffect(() => {
     if (!open) {
@@ -41,7 +60,7 @@ export function ShopDrawer() {
           ref={triggerRef}
           type="button"
           className={[
-            'pointer-events-auto flex w-full max-w-md items-center justify-center gap-2',
+            'pointer-events-auto relative flex w-full max-w-md items-center justify-center gap-2',
             'rounded-xl border border-[var(--ship-line)]',
             'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_94%,transparent)] px-4 py-3',
             'text-base font-semibold tracking-tight text-[var(--ship-ink)] shadow-[0_-4px_24px_color-mix(in_srgb,var(--ship-ink)_8%,transparent)]',
@@ -50,6 +69,9 @@ export function ShopDrawer() {
           ].join(' ')}
           aria-expanded={open}
           aria-haspopup="dialog"
+          aria-label={
+            showAffordableCue ? 'Shop, affordable purchases available' : 'Shop'
+          }
           onClick={() => setOpen(true)}
         >
           <ShoppingBag
@@ -58,6 +80,16 @@ export function ShopDrawer() {
             aria-hidden
           />
           Shop
+          {showAffordableCue ? (
+            <span
+              className={[
+                'absolute right-3 top-2.5 size-2.5 rounded-full',
+                'bg-[var(--ship-accent)]',
+                'ring-2 ring-[var(--ship-bg-elevated)]',
+              ].join(' ')}
+              aria-hidden
+            />
+          ) : null}
         </button>
       </div>
 
@@ -75,7 +107,7 @@ export function ShopDrawer() {
             aria-labelledby={titleId}
             className={[
               'shop-drawer-panel absolute inset-x-0 bottom-0 flex max-h-[min(78dvh,36rem)] flex-col',
-              'rounded-t-2xl border border-b-0 border-[var(--ship-line)]',
+              'overflow-x-hidden rounded-t-2xl border border-b-0 border-[var(--ship-line)]',
               'bg-[var(--ship-bg-elevated)] shadow-[0_-8px_32px_color-mix(in_srgb,var(--ship-ink)_12%,transparent)]',
               'pb-[max(1rem,env(safe-area-inset-bottom))]',
             ].join(' ')}
@@ -107,7 +139,7 @@ export function ShopDrawer() {
                 <X className="size-5" strokeWidth={2} aria-hidden />
               </button>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-3">
               <ShopCatalog />
             </div>
           </div>

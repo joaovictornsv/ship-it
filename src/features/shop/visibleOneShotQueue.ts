@@ -18,8 +18,9 @@ export type OneShotQueueItem =
   | { kind: 'building'; upgrade: BuildingUpgradeDef; cost: number };
 
 /**
- * Combined horizontal queue: next Ship upgrade (ladder) + all available
+ * Combined one-shot queue: next Ship upgrade (ladder) + all available
  * building upgrades, interleaved by ascending cost (Cookie-style).
+ * Catalog UI wraps tiles within the rail / drawer width (no H-scroll).
  */
 export function visibleOneShotQueue(
   owned: OwnedUpgrades,

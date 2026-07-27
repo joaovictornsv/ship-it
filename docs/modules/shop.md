@@ -2,11 +2,11 @@
 
 Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke copy.
 
-**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal one-shot upgrades queue (#30 + #37 building mults); Rewrites prestige in Rewrite flow only (#9 + #49); scan-first rows (#28); responsive shell (#8).
+**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal one-shot upgrades queue (#30 + #37 building mults); Rewrites prestige in Rewrite flow only (#9 + #49); scan-first rows (#28); responsive shell (#8); mobile drawer no H-scroll + closed-trigger affordability cue (#53).
 
 ## Owned by
 
-- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, `ShopBuildingTile`, `ShopPrestigeRow`, `RewritesShop`, `RewritePanel`, `RewriteConfirmDialog`, icons/colors, `useBuyMode`, `useProductionTick`, `visibleOneShotQueue`
+- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, `ShopBuildingTile`, `ShopPrestigeRow`, `RewritesShop`, `RewritePanel`, `RewriteConfirmDialog`, icons/colors, `useBuyMode`, `useProductionTick`, `visibleOneShotQueue`, `shopAffordability`
 - `src/app/breakpoints.ts` — shared `lg` breakpoint (`DESKTOP_MIN_WIDTH_PX = 1024`)
 - `src/features/scene/` — living office reads owned from store; `onUpgradeOwnedChanged` fans out spawn FX
 - `src/app/PlayView.tsx` — mounts `RewritePanel` under Ship It
@@ -20,11 +20,17 @@ Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke co
 
 Mobile first paint keeps **one primary action** (Ship It). The drawer is `aria-modal` dialog; Escape / backdrop / close dismiss it. Safe-area padding on the trigger and sheet. Drawer rows use the **same** scan-first hierarchy as the rail (including the buy-mode control).
 
+Sheet layout **constrains width** (`overflow-x-hidden` on the panel + scroll body; catalog `min-w-0`). One-shot upgrade tiles **wrap** within the sheet — no horizontal scrollbar / sideways pan under normal catalog content. Verify at ~360px and common phone widths including safe-area insets.
+
+### Closed-trigger affordability cue
+
+While the drawer is **closed**, the fixed bottom **Shop** trigger shows a small accent dot when at least one normal-shop purchase is currently affordable (buildings under the active buy mode, or visible Ship / building one-shots). Same cost helpers as buy rows (`shopAffordability` / `hasAffordableShopPurchase`). Cue clears when nothing is affordable or when the drawer is open. Accessible via trigger `aria-label` (`Shop, affordable purchases available`). No second HUD strip or floating badge cluster — cue lives on the existing trigger only.
+
 ## Sections
 
 `ShopCatalog` renders (rail + drawer share the list):
 
-1. **Upgrades** — Cookie-style **horizontal** one-shot queue **above** buildings (`ShopShipTile` + `ShopBuildingTile`). Ship ladder next-step + unlocked building boosts, interleaved by cost (`visibleOneShotQueue`). Owned upgrades live on Achievements, not here.
+1. **Upgrades** — Cookie-style **wrapping** one-shot queue **above** buildings (`ShopShipTile` + `ShopBuildingTile`). Ship ladder next-step + unlocked building boosts, interleaved by cost (`visibleOneShotQueue`). Owned upgrades live on Achievements, not here.
 2. **Buildings** — tokens/s producers (`ShopRow`) with a compact **buy-mode** control in the section header
 
 **Rewrites shop** is **not** in the normal catalog (#49). Prestige rows live in the Rewrite flow only (`RewritesShop` inside `RewriteConfirmDialog` after confirm). Rail/drawer subtitles stay **buildings + ship**.
@@ -66,7 +72,7 @@ Each producer renders as a dense interactive row (card only because it wraps buy
 
 ## One-shot upgrade queue
 
-Horizontal scroll of compact tiles (`visibleOneShotQueue`):
+Wrapping flex of compact tiles (`visibleOneShotQueue`) — stays within rail / drawer width (no horizontal sheet scroll):
 
 | Shown                                                                                     | Hidden                                                               |
 | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
