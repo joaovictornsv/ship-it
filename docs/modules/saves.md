@@ -58,6 +58,6 @@ type SaveFile = {
 ## Player UI
 
 - **Play screen:** no export/import panel — clicker + shop only. Autosave + hydrate still run in the app shell.
-- **Save view:** dedicated screen (`#/save` via lightweight hash nav) mounts export / import file / paste (`SaveControls`). Header **Save** / **Back to play** (and brand → play) switches views without touching the save slot.
+- **Save view:** dedicated screen (`#/save` via lightweight hash nav) mounts export / import file / paste (`SaveControls`). Desktop header **Save** / **Back to play** (and brand → play); mobile Menu drawer → Save / Ship It. Switching views does not touch the save slot.
 - Untrusted banner stays global/shell (not tied to the Save view).
 - Chrome follows `docs/modules/ui.md` (`--ship-*` tokens).

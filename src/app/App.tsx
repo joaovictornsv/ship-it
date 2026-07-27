@@ -1,4 +1,3 @@
-import { Medal, Save, Users } from 'lucide-react';
 import { AchievementUnlockToast } from '../features/achievements';
 import {
   SaveUntrustedBanner,
@@ -7,14 +6,12 @@ import {
 } from '../features/save';
 import { useProductionTick } from '../features/shop';
 import { AchievementsView } from './AchievementsView';
+import { AppHeader } from './AppHeader';
 import { Atmosphere } from './Atmosphere';
 import { CreditsView } from './CreditsView';
 import { PlayView } from './PlayView';
 import { SaveView } from './SaveView';
 import { useAppView } from './useAppView';
-
-const iconNavClass =
-  'inline-flex size-9 items-center justify-center rounded-lg text-[var(--ship-accent-deep)] hover:bg-[color-mix(in_srgb,var(--ship-ink)_6%,transparent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]';
 
 export function App() {
   const { ready, error } = useHydrateSave();
@@ -33,53 +30,7 @@ export function App() {
   return (
     <div className="ship-shell flex min-h-dvh flex-col">
       <Atmosphere />
-      <header className="border-b border-[var(--ship-line)] bg-[color-mix(in_srgb,var(--ship-bg-elevated)_82%,transparent)] px-4 py-2.5 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <button
-            type="button"
-            className="text-lg font-semibold tracking-tight text-[var(--ship-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]"
-            onClick={() => setView('play')}
-          >
-            Ship It
-          </button>
-          {view === 'play' ? (
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                className={iconNavClass}
-                aria-label="Achievements"
-                onClick={() => setView('achievements')}
-              >
-                <Medal className="size-5" strokeWidth={2} aria-hidden />
-              </button>
-              <button
-                type="button"
-                className={iconNavClass}
-                aria-label="Credits"
-                onClick={() => setView('credits')}
-              >
-                <Users className="size-5" strokeWidth={2} aria-hidden />
-              </button>
-              <button
-                type="button"
-                className={iconNavClass}
-                aria-label="Save"
-                onClick={() => setView('save')}
-              >
-                <Save className="size-5" strokeWidth={2} aria-hidden />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="rounded-lg px-2 py-1 text-sm font-semibold text-[var(--ship-accent-deep)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]"
-              onClick={() => setView('play')}
-            >
-              Back to play
-            </button>
-          )}
-        </div>
-      </header>
+      <AppHeader view={view} setView={setView} />
 
       <SaveUntrustedBanner />
       <AchievementUnlockToast />

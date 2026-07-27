@@ -85,8 +85,6 @@ export type ResolvedDevSkin =
       avatarSrc: string;
       /** GitHub username (`id` / login) for hover. */
       label: string;
-      /** Profile URL for human skins; `null` for bots. */
-      profileUrl: string | null;
     }
   | {
       mode: 'fallback';
@@ -96,14 +94,6 @@ export type ResolvedDevSkin =
 
 export function contributorAvatarSrc(skin: ContributorSkin): string {
   return `/contributors/avatars/${skin.avatarFile}`;
-}
-
-/** GitHub profile URL for human skins; bots return `null`. */
-export function contributorProfileUrl(skin: ContributorSkin): string | null {
-  if (skin.kind === 'bot') {
-    return null;
-  }
-  return `https://github.com/${skin.id}`;
 }
 
 /** Stable fake name for desk index `i` (modulo the pool). */
@@ -132,7 +122,6 @@ export function resolveDevSkinFromPool(
     skin,
     avatarSrc: contributorAvatarSrc(skin),
     label: skin.id,
-    profileUrl: contributorProfileUrl(skin),
   };
 }
 

@@ -7,8 +7,9 @@ import { useMediaQuery } from './useMediaQuery';
 
 /**
  * Primary clicker + living office + shop layout (no export/import chrome).
- * Below `lg`: Ship It first paint + closed shop drawer. At `lg+`: right-rail shop.
- * Currency HUD docks on the Ship It cluster (PRODUCT §4); scene is the stage.
+ * Below `lg`: Ship It first paint + closed shop drawer; office / bank / CTA
+ * stay vertically centered in the space above the Shop trigger. At `lg+`:
+ * right-rail shop. Currency HUD docks on the Ship It cluster (PRODUCT §4).
  */
 export function PlayView() {
   const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);
@@ -16,16 +17,16 @@ export function PlayView() {
   return (
     <main
       className={[
-        'mx-auto flex w-full max-w-6xl flex-1 gap-8 px-4 py-8',
+        'mx-auto flex w-full max-w-6xl flex-1 gap-8 px-4',
         isDesktop
-          ? 'flex-row items-start justify-between gap-10'
-          : 'flex-col pb-28',
+          ? 'flex-row items-start justify-between gap-10 py-8'
+          : 'flex-col pb-28 pt-3',
       ].join(' ')}
     >
       <div
         className={[
-          'flex flex-1 flex-col items-center gap-5 text-center',
-          isDesktop ? 'min-h-[min(78vh,42rem)] justify-center' : '',
+          'flex flex-1 flex-col items-center justify-center gap-5 text-center',
+          isDesktop ? 'min-h-[min(78vh,42rem)]' : 'min-h-0',
         ].join(' ')}
       >
         <h1 className="sr-only">Ship It</h1>

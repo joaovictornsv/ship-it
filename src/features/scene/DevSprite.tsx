@@ -1,6 +1,5 @@
 import {
   useEffect,
-  useId,
   useLayoutEffect,
   useRef,
   useState,
@@ -31,8 +30,8 @@ const spriteClassName = (spawn: boolean) =>
  * Dev sprite — opt-in contributor avatar when available, else generic emoji.
  * Hover / focus shows a simple talk-shaped name tip with inverted ink/elevated
  * colors (distinct from office speech bubbles), portaled so the stage
- * `overflow-hidden` does not clip it. Human contributor skins wrap in a
- * GitHub profile link; bots and fallback desks stay non-linked. Avatar load
+ * `overflow-hidden` does not clip it. Contributor skins also show a
+ * "Contributor" label in the tip; clicks never leave the office. Avatar load
  * errors fall back to the emoji glyph so missing assets never blank a desk.
  */
 export function DevSprite({
@@ -40,7 +39,6 @@ export function DevSprite({
   spawn = false,
   onSpawnEnd,
 }: DevSpriteProps) {
-  const tipId = useId();
   const wrapRef = useRef<HTMLSpanElement>(null);
   const resolved = resolveDevSkin(index);
   const [avatarFailed, setAvatarFailed] = useState(false);
@@ -48,9 +46,8 @@ export function DevSprite({
   const [pos, setPos] = useState<TipPos | null>(null);
   const delayMs = (index % 8) * 120;
   const label = resolved.label;
-  const showAvatar = resolved.mode === 'contributor' && !avatarFailed;
-  const profileUrl =
-    resolved.mode === 'contributor' ? resolved.profileUrl : null;
+  const isContributor = resolved.mode === 'contributor';
+  const showAvatar = isContributor && !avatarFailed;
   const tipVisible = hovered;
 
   const style: CSSProperties = {
@@ -116,18 +113,22 @@ export function DevSprite({
     tipVisible && pos && typeof document !== 'undefined'
       ? createPortal(
           <span
-            id={tipId}
             role="tooltip"
             className={[
               'pointer-events-none fixed z-[80] -translate-x-1/2 -translate-y-full',
-              'max-w-[10.5rem] truncate rounded-xl border border-[color-mix(in_srgb,var(--ship-bg-elevated)_28%,transparent)]',
+              'max-w-[10.5rem] rounded-xl border border-[color-mix(in_srgb,var(--ship-bg-elevated)_28%,transparent)]',
               'bg-[var(--ship-ink)] px-2.5 py-1 text-[11px] font-medium leading-snug text-[var(--ship-bg-elevated)]',
               'shadow-[0_4px_12px_color-mix(in_srgb,var(--ship-ink)_22%,transparent)]',
               'office-dev-name-tip',
             ].join(' ')}
             style={{ top: pos.top, left: pos.left }}
           >
-            {label}
+            <span className="block truncate">{label}</span>
+            {isContributor ? (
+              <span className="mt-0.5 block text-[10px] font-normal opacity-75">
+                Contributor
+              </span>
+            ) : null}
           </span>,
           document.body,
         )
@@ -154,29 +155,14 @@ export function DevSprite({
         setHovered(false);
       }}
     >
-      {profileUrl ? (
-        <a
-          className={`${spriteClassName(spawn)} no-underline text-inherit`}
-          style={style}
-          href={profileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`${label} on GitHub`}
-          aria-describedby={tipVisible ? tipId : undefined}
-          onAnimationEnd={onAnimationEnd}
-        >
-          {glyph}
-        </a>
-      ) : (
-        <span
-          className={spriteClassName(spawn)}
-          style={style}
-          aria-hidden
-          onAnimationEnd={onAnimationEnd}
-        >
-          {glyph}
-        </span>
-      )}
+      <span
+        className={spriteClassName(spawn)}
+        style={style}
+        aria-hidden
+        onAnimationEnd={onAnimationEnd}
+      >
+        {glyph}
+      </span>
       {tip}
     </span>
   );

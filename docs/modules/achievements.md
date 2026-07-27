@@ -12,7 +12,7 @@ Durable milestone badges across lifetime play stats (issue #33).
 - `src/features/achievements/` — `AchievementUnlockToast` HUD feedback
 - `src/app/AchievementsView.tsx` — milestones panel + this-run Ship / building upgrades galleries
 - `src/app/appView.ts` — `#/achievements` hash view
-- Header Medal icon in `App.tsx` (play view)
+- `src/app/AppHeader.tsx` — desktop header Medal / mobile Menu → Achievements
 
 ## Catalog shape
 
@@ -50,8 +50,9 @@ Toast is non-blocking (no focus steal, `pointer-events-none`). Chrome matches un
 ## Navigation
 
 - Hash: `#/achievements`
-- Play header: Medal → Achievements; Save icon unchanged
-- Secondary screens show **Back to play**
+- Desktop play header: Medal → Achievements; Save icon unchanged
+- Mobile: Menu drawer → Achievements (same destinations)
+- Secondary screens: desktop **Back to play**; mobile drawer **Ship It** / Back to play
 
 ## Save
 
