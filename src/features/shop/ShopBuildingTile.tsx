@@ -172,14 +172,25 @@ export function ShopBuildingTile({ upgrade }: ShopBuildingTileProps) {
       <button
         type="button"
         className={[
-          'relative flex w-[4.75rem] flex-col items-center gap-1 rounded-xl border border-[var(--ship-line)] px-1.5 py-2',
-          'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_88%,transparent)]',
+          'relative flex w-[4.75rem] flex-col items-center gap-1 rounded-xl px-1.5 py-2',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]',
           buyFlash ? 'buy-spend-flash' : '',
-          canBuy ? 'hover:brightness-[1.03]' : 'opacity-60',
+          canBuy
+            ? [
+                'border border-[color-mix(in_srgb,var(--ship-accent)_35%,var(--ship-line))]',
+                'bg-[var(--ship-bg-elevated)] hover:brightness-[1.03]',
+              ].join(' ')
+            : [
+                'cursor-not-allowed border border-dashed border-[var(--ship-line)]',
+                'bg-[color-mix(in_srgb,var(--ship-ink)_4%,transparent)]',
+              ].join(' '),
         ].join(' ')}
         aria-describedby={tipVisible ? tipId : undefined}
-        aria-label={`Buy ${upgrade.name} for ${formatTokensCompact(cost)} tokens`}
+        aria-label={
+          canBuy
+            ? `Buy ${upgrade.name} for ${formatTokensCompact(cost)} tokens`
+            : `${upgrade.name}, ${formatTokensCompact(cost)} tokens, cannot afford`
+        }
         disabled={!canBuy}
         onClick={handleBuy}
         onAnimationEnd={(event) => {
@@ -189,15 +200,25 @@ export function ShopBuildingTile({ upgrade }: ShopBuildingTileProps) {
         }}
       >
         <div
-          className="flex size-9 items-center justify-center rounded-lg border border-[var(--ship-line)]"
+          className={[
+            'flex size-9 items-center justify-center rounded-lg border border-[var(--ship-line)]',
+            canBuy ? '' : 'grayscale',
+          ].join(' ')}
           style={{
-            background: `color-mix(in srgb, var(${colorVar}) 14%, transparent)`,
+            background: canBuy
+              ? `color-mix(in srgb, var(${colorVar}) 14%, transparent)`
+              : 'color-mix(in srgb, var(--ship-bg-elevated) 60%, transparent)',
           }}
           aria-hidden
         >
           <ShopShipUpgradeIcon emoji={upgrade.emoji} />
         </div>
-        <span className="max-w-full truncate text-[0.65rem] font-semibold leading-tight text-[var(--ship-ink)]">
+        <span
+          className={[
+            'max-w-full truncate text-[0.65rem] font-semibold leading-tight',
+            canBuy ? 'text-[var(--ship-ink)]' : 'text-[var(--ship-muted)]',
+          ].join(' ')}
+        >
           {upgrade.name}
         </span>
         <span

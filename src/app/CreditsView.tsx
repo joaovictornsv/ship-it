@@ -1,5 +1,7 @@
 import { CONTRIBUTOR_SKINS, contributorAvatarSrc } from '../data/contributors';
 
+const REPO_URL = 'https://github.com/joaovictornsv/ship-it';
+
 /**
  * Attribution for opt-in contributor skins — tribute framing, public avatars.
  */
@@ -11,11 +13,18 @@ export function CreditsView() {
           Credits
         </h1>
         <p className="mt-1 text-sm text-[var(--ship-muted)]">
-          Office Dev skins celebrate people (and bots) who contribute to this
-          repo. The pool is{' '}
-          <span className="text-[var(--ship-ink)]">opt-in</span> — a homage, not
-          a roast. Avatars ship as static public assets; missing files fall back
-          to generic Dev glyphs in the office.
+          Office Dev skins celebrate people (and bots) who contribute to{' '}
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-[var(--ship-accent-deep)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]"
+          >
+            this repo
+          </a>
+          . The pool is <span className="text-[var(--ship-ink)]">opt-in</span> —
+          a homage, not a roast. Avatars ship as static public assets; missing
+          files fall back to generic Dev glyphs in the office.
         </p>
       </div>
 
@@ -49,10 +58,17 @@ export function CreditsView() {
           <ul className="mt-3 flex list-none flex-col gap-2 p-0 sm:grid sm:grid-cols-2 sm:gap-3">
             {CONTRIBUTOR_SKINS.map((skin) => (
               <li key={skin.id}>
-                <article
+                <a
+                  href={`https://github.com/${skin.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${skin.displayName} on GitHub`}
                   className={[
                     'flex items-center gap-3 rounded-xl border border-[var(--ship-line)]',
                     'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_88%,transparent)] px-3 py-2.5',
+                    'no-underline transition-[border-color,background-color] hover:border-[var(--ship-accent)]',
+                    'hover:bg-[color-mix(in_srgb,var(--ship-bg-elevated)_100%,transparent)]',
+                    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]',
                   ].join(' ')}
                 >
                   <img
@@ -70,7 +86,7 @@ export function CreditsView() {
                       {skin.kind === 'bot' ? 'Joke bot skin' : 'Contributor'}
                     </p>
                   </div>
-                </article>
+                </a>
               </li>
             ))}
           </ul>
