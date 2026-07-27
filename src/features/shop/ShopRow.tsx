@@ -1,26 +1,37 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Info } from 'lucide-react';
 import type { UpgradeDef } from '../../data/upgrades';
-import { nextUpgradeCost } from '../../game/economy';
+import { maxAffordableOf, nextUpgradeCostForN } from '../../game/economy';
 import { formatTokensCompact } from '../../game/format';
 import { useGameStore } from '../../game/state';
 import { onUpgradeOwnedChanged } from '../scene';
+import { type BuyModeName, BuyModes } from './buyMode';
 import { ShopUpgradeIcon } from './ShopUpgradeIcon';
 
 type ShopRowProps = {
   upgrade: UpgradeDef;
+  buyMode: BuyModeName;
 };
 
 /**
  * Scan-first buy row: colored icon · name · ×owned · price/buy.
  * Blurb + per-unit tokens/s: hover / keyboard focus / touch ⓘ toggle (never hover-only).
+ * Cost and buy quantity follow the shop buy-mode control.
  */
-export function ShopRow({ upgrade }: ShopRowProps) {
+export function ShopRow({ upgrade, buyMode }: ShopRowProps) {
   const tokens = useGameStore((s) => s.tokens);
   const owned = useGameStore((s) => s.owned[upgrade.id] ?? 0);
   const buyUpgrade = useGameStore((s) => s.buyUpgrade);
-  const cost = nextUpgradeCost(upgrade.id, owned);
-  const canAfford = tokens >= cost;
+  const fixedQuantity = BuyModes[buyMode].fixedQuantity;
+  const quantity =
+    fixedQuantity == null
+      ? maxAffordableOf(upgrade.id, owned, tokens)
+      : fixedQuantity;
+  // Label shows the mode quantity (Max may be 0); cost always previews at least 1 unit.
+  const displayQuantity = fixedQuantity ?? quantity;
+  const previewQuantity = Math.max(quantity, fixedQuantity ?? 1);
+  const previewCost = nextUpgradeCostForN(upgrade.id, owned, previewQuantity);
+  const canAfford = quantity > 0 && tokens >= previewCost;
   const colorVar = upgrade.colorVar;
   const detailsId = useId();
   const detailsRef = useRef<HTMLDivElement>(null);
@@ -43,6 +54,11 @@ export function ShopRow({ upgrade }: ShopRowProps) {
       document.removeEventListener('pointerdown', onPointerDown);
     };
   }, [detailsOpen]);
+
+  const buyLabel =
+    quantity > 1
+      ? `Buy ${quantity} ${upgrade.name} for ${formatTokensCompact(previewCost)} tokens`
+      : `Buy ${upgrade.name} for ${formatTokensCompact(previewCost)} tokens`;
 
   return (
     <article
@@ -124,16 +140,16 @@ export function ShopRow({ upgrade }: ShopRowProps) {
         <button
           type="button"
           className={[
-            'shrink-0 rounded-lg px-3 py-2 text-sm font-bold tabular-nums',
+            'flex shrink-0 flex-col items-end gap-0.5 rounded-lg px-3 py-1.5',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]',
             canAfford
               ? 'bg-[var(--ship-accent)] text-white hover:brightness-110'
               : 'cursor-not-allowed bg-[color-mix(in_srgb,var(--ship-ink)_8%,transparent)] text-[color-mix(in_srgb,var(--ship-muted)_70%,transparent)]',
           ].join(' ')}
           disabled={!canAfford}
-          aria-label={`Buy ${upgrade.name} for ${formatTokensCompact(cost)} tokens`}
+          aria-label={buyLabel}
           onClick={() => {
-            if (!buyUpgrade(upgrade.id)) {
+            if (!canAfford || !buyUpgrade(upgrade.id, quantity)) {
               return;
             }
             setBuyFlash(false);
@@ -144,7 +160,14 @@ export function ShopRow({ upgrade }: ShopRowProps) {
             onUpgradeOwnedChanged(upgrade.id, nextOwned);
           }}
         >
-          {formatTokensCompact(cost)}
+          {displayQuantity > 1 ? (
+            <span className="text-[0.65rem] font-semibold leading-none tabular-nums opacity-90">
+              ×{displayQuantity}
+            </span>
+          ) : null}
+          <span className="text-sm font-bold leading-none tabular-nums">
+            {formatTokensCompact(previewCost)}
+          </span>
         </button>
       </div>
     </article>

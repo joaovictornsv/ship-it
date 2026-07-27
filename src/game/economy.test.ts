@@ -35,6 +35,8 @@ import {
   tokensFromDelta,
   tokensPerSecond,
   upgradeCost,
+  upgradeCostForN,
+  maxAffordableUpgrades,
 } from './economy';
 
 describe('clickPower', () => {
@@ -181,6 +183,56 @@ describe('upgradeCost', () => {
 describe('espressoMachineCost', () => {
   it('matches catalog base cost for the first machine', () => {
     expect(espressoMachineCost(0)).toBe(ESPRESSO_MACHINE.baseCost);
+  });
+});
+
+describe('upgradeCostForN', () => {
+  it('returns 0 for n = 0', () => {
+    expect(upgradeCostForN(15, 0, 0)).toBe(0);
+  });
+
+  it('matches a single next cost when n = 1', () => {
+    expect(upgradeCostForN(15, 0, 1)).toBe(upgradeCost(15, 0));
+    expect(upgradeCostForN(15, 3, 1)).toBe(upgradeCost(15, 3));
+  });
+
+  it('sums Cookie rising costs across the next n purchases', () => {
+    const owned = 2;
+    const n = 5;
+    let expected = 0;
+    for (let i = 0; i < n; i++) {
+      expected += upgradeCost(15, owned + i);
+    }
+    expect(upgradeCostForN(15, owned, n)).toBe(expected);
+  });
+
+  it('rejects negative owned or n', () => {
+    expect(() => upgradeCostForN(15, -1, 1)).toThrow(/owned/);
+    expect(() => upgradeCostForN(15, 0, -1)).toThrow(/n/);
+  });
+});
+
+describe('maxAffordableUpgrades', () => {
+  it('returns 0 when the bank is empty or cannot afford one', () => {
+    expect(maxAffordableUpgrades(15, 0, 0)).toBe(0);
+    expect(maxAffordableUpgrades(15, 0, 14)).toBe(0);
+  });
+
+  it('returns 1 when the bank exactly fits the next unit', () => {
+    const cost = upgradeCost(15, 0);
+    expect(maxAffordableUpgrades(15, 0, cost)).toBe(1);
+  });
+
+  it('returns the largest n whose rising sum fits the bank', () => {
+    const owned = 0;
+    const n = 10;
+    const exact = upgradeCostForN(15, owned, n);
+    expect(maxAffordableUpgrades(15, owned, exact)).toBe(n);
+    expect(maxAffordableUpgrades(15, owned, exact - 1)).toBe(n - 1);
+  });
+
+  it('rejects negative owned', () => {
+    expect(() => maxAffordableUpgrades(15, -1, 100)).toThrow(/owned/);
   });
 });
 

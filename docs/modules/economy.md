@@ -2,7 +2,7 @@
 
 Formulas, cost curves, tokens/s, click power, number formatting (K/M/B).
 
-**Status:** active — producer tokens/s + Ship upgrade click-power track (issue #30).
+**Status:** active — producer tokens/s + Ship upgrade click-power track (issue #30); bulk cost-for-N / max-affordable (issue #38).
 
 ## Owned by
 
@@ -54,8 +54,10 @@ cost(owned) = ceil(baseCost × 1.15 ^ owned)
 
 - Constant: `COST_GROWTH = 1.15` in `economy.ts`
 - Helper: `upgradeCost(baseCost, owned)` / `nextUpgradeCost(id, owned)`
+- Bulk: `upgradeCostForN(baseCost, owned, n)` / `nextUpgradeCostForN(id, owned, n)` — sum of the next `n` rising costs
+- Max buy: `maxAffordableUpgrades(baseCost, owned, tokens)` / `maxAffordableOf(id, owned, tokens)` — largest `n ≥ 1` that fits (else `0`)
 
-Ship upgrades use **fixed one-shot costs** from the catalog (not `×1.15`).
+Ship upgrades use **fixed one-shot costs** from the catalog (not `×1.15`). Shop bulk modes apply to **buildings only** (see `shop.md`).
 
 ## Tokens/s + tick
 
