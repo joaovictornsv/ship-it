@@ -4,6 +4,9 @@ export { ShopDrawer } from './ShopDrawer';
 export { ShopRail } from './ShopRail';
 export { ShopRow } from './ShopRow';
 export { ShopShipTile } from './ShopShipTile';
+export { ShopPrestigeRow } from './ShopPrestigeRow';
+export { RewritePanel } from './RewritePanel';
+export { RewriteConfirmDialog } from './RewriteConfirmDialog';
 export { useBuyMode } from './useBuyMode';
 export { useProductionTick } from './useProductionTick';
 export {

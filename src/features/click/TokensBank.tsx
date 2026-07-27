@@ -12,6 +12,7 @@ const TPS_PULSE_MIN_MS = 1600;
  */
 export function TokensBank() {
   const tokens = useGameStore((state) => state.tokens);
+  const rewrites = useGameStore((state) => state.rewrites);
   const tps = useGameStore(selectTokensPerSecond);
   const flooredTokens = Math.floor(tokens);
   const tokenLabel = flooredTokens === 1 ? 'token' : 'tokens';
@@ -79,6 +80,14 @@ export function TokensBank() {
       >
         {formatTokensCompact(tps)} tokens/s
       </p>
+      {rewrites > 0 ? (
+        <p className="mt-1 text-xs tabular-nums text-[var(--ship-muted)]">
+          <span className="font-semibold text-[var(--ship-rewrite)]">
+            {formatTokensCompact(rewrites)}
+          </span>{' '}
+          {rewrites === 1 ? 'Rewrite' : 'Rewrites'} banked
+        </p>
+      ) : null}
     </div>
   );
 }

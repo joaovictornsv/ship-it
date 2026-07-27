@@ -2,24 +2,25 @@
 
 Producer IDs (Dev, Espresso machine, …) and the separate **Ship upgrades** click-power track.
 
-**Status:** active — early ladder through On-call (#6); Dev / Espresso scene (#7); Ship upgrades one-shot track (#30).
+**Status:** active — early ladder through On-call (#6); Dev / Espresso scene (#7); Ship upgrades one-shot track (#30); prestige shop (#9).
 
 ## Owned by
 
 - `src/data/upgrades.ts` — producer catalog
 - `src/data/shipUpgrades.ts` — Ship upgrade (click-power) catalog
-- `src/features/shop/` — `ShopRail` / `ShopRow` / `ShopShipRow`
-- `src/game/economy.ts` — cost + tokens/s + `clickPower`
-- `src/game/state.ts` — `owned` / `shipOwned` + buy actions
+- `src/data/prestigeUpgrades.ts` — Rewrites prestige catalog
+- `src/features/shop/` — `ShopRail` / `ShopRow` / `ShopShipTile` / `ShopPrestigeRow`
+- `src/game/economy.ts` — cost + tokens/s + `clickPower` + prestige helpers
+- `src/game/state.ts` — `owned` / `shipOwned` / `prestigeOwned` + buy / rewrite actions
 - `src/features/scene/` — `OfficeScene` from producer owned; `onUpgradeOwnedChanged` on buy
 
 ## Split (locked)
 
-| Track         | Job                                    | Cost model            | Resets on Rewrite (#9) |
-| ------------- | -------------------------------------- | --------------------- | ---------------------- |
-| Buildings     | tokens/s + scene presence              | Cookie `×1.15` owned  | Yes (run state)        |
-| Ship upgrades | tokens per click + light CTA evolution | One-shot fixed ladder | Yes (run state)        |
-| Muscle memory | permanent % on click (prestige shop)   | Rewrites currency     | No (keep)              |
+| Track         | Job                                    | Cost model            | Resets on Rewrite |
+| ------------- | -------------------------------------- | --------------------- | ----------------- |
+| Buildings     | tokens/s + scene presence              | Cookie `×1.15` owned  | Yes (run state)   |
+| Ship upgrades | tokens per click + light CTA evolution | One-shot fixed ladder | Yes (run state)   |
+| Prestige      | permanent power (Rewrites currency)    | Rising Rewrites cost  | No (keep)         |
 
 Espresso is **never** a click-power building. No producer row gains click side-effects.
 

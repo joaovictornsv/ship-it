@@ -55,6 +55,10 @@ Defined on `:root` in `src/styles/index.css`. Prefer these over raw hex in compo
 | `--ship-upgrade-green-build`    | `#2a9d6e`              | Ship upgrade: Green build                             |
 | `--ship-upgrade-readme`         | `#5b6b7c`              | Ship upgrade: README-driven                           |
 | `--ship-upgrade-friday`         | `#0f7a74`              | Ship upgrade: Ship-it Friday                          |
+| `--ship-prestige-postmortem`    | `#3d7ea6`              | Prestige: Postmortem                                  |
+| `--ship-prestige-muscle`        | `#0f7a74`              | Prestige: Muscle memory                               |
+| `--ship-prestige-stub`          | `#c47a3a`              | Prestige: Stub repo                                   |
+| `--ship-rewrite`                | `#5b6b7c`              | Rewrites currency numeral (distinct from token gold)  |
 
 **Do not** reintroduce coffee-brown shell chrome (`#8b5a2b`, cream `#f3eee4`, etc.). Scene mug tint (`--office-mug`) stays local on `.office-scene`.
 

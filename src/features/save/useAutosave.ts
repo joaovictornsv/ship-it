@@ -10,7 +10,7 @@ function getPersistedSnapshot() {
 }
 
 /**
- * Trailing autosave ~1.5s after tokens / owned / shipOwned changes, plus sync
+ * Trailing autosave ~1.5s after tokens / owned / shipOwned / prestige changes, plus sync
  * flush on `visibilitychange` (hidden) and `pagehide` via a warmed base64 blob.
  *
  * `lastTickAt`-only updates do not schedule a save. Token accrual from the
@@ -93,7 +93,10 @@ export function useAutosave(enabled: boolean = true): void {
       if (
         state.tokens === prev.tokens &&
         state.owned === prev.owned &&
-        state.shipOwned === prev.shipOwned
+        state.shipOwned === prev.shipOwned &&
+        state.tokensEarnedThisRun === prev.tokensEarnedThisRun &&
+        state.rewrites === prev.rewrites &&
+        state.prestigeOwned === prev.prestigeOwned
       ) {
         return;
       }
