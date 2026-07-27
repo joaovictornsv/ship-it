@@ -27,7 +27,7 @@ export function AchievementUnlockToast() {
 
   return (
     <div
-      className="achievement-toast-host pointer-events-none fixed inset-x-0 top-14 z-40 flex justify-center px-4"
+      className="achievement-toast-host pointer-events-none fixed inset-x-0 top-4 z-40 flex justify-center px-4 lg:top-14"
       aria-live="polite"
       aria-atomic="true"
     >

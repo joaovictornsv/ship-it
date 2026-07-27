@@ -56,11 +56,11 @@ export function ShipItButton() {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center">
+    <div className="relative flex w-full flex-col items-center justify-center">
       <button
         type="button"
         className={[
-          'ship-it-button relative z-10 w-full max-w-md min-h-48 rounded-2xl bg-[var(--ship-accent)] px-10 py-12',
+          'ship-it-button relative z-10 w-full min-h-48 rounded-2xl bg-[var(--ship-accent)] px-10 py-12',
           'text-4xl font-bold tracking-tight text-white',
           'lg:w-auto lg:min-h-28 lg:min-w-56 lg:max-w-none lg:px-12 lg:py-8 lg:text-2xl',
           'transition-[filter,background-color] duration-200 hover:brightness-110',

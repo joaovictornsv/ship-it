@@ -24,7 +24,7 @@ Static skin pipeline, opt-in, fallbacks, attribution, office hover names.
 | Runtime | Desk index `i < pool.length` → unique contributor; overflow / empty / img failure → `devEmojiForIndex` fallback.                |
 | Hover   | See **Office hover** below.                                                                                                     |
 | Talk    | `TALK_CONTRIBUTOR_NAMES` derived from the same catalog so bubbles name-drop skins.                                              |
-| Credits | Header **Credits** (Users icon) → `#/credits` lists opt-in skins + tribute copy.                                                |
+| Credits | Desktop header **Credits** (Users) / mobile Menu → `#/credits` lists opt-in skins + tribute copy.                               |
 
 ## Office hover
 

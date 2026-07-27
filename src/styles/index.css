@@ -586,6 +586,19 @@ button:disabled {
   animation: shop-drawer-up 220ms ease-out;
 }
 
+@keyframes app-menu-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.app-menu-drawer {
+  animation: app-menu-drawer-in 220ms ease-out;
+}
+
 .shop-row-details[open] summary {
   color: var(--ship-accent-deep);
 }
@@ -627,7 +640,8 @@ button:disabled {
     animation: none;
   }
 
-  .shop-drawer-panel {
+  .shop-drawer-panel,
+  .app-menu-drawer {
     animation: none;
   }
 }

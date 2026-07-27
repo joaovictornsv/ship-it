@@ -8,6 +8,7 @@ Shell chrome, design tokens, typography, spacing, and motion for **Ship It**.
 
 - `src/styles/index.css` — CSS custom properties + shell background / atmosphere / motion
 - `index.html` — Space Grotesk font load
+- `src/app/AppHeader.tsx` — desktop header bar + mobile Menu drawer
 - Feature components under `src/app/`, `src/features/*` — consume tokens via `var(--ship-*)` / Tailwind
 
 Agents and humans that change player-facing UI **must** read this doc and follow it. New GitHub issues that touch UI must require compliance (see `create-issue` / `implement-issue` skills).
@@ -75,13 +76,13 @@ For translucent mixes, use `color-mix` with underscores in arbitrary values, e.g
 
 ## Typography
 
-| Role                         | Spec                                                                                                                                                                                     |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Family                       | **Space Grotesk** (`index.html` Google Fonts), then `ui-sans-serif, system-ui, sans-serif`                                                                                               |
-| Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy                                                                                                    |
-| Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                                                                                                                         |
-| Numbers (bank, costs, rates) | `tabular-nums`                                                                                                                                                                           |
-| Hierarchy (shell today)      | Brand `text-lg`; HUD bank `text-3xl`→`text-4xl`; Ship It CTA `text-4xl` (mobile) → `text-2xl` (`lg+`); shop name `text-sm`; meta `text-xs`; header Achievements + Credits + Save = icons |
+| Role                         | Spec                                                                                                                                                                                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Family                       | **Space Grotesk** (`index.html` Google Fonts), then `ui-sans-serif, system-ui, sans-serif`                                                                                                                                                  |
+| Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy                                                                                                                                                       |
+| Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                                                                                                                                                                            |
+| Numbers (bank, costs, rates) | `tabular-nums`                                                                                                                                                                                                                              |
+| Hierarchy (shell today)      | Brand `text-lg` (desktop header / menu brand row); HUD bank `text-3xl`→`text-4xl`; Ship It CTA `text-4xl` (mobile) → `text-2xl` (`lg+`); shop name `text-sm`; meta `text-xs`; Achievements + Credits + Save = icons (header or menu drawer) |
 
 Do not add Inter / Roboto / Arial as the primary UI face. Do not introduce a second display font without updating this doc.
 
@@ -91,18 +92,19 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 
 | Token-ish     | Tailwind                                                                                                                                                                                              | Use                                                                       |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Page gutter   | `px-4`                                                                                                                                                                                                | Header / main horizontal padding                                          |
+| Page gutter   | `px-4` (mobile Menu trigger `px-3`)                                                                                                                                                                   | Header (desktop) / main horizontal padding                                |
 | Section stack | `gap-5`–`gap-8`                                                                                                                                                                                       | Play column: scene → HUD → CTA                                            |
 | Cluster       | `gap-2`–`gap-4`                                                                                                                                                                                       | Tight groups (HUD + Ship It, header row)                                  |
-| Header nav    | Brand + **Achievements** (Medal) + **Credits** (Users) + **Save** icon buttons                                                                                                                        | Lightweight hash views (`#/` / `#/achievements` / `#/credits` / `#/save`) |
+| Header nav    | **Desktop (`lg+`):** brand + Achievements / Credits / Save icon buttons. **Mobile:** floating Menu opens a right-side drawer (same destinations + Back to play); no persistent header bar             | Lightweight hash views (`#/` / `#/achievements` / `#/credits` / `#/save`) |
 | HUD           | Tokens + tokens/s docked on the Ship It cluster (`max-w-md`)                                                                                                                                          | PRODUCT §4 — currency next to the click target                            |
 | Rewrite CTA   | Locked: muted `Rewrite · N more`; available: centered label + secondary outline button                                                                                                                | Secondary to Ship It; Rewrites shop lives in the Rewrite dialog only      |
 | Panel pad     | `px-3 py-2` (shop rows); HUD `px-4 py-3`                                                                                                                                                              | Dense Cookie-style buy rows; readable bank                                |
 | Content max   | `max-w-6xl` (shell), office stage `max-w-xl`→`max-w-2xl`, shop rail `lg:w-80`                                                                                                                         | Scene reads as a stage, not a tiny card                                   |
 | Room tabs     | Compact `text-xs` tab strip inside the stage (`.office-room-tab`); only unlocked rooms; hidden when only Office. Shared inset `--office-pad-x` (0.85rem) with props + desk farm — same for every room | Map switcher — not header chrome                                          |
-| Main vertical | `py-8`; below `lg` add `pb-28` for the fixed Shop trigger                                                                                                                                             | Primary play area + mobile shop clearance                                 |
-| Ship It CTA   | Mobile: `min-h-48` + `w-full max-w-md` + `text-4xl` (no mid-breakpoint shrink); `lg+`: `min-h-28 min-w-56 text-2xl`                                                                                   | Large multi-finger phone tap target; desktop stays compact                |
+| Main vertical | Desktop `py-8`; mobile `pt-3` + `pb-28` (Shop clearance). Play column `justify-center` so office + bank + Ship It stay centered in the remaining space                                                | Primary play area; mobile centers above Shop                              |
+| Ship It CTA   | Mobile: `w-full` of the `max-w-md` HUD cluster (same width as token bank) + `min-h-48` + `text-4xl`; `lg+`: `min-h-28 min-w-56 text-2xl`                                                              | Match bank width on phone; desktop stays compact                          |
 | Shop drawer   | Fixed bottom trigger (`max-w-md`); sheet `max-h-[min(78dvh,36rem)]`, `rounded-t-2xl`; `overflow-x-hidden`; closed trigger may show accent affordability dot                                           | Below `lg` only; closed by default so Ship It owns first paint            |
+| Menu drawer   | Fixed top-right Menu trigger (safe-area); right sheet `w-[min(20rem,88vw)]`; Escape / backdrop / close; closes on navigate                                                                            | Below `lg` only — replaces the persistent header bar                      |
 | Atmosphere    | `.ship-atmosphere` fixed blobs behind `.ship-shell`                                                                                                                                                   | Fills dead space; static under reduced motion                             |
 
 **Radius:** interactive panels `rounded-xl`; stage `rounded-2xl`; small controls `rounded-lg`; primary Ship It CTA `rounded-2xl`.
@@ -125,6 +127,7 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 | `office-spawn-pop`               | `.office-dev-spawn`                            | Buy spawn celebration on new Dev sprite                                                         |
 | `office-stage-flash`             | `.office-stage-flash`                          | Optional inset flash when milestone stage changes                                               |
 | `shop-drawer-up`                 | `.shop-drawer-panel`                           | Mobile shop bottom sheet enter (~220ms); off under reduced motion                               |
+| `app-menu-drawer-in`             | `.app-menu-drawer`                             | Mobile header menu right sheet enter (~220ms); off under reduced motion                         |
 | `tip-fade-in`                    | `.play-tip`                                    | Ephemeral play tip enter                                                                        |
 | `achievement-toast-in`           | `.achievement-toast`                           | Unlock HUD toast enter (~280ms scale+fade); **off** under reduced motion                        |
 | `achievement-toast-accent-pulse` | `.achievement-toast`                           | Brief accent-bar pulse after enter (~1.2s × 2); **off** under reduced motion                    |
