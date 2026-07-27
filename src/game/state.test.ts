@@ -66,6 +66,42 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().tokens).toBe(5);
   });
 
+  it('buyUpgrade buys quantity units for the rising-cost sum', () => {
+    const quantity = 5;
+    const cost = espressoMachineCost(0);
+    // Precompute exact bulk cost via repeated single costs.
+    let total = 0;
+    for (let i = 0; i < quantity; i++) {
+      total += espressoMachineCost(i);
+    }
+    useGameStore.setState({ tokens: total });
+    expect(
+      useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID, quantity),
+    ).toBe(true);
+    expect(useGameStore.getState().owned[ESPRESSO_MACHINE_ID]).toBe(quantity);
+    expect(useGameStore.getState().tokens).toBe(0);
+
+    useGameStore.setState({ tokens: total - 1, owned: {} });
+    expect(
+      useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID, quantity),
+    ).toBe(false);
+    expect(useGameStore.getState().owned[ESPRESSO_MACHINE_ID]).toBeUndefined();
+
+    // Invalid quantities are rejected without spending.
+    useGameStore.setState({ tokens: 1_000, owned: {} });
+    expect(useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID, 0)).toBe(
+      false,
+    );
+    expect(useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID, 1.5)).toBe(
+      false,
+    );
+    expect(useGameStore.getState().tokens).toBe(1_000);
+    // Default remains a single buy.
+    expect(useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID)).toBe(true);
+    expect(useGameStore.getState().owned[ESPRESSO_MACHINE_ID]).toBe(1);
+    expect(useGameStore.getState().tokens).toBe(1_000 - cost);
+  });
+
   it('buyShipUpgrade requires a producer and ladder order', () => {
     useGameStore.setState({ tokens: 1_000 });
     expect(useGameStore.getState().buyShipUpgrade(RUBBER_DUCK_ID)).toBe(false);

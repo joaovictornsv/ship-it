@@ -9,7 +9,7 @@ import {
   clickPower,
   hasShipUpgrade,
   nextShipUpgradeId,
-  nextUpgradeCost,
+  nextUpgradeCostForN,
   shipUpgradeCost,
   shipUpgradesUnlocked,
   tokensPerSecond,
@@ -28,10 +28,10 @@ type GameActions = {
   /** Earn tokens from a Ship It click; returns amount granted (for UI FX). */
   shipIt: () => Tokens;
   /**
-   * Buy one unit of an upgrade if affordable.
-   * Returns true when the purchase succeeded.
+   * Buy `quantity` units of a producer if the rising-cost sum is affordable.
+   * `quantity` defaults to 1. Returns true when the purchase succeeded.
    */
-  buyUpgrade: (id: UpgradeId) => boolean;
+  buyUpgrade: (id: UpgradeId, quantity?: number) => boolean;
   /**
    * Buy the next one-shot Ship upgrade if unlocked and affordable.
    * Returns true when the purchase succeeded.
@@ -71,16 +71,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set((state) => ({ tokens: state.tokens + earned }));
     return earned;
   },
-  buyUpgrade: (id) => {
+  buyUpgrade: (id, quantity = 1) => {
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      return false;
+    }
     const state = get();
     const ownedCount = state.owned[id] ?? 0;
-    const cost = nextUpgradeCost(id, ownedCount);
+    const cost = nextUpgradeCostForN(id, ownedCount, quantity);
     if (state.tokens < cost) {
       return false;
     }
     set({
       tokens: state.tokens - cost,
-      owned: { ...state.owned, [id]: ownedCount + 1 },
+      owned: { ...state.owned, [id]: ownedCount + quantity },
     });
     return true;
   },

@@ -1,26 +1,36 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Info } from 'lucide-react';
 import type { UpgradeDef } from '../../data/upgrades';
-import { nextUpgradeCost } from '../../game/economy';
+import { maxAffordableOf, nextUpgradeCostForN } from '../../game/economy';
 import { formatTokensCompact } from '../../game/format';
 import { useGameStore } from '../../game/state';
 import { onUpgradeOwnedChanged } from '../scene';
+import { type BuyModeName, BuyModes } from './buyMode';
 import { ShopUpgradeIcon } from './ShopUpgradeIcon';
 
 type ShopRowProps = {
   upgrade: UpgradeDef;
+  buyMode: BuyModeName;
 };
 
 /**
  * Scan-first buy row: colored icon · name · ×owned · price/buy.
  * Blurb + per-unit tokens/s: hover / keyboard focus / touch ⓘ toggle (never hover-only).
+ * Cost and buy quantity follow the shop buy-mode control.
  */
-export function ShopRow({ upgrade }: ShopRowProps) {
+export function ShopRow({ upgrade, buyMode }: ShopRowProps) {
   const tokens = useGameStore((s) => s.tokens);
   const owned = useGameStore((s) => s.owned[upgrade.id] ?? 0);
   const buyUpgrade = useGameStore((s) => s.buyUpgrade);
-  const cost = nextUpgradeCost(upgrade.id, owned);
-  const canAfford = tokens >= cost;
+  const fixedQuantity = BuyModes[buyMode].fixedQuantity;
+  const quantity =
+    fixedQuantity == null
+      ? maxAffordableOf(upgrade.id, owned, tokens)
+      : fixedQuantity;
+  // When Max cannot buy, still preview the next single-unit cost.
+  const previewQuantity = Math.max(quantity, fixedQuantity ?? 1);
+  const previewCost = nextUpgradeCostForN(upgrade.id, owned, previewQuantity);
+  const canAfford = quantity > 0 && tokens >= previewCost;
   const colorVar = upgrade.colorVar;
   const detailsId = useId();
   const detailsRef = useRef<HTMLDivElement>(null);
@@ -43,6 +53,11 @@ export function ShopRow({ upgrade }: ShopRowProps) {
       document.removeEventListener('pointerdown', onPointerDown);
     };
   }, [detailsOpen]);
+
+  const buyLabel =
+    quantity > 1
+      ? `Buy ${quantity} ${upgrade.name} for ${formatTokensCompact(previewCost)} tokens`
+      : `Buy ${upgrade.name} for ${formatTokensCompact(previewCost)} tokens`;
 
   return (
     <article
@@ -131,9 +146,9 @@ export function ShopRow({ upgrade }: ShopRowProps) {
               : 'cursor-not-allowed bg-[color-mix(in_srgb,var(--ship-ink)_8%,transparent)] text-[color-mix(in_srgb,var(--ship-muted)_70%,transparent)]',
           ].join(' ')}
           disabled={!canAfford}
-          aria-label={`Buy ${upgrade.name} for ${formatTokensCompact(cost)} tokens`}
+          aria-label={buyLabel}
           onClick={() => {
-            if (!buyUpgrade(upgrade.id)) {
+            if (!canAfford || !buyUpgrade(upgrade.id, quantity)) {
               return;
             }
             setBuyFlash(false);
@@ -144,7 +159,7 @@ export function ShopRow({ upgrade }: ShopRowProps) {
             onUpgradeOwnedChanged(upgrade.id, nextOwned);
           }}
         >
-          {formatTokensCompact(cost)}
+          {formatTokensCompact(previewCost)}
         </button>
       </div>
     </article>

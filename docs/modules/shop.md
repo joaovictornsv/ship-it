@@ -2,11 +2,11 @@
 
 Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke copy.
 
-**Status:** active — horizontal Ship upgrades queue above Buildings (issue #30); scan-first rows (#28); responsive shell (#8).
+**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal Ship upgrades queue (#30); scan-first rows (#28); responsive shell (#8).
 
 ## Owned by
 
-- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopRow`, `ShopShipTile`, icons/colors, `useProductionTick`
+- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, icons/colors, `useBuyMode`, `useProductionTick`
 - `src/app/breakpoints.ts` — shared `lg` breakpoint (`DESKTOP_MIN_WIDTH_PX = 1024`)
 - `src/features/scene/` — living office reads owned from store; `onUpgradeOwnedChanged` fans out spawn FX
 
@@ -17,25 +17,39 @@ Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke co
 | `lg` and up (`min-width: 1024px`) | Right-rail shop beside the Ship It play column (`max-w-6xl` shell); rail always visible  |
 | Below `lg`                        | Shop **closed by default** — fixed bottom **Shop** trigger opens a bottom sheet / drawer |
 
-Mobile first paint keeps **one primary action** (Ship It). The drawer is `aria-modal` dialog; Escape / backdrop / close dismiss it. Safe-area padding on the trigger and sheet. Drawer rows use the **same** scan-first hierarchy as the rail.
+Mobile first paint keeps **one primary action** (Ship It). The drawer is `aria-modal` dialog; Escape / backdrop / close dismiss it. Safe-area padding on the trigger and sheet. Drawer rows use the **same** scan-first hierarchy as the rail (including the buy-mode control).
 
 ## Sections
 
 `ShopCatalog` renders (rail + drawer share the list):
 
 1. **Ship upgrades** — Cookie-style **horizontal** one-shot queue **above** buildings (`ShopShipTile`). Owned upgrades live on Achievements, not here.
-2. **Buildings** — tokens/s producers (`ShopRow`)
+2. **Buildings** — tokens/s producers (`ShopRow`) with a compact **buy-mode** control in the section header
 
-Do not add a second panel, floating badge cluster, or HUD strip of click meta.
+Do not add a second panel, floating badge cluster, or HUD strip of click meta. Keep the buy-mode control in shop chrome — not on the first-paint play column.
+
+## Buy mode (buildings only)
+
+Compact control above the building list: **×1** / **×10** / **×100** / **Max**.
+
+| Mode            | Behavior                                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- |
+| ×1 / ×10 / ×100 | One click buys that many units when the rising-cost **sum** fits the bank; otherwise the row buy control is disabled |
+| Max             | Buys the largest `n ≥ 1` that fits; `0` → cannot buy (disabled)                                                      |
+
+- Session-backed via `sessionStorage` (`ship-it:shop-buy-mode`) so rail remounts / drawer open-close keep the selection
+- Cost preview on each row uses `nextUpgradeCostForN` / `maxAffordableOf` (see `economy.md`)
+- Ship upgrade tiles ignore buy mode (still one-shot)
+- English labels only; totals use `formatTokensCompact`
 
 ## Building row
 
 Each producer renders as a dense interactive row (card only because it wraps buy):
 
-| Priority     | Element                                   | Notes                                                 |
-| ------------ | ----------------------------------------- | ----------------------------------------------------- |
-| Primary scan | Emoji · **name** · **×N** · **price/buy** | Owned count is the big number only (no “Owned” label) |
-| Details      | Joke blurb + `+X tokens/s each`           | Hidden by default                                     |
+| Priority     | Element                                   | Notes                                                                              |
+| ------------ | ----------------------------------------- | ---------------------------------------------------------------------------------- |
+| Primary scan | Emoji · **name** · **×N** · **price/buy** | Owned count is the big number only (no “Owned” label); price is the **mode total** |
+| Details      | Joke blurb + `+X tokens/s each`           | Hidden by default                                                                  |
 
 ## Ship upgrade queue
 

@@ -2,8 +2,10 @@ import { visibleShipUpgradeQueue } from '../../data/shipUpgrades';
 import { upgrades } from '../../data/upgrades';
 import { shipUpgradesUnlocked } from '../../game/economy';
 import { useGameStore } from '../../game/state';
+import { ShopBuyModeControl } from './ShopBuyModeControl';
 import { ShopRow } from './ShopRow';
 import { ShopShipTile } from './ShopShipTile';
+import { useBuyMode } from './useBuyMode';
 
 /** Shared catalog for the desktop rail and mobile drawer. */
 export function ShopCatalog() {
@@ -11,6 +13,7 @@ export function ShopCatalog() {
   const shipOwned = useGameStore((s) => s.shipOwned);
   const unlocked = shipUpgradesUnlocked(owned);
   const queue = unlocked ? visibleShipUpgradeQueue(shipOwned) : [];
+  const [buyMode, setBuyMode] = useBuyMode();
 
   return (
     <div className="flex flex-col gap-5">
@@ -50,19 +53,24 @@ export function ShopCatalog() {
       </section>
 
       <section aria-labelledby="shop-buildings-heading">
-        <div className="mb-2 px-0.5">
-          <h3
-            id="shop-buildings-heading"
-            className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]"
-          >
-            Buildings
-          </h3>
-          <p className="text-xs text-[var(--ship-muted)]">tokens/s producers</p>
+        <div className="mb-2 flex flex-wrap items-end justify-between gap-2 px-0.5">
+          <div className="min-w-0">
+            <h3
+              id="shop-buildings-heading"
+              className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]"
+            >
+              Buildings
+            </h3>
+            <p className="text-xs text-[var(--ship-muted)]">
+              tokens/s producers
+            </p>
+          </div>
+          <ShopBuyModeControl mode={buyMode} onChange={setBuyMode} />
         </div>
         <ul className="flex list-none flex-col gap-2 p-0">
           {upgrades.map((upgrade) => (
             <li key={upgrade.id}>
-              <ShopRow upgrade={upgrade} />
+              <ShopRow upgrade={upgrade} buyMode={buyMode} />
             </li>
           ))}
         </ul>

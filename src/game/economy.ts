@@ -133,6 +133,92 @@ export function nextUpgradeCost(id: UpgradeId, owned: number): Tokens {
   return upgradeCost(def.baseCost, owned);
 }
 
+/**
+ * Sum of Cookie-style rising costs for the next `n` purchases.
+ * `Σ ceil(baseCost × COST_GROWTH^(owned+i))` for `i` in `[0, n)`.
+ */
+export function upgradeCostForN(
+  baseCost: Tokens,
+  owned: number,
+  n: number,
+): Tokens {
+  if (owned < 0) {
+    throw new Error('owned must be >= 0');
+  }
+  if (n < 0) {
+    throw new Error('n must be >= 0');
+  }
+  if (n === 0) {
+    return 0;
+  }
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    total += upgradeCost(baseCost, owned + i);
+  }
+  return total;
+}
+
+/** Catalog wrapper for {@link upgradeCostForN}. */
+export function nextUpgradeCostForN(
+  id: UpgradeId,
+  owned: number,
+  n: number,
+): Tokens {
+  const def = upgrades.find((u) => u.id === id);
+  if (!def) {
+    throw new Error(`Unknown upgrade id: ${id}`);
+  }
+  return upgradeCostForN(def.baseCost, owned, n);
+}
+
+/**
+ * Largest `n ≥ 1` such that {@link upgradeCostForN} fits in `tokens`.
+ * Returns `0` when even one unit is unaffordable (including empty bank).
+ */
+export function maxAffordableUpgrades(
+  baseCost: Tokens,
+  owned: number,
+  tokens: Tokens,
+): number {
+  if (owned < 0) {
+    throw new Error('owned must be >= 0');
+  }
+  if (tokens <= 0) {
+    return 0;
+  }
+  const first = upgradeCost(baseCost, owned);
+  if (tokens < first) {
+    return 0;
+  }
+
+  let count = 0;
+  let remaining = tokens;
+  // Hard cap keeps Max snappy for absurd banks; far above normal play.
+  const CAP = 1_000_000;
+  while (count < CAP) {
+    const next = upgradeCost(baseCost, owned + count);
+    if (remaining < next) {
+      break;
+    }
+    remaining -= next;
+    count += 1;
+  }
+  return count;
+}
+
+/** Catalog wrapper for {@link maxAffordableUpgrades}. */
+export function maxAffordableOf(
+  id: UpgradeId,
+  owned: number,
+  tokens: Tokens,
+): number {
+  const def = upgrades.find((u) => u.id === id);
+  if (!def) {
+    throw new Error(`Unknown upgrade id: ${id}`);
+  }
+  return maxAffordableUpgrades(def.baseCost, owned, tokens);
+}
+
 function ownedCount(owned: OwnedUpgrades, id: UpgradeId): number {
   return owned[id] ?? 0;
 }
