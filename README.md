@@ -2,7 +2,7 @@
 
 Developer-themed incremental game — ship software, earn tokens, grow the office.
 
-![Ship It gameplay — small team office, token bank, and shop](./docs/assets/gameplay.png)
+![Ship It gameplay — office desk farm with room tabs, token bank, and shop](./docs/assets/gameplay.png)
 
 ## Quick start
 
