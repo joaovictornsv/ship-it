@@ -371,17 +371,40 @@ button:disabled {
 }
 
 /* Unlockable rooms — local floor/wall tints only (not shell --ship-* tokens).
-   Never change padding / min-height here — chrome inset is shared above. */
-.office-room-break-room {
-  --office-mug: #c47a3a;
+   Strong dominant hue per room; never change padding / min-height here. */
+.office-room-office {
   --office-wall: color-mix(
     in srgb,
-    var(--ship-warm) 38%,
+    var(--ship-sky) 58%,
     var(--ship-bg-elevated)
   );
   --office-floor: color-mix(
     in srgb,
-    var(--ship-upgrade-espresso) 10%,
+    var(--ship-sky) 22%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-sky) 28%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-break-room {
+  --office-mug: #c47a3a;
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-warm) 55%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-espresso) 32%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-upgrade-espresso) 26%,
     var(--ship-bg-elevated)
   );
 }
@@ -389,17 +412,17 @@ button:disabled {
 .office-room-review-lab {
   --office-wall: color-mix(
     in srgb,
-    var(--ship-upgrade-code-review) 28%,
+    var(--ship-upgrade-code-review) 52%,
     var(--ship-bg-elevated)
   );
   --office-floor: color-mix(
     in srgb,
-    var(--ship-upgrade-code-review) 8%,
+    var(--ship-upgrade-code-review) 28%,
     var(--ship-bg-elevated)
   );
   --office-desk: color-mix(
     in srgb,
-    var(--ship-upgrade-code-review) 18%,
+    var(--ship-upgrade-code-review) 34%,
     var(--ship-bg-elevated)
   );
 }
@@ -407,12 +430,17 @@ button:disabled {
 .office-room-ops-bay {
   --office-wall: color-mix(
     in srgb,
-    var(--ship-upgrade-ci-cd) 22%,
+    var(--ship-upgrade-ci-cd) 50%,
     var(--ship-bg-elevated)
   );
   --office-floor: color-mix(
     in srgb,
-    var(--ship-upgrade-on-call) 10%,
+    var(--ship-upgrade-ci-cd) 26%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-upgrade-ci-cd) 30%,
     var(--ship-bg-elevated)
   );
 }
@@ -420,17 +448,17 @@ button:disabled {
 .office-room-datacenter {
   --office-wall: color-mix(
     in srgb,
-    var(--ship-ink) 12%,
+    var(--ship-upgrade-dark-mode) 42%,
     var(--ship-bg-elevated)
   );
   --office-floor: color-mix(
     in srgb,
-    var(--ship-accent) 10%,
+    var(--ship-accent) 28%,
     var(--ship-bg-elevated)
   );
   --office-desk: color-mix(
     in srgb,
-    var(--ship-ink) 22%,
+    var(--ship-upgrade-dark-mode) 34%,
     var(--ship-bg-elevated)
   );
 }

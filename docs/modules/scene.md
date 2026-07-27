@@ -68,13 +68,15 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 Data-driven map spaces in `src/data/rooms.ts`. Unlock once → sticky in `roomsUnlocked` (save **v6**); **kept** across Rewrite. `RoomSwitcher` tabs appear once ≥2 rooms are unlocked so minute-1 stays a single office stage.
 
-| ID           | Label      | Unlock                  | Feel                        |
-| ------------ | ---------- | ----------------------- | --------------------------- |
-| `office`     | Office     | Always                  | Starting desks + sky wash   |
-| `break-room` | Break room | Own ≥1 Espresso machine | Warm espresso tint          |
-| `review-lab` | Review lab | Own ≥1 Code review      | Cool review-blue wall/floor |
-| `ops-bay`    | Ops bay    | Own ≥1 CI / CD          | Green/amber ops wash        |
-| `datacenter` | Datacenter | Bank ≥1 Rewrite         | Cooler denser floor tint    |
+| ID           | Label      | Unlock                  | Dominant tint (wall / floor)                   |
+| ------------ | ---------- | ----------------------- | ---------------------------------------------- |
+| `office`     | Office     | Always                  | Light **sky blue** (`--ship-sky`)              |
+| `break-room` | Break room | Own ≥1 Espresso machine | **Warm amber** wall + **espresso** floor       |
+| `review-lab` | Review lab | Own ≥1 Code review      | **Review blue** (`--ship-upgrade-code-review`) |
+| `ops-bay`    | Ops bay    | Own ≥1 CI / CD          | **CI green** (`--ship-upgrade-ci-cd`)          |
+| `datacenter` | Datacenter | Bank ≥1 Rewrite         | **Slate dusk** wall + **teal** floor           |
+
+- Per-room modifiers use **strong** `color-mix` percentages so each room reads as a distinct dominant hue (not washed-out siblings).
 
 - Per-room **Dev emoji pools** (`devEmojis`) — people-only fallback sprites; contributor avatars unchanged. Room tint carries place identity — not food/object glyphs as Devs.
 
