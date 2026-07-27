@@ -8,11 +8,14 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { devTitleForIndex } from '../../data/devTitles';
 import { resolveDevSkin } from '../../data/contributors';
+import type { RoomId } from '../../data/rooms';
 import { devEmojiForIndex } from '../shop/upgradeEmoji';
 
 type DevSpriteProps = {
   index: number;
+  roomId: RoomId;
   /** When true, play a short spawn pop (buy celebration). */
   spawn?: boolean;
   onSpawnEnd?: () => void;
@@ -36,6 +39,7 @@ const spriteClassName = (spawn: boolean) =>
  */
 export function DevSprite({
   index,
+  roomId,
   spawn = false,
   onSpawnEnd,
 }: DevSpriteProps) {
@@ -106,7 +110,7 @@ export function DevSprite({
         }}
       />
     ) : (
-      devEmojiForIndex(index)
+      devEmojiForIndex(index, roomId)
     );
 
   const tip =
@@ -116,19 +120,23 @@ export function DevSprite({
             role="tooltip"
             className={[
               'pointer-events-none fixed z-[80] -translate-x-1/2 -translate-y-full',
-              'max-w-[10.5rem] rounded-xl border border-[color-mix(in_srgb,var(--ship-bg-elevated)_28%,transparent)]',
-              'bg-[var(--ship-ink)] px-2.5 py-1 text-[11px] font-medium leading-snug text-[var(--ship-bg-elevated)]',
+              'flex max-w-[10.5rem] flex-col items-center rounded-xl border border-[color-mix(in_srgb,var(--ship-bg-elevated)_28%,transparent)]',
+              'bg-[var(--ship-ink)] px-2.5 py-1 text-center text-[11px] font-medium leading-snug text-[var(--ship-bg-elevated)]',
               'shadow-[0_4px_12px_color-mix(in_srgb,var(--ship-ink)_22%,transparent)]',
               'office-dev-name-tip',
             ].join(' ')}
             style={{ top: pos.top, left: pos.left }}
           >
-            <span className="block truncate">{label}</span>
+            <span className="max-w-full truncate">{label}</span>
             {isContributor ? (
-              <span className="mt-0.5 block text-[10px] font-normal opacity-75">
+              <span className="mt-0.5 text-[10px] font-normal opacity-75">
                 Contributor
               </span>
-            ) : null}
+            ) : (
+              <span className="mt-0.5 max-w-full truncate text-[10px] font-normal opacity-75">
+                {devTitleForIndex(index)}
+              </span>
+            )}
           </span>,
           document.body,
         )

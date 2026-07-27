@@ -18,7 +18,10 @@ export function RoomSwitcher() {
 
   return (
     <div
-      className="office-room-switcher relative z-[2] flex flex-wrap gap-1.5"
+      className={[
+        'office-room-switcher relative z-[2]',
+        'flex flex-nowrap gap-1.5 overflow-x-auto overscroll-x-contain',
+      ].join(' ')}
       role="tablist"
       aria-label="Unlocked rooms"
     >
@@ -33,7 +36,7 @@ export function RoomSwitcher() {
             aria-label={room.label}
             title={room.blurb}
             className={[
-              'office-room-tab inline-flex items-center gap-1 rounded-lg',
+              'office-room-tab inline-flex shrink-0 items-center gap-1 rounded-lg',
               'border px-2 py-1 text-xs font-semibold tracking-tight',
               'transition-[background-color,border-color,color] duration-150',
               selected

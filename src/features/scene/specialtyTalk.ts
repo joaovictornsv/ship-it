@@ -1,6 +1,6 @@
 /**
  * Rare specialty office talk — GitHub issues, contributors, calendar, owned props.
- * Generic majority still lives in `devTalk.ts`.
+ * Generic majority still lives in `devTalk.ts` / `roomTalk.ts`.
  */
 
 import { TALK_CONTRIBUTOR_NAMES } from '../../data/talkNames';
@@ -8,10 +8,16 @@ import {
   OPEN_ISSUES_SNAPSHOT,
   type OpenIssueSnapshot,
 } from '../../data/openIssues';
+import type { RoomId } from '../../data/rooms';
 import type { SceneStageId } from './stages';
-import { DEV_LINES } from './devTalk';
+import {
+  pickEmotionalPeak,
+  roomLines,
+  type TalkBubbleContent,
+  type TalkMood,
+} from './roomTalk';
 
-/** Chance a non-dialogue spawn uses a specialty line instead of `DEV_LINES`. */
+/** Chance a non-dialogue spawn uses a specialty line instead of room lines. */
 export const SPECIALTY_LINE_CHANCE = 0.14;
 
 export type TalkOwnedProps = {
@@ -27,17 +33,25 @@ export type TalkContext = {
   stageId: SceneStageId;
   tokensPerSecond: number;
   owned: TalkOwnedProps;
+  /** Active unlockable room — flavors specialty + generic pools. */
+  roomId: RoomId;
 };
 
 export type SpecialtyCategory =
-  'github' | 'contributor' | 'calendar' | 'owned-upgrade' | 'stage' | 'rate';
+  | 'github'
+  | 'contributor'
+  | 'calendar'
+  | 'owned-upgrade'
+  | 'stage'
+  | 'rate'
+  | 'room';
 
 type PickOptions = {
   exclude?: ReadonlySet<string>;
   context: TalkContext;
   openIssues?: readonly OpenIssueSnapshot[];
   contributorNames?: readonly string[];
-  /** Specialty roll; inject for tests. Defaults to `Math.random`. */
+  /** Specialty / peak roll; inject for tests. Defaults to `Math.random`. */
   random?: () => number;
 };
 
@@ -56,32 +70,84 @@ function shortTitle(title: string, max = 36): string {
   return `${trimmed.slice(0, max - 1).trimEnd()}…`;
 }
 
+/** Room-flavored jokes over open GitHub issues (build-time snapshot). */
 export function githubIssueLines(
   issues: readonly OpenIssueSnapshot[],
+  roomId: RoomId = 'office',
 ): string[] {
   const lines: string[] = [];
   for (const issue of issues) {
     const n = issue.number;
     const title = shortTitle(issue.title);
-    lines.push(`Anyone looking at #${n}?`);
-    lines.push(`#${n} keeps popping up in standup.`);
-    lines.push(`Should we poke #${n} next?`);
-    lines.push(`That open issue about ${title} is haunting me.`);
+    switch (roomId) {
+      case 'break-room':
+        lines.push(`#${n} can wait until after espresso.`);
+        lines.push(`Talking about ${title} over coffee.`);
+        lines.push(`Snack first, then poke #${n}.`);
+        break;
+      case 'review-lab':
+        lines.push(`#${n} needs another LGTM.`);
+        lines.push(`Reviewing “${title}” — thoughts?`);
+        lines.push(`Leave a nit on #${n}?`);
+        break;
+      case 'ops-bay':
+        lines.push(`#${n} is paging the bay.`);
+        lines.push(`Is ${title} an incident yet?`);
+        lines.push(`Runbook for #${n}, anyone?`);
+        break;
+      case 'datacenter':
+        lines.push(`#${n} survived the last Rewrite.`);
+        lines.push(`Racks still whisper about ${title}.`);
+        lines.push(`Infra ticket energy: #${n}.`);
+        break;
+      case 'office':
+      default:
+        lines.push(`Anyone looking at #${n}?`);
+        lines.push(`#${n} keeps popping up in standup.`);
+        lines.push(`Should we poke #${n} next?`);
+        lines.push(`That open issue about ${title} is haunting me.`);
+        break;
+    }
   }
   return lines;
 }
 
-export function contributorLines(names: readonly string[]): string[] {
+/** Room-flavored contributor name-drops. */
+export function contributorLines(
+  names: readonly string[],
+  roomId: RoomId = 'office',
+): string[] {
   const lines: string[] = [];
   for (const name of names) {
     const handle = name.trim();
     if (!handle) {
       continue;
     }
-    lines.push(`Did ${handle} review this yet?`);
-    lines.push(`${handle} would ship this already.`);
-    lines.push(`Ping ${handle} when you’re free.`);
-    lines.push(`Was this ${handle}’s idea?`);
+    switch (roomId) {
+      case 'break-room':
+        lines.push(`Is ${handle} AFK in the break room?`);
+        lines.push(`${handle} took the last espresso.`);
+        break;
+      case 'review-lab':
+        lines.push(`Did ${handle} review this yet?`);
+        lines.push(`${handle} leaves the kindest nits.`);
+        break;
+      case 'ops-bay':
+        lines.push(`Ping ${handle} before we page.`);
+        lines.push(`${handle} knows this alert.`);
+        break;
+      case 'datacenter':
+        lines.push(`${handle} is a Rewrite ghost in the racks.`);
+        lines.push(`Was this ${handle}’s infra idea?`);
+        break;
+      case 'office':
+      default:
+        lines.push(`Did ${handle} review this yet?`);
+        lines.push(`${handle} would ship this already.`);
+        lines.push(`Ping ${handle} when you’re free.`);
+        lines.push(`Was this ${handle}’s idea?`);
+        break;
+    }
   }
   return lines;
 }
@@ -174,6 +240,51 @@ export function rateLines(tokensPerSecond: number): string[] {
   return ['Tokens/s is spicy today.', 'We’re printing tokens now.'];
 }
 
+/** Place-specific one-liners beyond the shared room line pool. */
+export function roomFlavorLines(roomId: RoomId): string[] {
+  switch (roomId) {
+    case 'break-room':
+      return ['Break room diplomacy underway.', 'Mug council is in session.'];
+    case 'review-lab':
+      return ['Diff theater tonight.', 'Approve with kindness.'];
+    case 'ops-bay':
+      return ['Bay is watching the graphs.', 'Canary looks calm.'];
+    case 'datacenter':
+      return ['Cold aisle banter.', 'Permanent map flex.'];
+    case 'office':
+    default:
+      return [];
+  }
+}
+
+/**
+ * Prefer room-relevant specialty buckets first (still random among available).
+ * Ops / review / break bias github+contributor; office stays balanced.
+ */
+function preferredCategories(roomId: RoomId): readonly SpecialtyCategory[] {
+  switch (roomId) {
+    case 'break-room':
+      return ['room', 'contributor', 'calendar', 'owned-upgrade', 'github'];
+    case 'review-lab':
+      return ['github', 'contributor', 'room', 'owned-upgrade', 'stage'];
+    case 'ops-bay':
+      return ['github', 'owned-upgrade', 'room', 'rate', 'contributor'];
+    case 'datacenter':
+      return ['contributor', 'github', 'room', 'rate', 'stage'];
+    case 'office':
+    default:
+      return [
+        'github',
+        'contributor',
+        'calendar',
+        'owned-upgrade',
+        'stage',
+        'rate',
+        'room',
+      ];
+  }
+}
+
 function availableCategories(
   context: TalkContext,
   openIssues: readonly OpenIssueSnapshot[],
@@ -198,6 +309,9 @@ function availableCategories(
   if (rateLines(context.tokensPerSecond).length > 0) {
     cats.push('rate');
   }
+  if (roomFlavorLines(context.roomId).length > 0) {
+    cats.push('room');
+  }
   return cats;
 }
 
@@ -209,9 +323,9 @@ function linesForCategory(
 ): string[] {
   switch (category) {
     case 'github':
-      return githubIssueLines(openIssues);
+      return githubIssueLines(openIssues, context.roomId);
     case 'contributor':
-      return contributorLines(contributorNames);
+      return contributorLines(contributorNames, context.roomId);
     case 'calendar':
       return calendarLines(context.now);
     case 'owned-upgrade':
@@ -220,7 +334,29 @@ function linesForCategory(
       return stageLines(context.stageId);
     case 'rate':
       return rateLines(context.tokensPerSecond);
+    case 'room':
+      return roomFlavorLines(context.roomId);
   }
+}
+
+function pickPreferredCategory(
+  available: readonly SpecialtyCategory[],
+  roomId: RoomId,
+  random: () => number,
+): SpecialtyCategory | undefined {
+  if (available.length === 0) {
+    return undefined;
+  }
+  const preferred = preferredCategories(roomId).filter((cat) =>
+    available.includes(cat),
+  );
+  const pool = preferred.length > 0 ? preferred : available;
+  // Weight the first half of the preferred list a bit heavier.
+  if (pool.length >= 2 && random() < 0.55) {
+    const front = pool.slice(0, Math.ceil(pool.length / 2));
+    return pickFrom(front, random);
+  }
+  return pickFrom(pool, random);
 }
 
 /**
@@ -241,8 +377,11 @@ export function pickSpecialtyLine(options: PickOptions): string | null {
     return null;
   }
 
-  // Shuffle-ish: pick a random available category, then a line.
-  const category = pickFrom(categories, random);
+  const category = pickPreferredCategory(
+    categories,
+    options.context.roomId,
+    random,
+  );
   if (!category) {
     return null;
   }
@@ -268,11 +407,12 @@ export function pickSpecialtyLine(options: PickOptions): string | null {
 }
 
 /**
- * Prefer a rare specialty line; otherwise a generic `DEV_LINES` entry.
+ * Prefer a rare specialty line; otherwise a room-flavored generic line.
  */
 export function pickTalkLine(options: PickOptions): string {
   const random = options.random ?? Math.random;
   const exclude = options.exclude ?? new Set<string>();
+  const lines = roomLines(options.context.roomId);
 
   if (random() < SPECIALTY_LINE_CHANCE) {
     const specialty = pickSpecialtyLine({ ...options, random });
@@ -281,7 +421,33 @@ export function pickTalkLine(options: PickOptions): string {
     }
   }
 
-  const pool = DEV_LINES.filter((line) => !exclude.has(line));
-  const source = pool.length > 0 ? pool : [...DEV_LINES];
-  return pickFrom(source, random) ?? DEV_LINES[0]!;
+  const pool = lines.filter((line) => !exclude.has(line));
+  const source = pool.length > 0 ? pool : [...lines];
+  return pickFrom(source, random) ?? lines[0]!;
 }
+
+/**
+ * Full bubble pick: rare emotional peak, else neutral specialty / room line.
+ */
+export function pickTalkBubble(options: PickOptions): TalkBubbleContent {
+  const random = options.random ?? Math.random;
+  const openIssues = options.openIssues ?? OPEN_ISSUES_SNAPSHOT;
+  const contributorNames = options.contributorNames ?? TALK_CONTRIBUTOR_NAMES;
+
+  const peak = pickEmotionalPeak({
+    exclude: options.exclude,
+    openIssues,
+    contributorNames,
+    random,
+  });
+  if (peak !== null) {
+    return peak;
+  }
+
+  return {
+    text: pickTalkLine({ ...options, random }),
+    mood: 'neutral' satisfies TalkMood,
+  };
+}
+
+export type { TalkBubbleContent, TalkMood };

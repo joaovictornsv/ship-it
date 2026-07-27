@@ -18,7 +18,7 @@
   /* Per-upgrade icon / prop hues (shop + scene personality). */
   --ship-upgrade-espresso: #c47a3a;
   --ship-upgrade-dev: #0f7a74;
-  --ship-upgrade-code-review: #3d7ea6;
+  --ship-upgrade-code-review: #6b5b95;
   --ship-upgrade-ci-cd: #2a9d6e;
   --ship-upgrade-on-call: #d97706;
   /* Ship upgrades (click-power track) — distinct from producer hues. */
@@ -28,6 +28,8 @@
   --ship-upgrade-stack-overflow: #c47a3a;
   --ship-upgrade-sticky-notes: #e8c47c;
   --ship-upgrade-dark-mode: #3d5a80;
+  /* Scene room tints (local flavor — not shell chrome). */
+  --ship-room-datacenter: #0d4f9c;
   --ship-upgrade-pair: #3d7ea6;
   --ship-upgrade-lgtm: #2a9d6e;
   --ship-upgrade-pomodoro: #d97706;
@@ -40,6 +42,9 @@
   --ship-prestige-stub: #c47a3a;
   /* Prestige currency numeral (distinct from token gold). */
   --ship-rewrite: #5b6b7c;
+  /* Occasional emotional-peak talk bubbles (scene juice, not shell chrome). */
+  --ship-talk-angry: #c44536;
+  --ship-talk-happy: #2a9d6e;
 }
 
 html,
@@ -337,51 +342,103 @@ button:disabled {
   animation: office-talk-out 700ms ease-in forwards;
 }
 
+/* Rare emotional peaks — thick border + bold copy (angry critic / happy ship). */
+.office-talk-bubble-peak {
+  border-style: solid;
+  border-width: 2.5px;
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--ship-ink) 12%, transparent);
+}
+
+.office-talk-bubble-angry {
+  border-color: var(--ship-talk-angry);
+  color: color-mix(in srgb, var(--ship-talk-angry) 72%, var(--ship-ink));
+  background: color-mix(
+    in srgb,
+    var(--ship-talk-angry) 14%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-talk-bubble-happy {
+  border-color: var(--ship-talk-happy);
+  color: color-mix(in srgb, var(--ship-talk-happy) 55%, var(--ship-ink));
+  background: color-mix(
+    in srgb,
+    var(--ship-talk-happy) 14%,
+    var(--ship-bg-elevated)
+  );
+}
+
 /* Dev name tip — same fade as talk, inverted ink/elevated so it ≠ speech. */
 .office-dev-name-tip {
   animation: office-talk-in 480ms ease-out;
 }
 
-/* Living office — local flavor vars (mugs); shell tokens stay cool slate. */
+/* Living office — local flavor vars (mugs); shell tokens stay cool slate.
+   Wall is always the darker / more saturated band; floor is a light wash.
+   Desk wood is shared (ops-bay espresso pattern) across all rooms. */
 .office-scene {
   --office-mug: #b08968;
-  --office-floor: color-mix(
-    in srgb,
-    var(--ship-ink) 6%,
-    var(--ship-bg-elevated)
-  );
   --office-wall: color-mix(
     in srgb,
-    var(--ship-sky) 45%,
+    var(--ship-sky) 52%,
     var(--ship-bg-elevated)
   );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-sky) 10%,
+    var(--ship-bg-elevated)
+  );
+  /* Shared desk — ops-bay espresso wood (do not recolor per room). */
   --office-desk: color-mix(
     in srgb,
-    var(--ship-ink) 14%,
-    var(--ship-bg-elevated)
+    var(--ship-ink) 34%,
+    var(--ship-upgrade-espresso)
+  );
+  --office-desk-shine: color-mix(
+    in srgb,
+    var(--office-desk) 50%,
+    var(--ship-warm)
+  );
+  --office-desk-edge: color-mix(
+    in srgb,
+    var(--ship-ink) 28%,
+    var(--office-desk)
   );
   /* Shared chrome inset — all rooms; do not override per `.office-room-*`. */
   --office-pad-x: 0.85rem;
   --office-chrome-pad-top: 0.55rem;
-  --office-props-pad-y: 0.45rem;
-  /* Space under prop chips before the stage divider (the “upgrades” rail). */
-  --office-props-pad-bottom: 0.55rem;
   --office-desk-pad-top: 0.85rem;
   --office-desk-pad-bottom: 0.9rem;
 }
 
-/* Unlockable rooms — local floor/wall tints only (not shell --ship-* tokens).
-   Never change padding / min-height here — chrome inset is shared above. */
-.office-room-break-room {
-  --office-mug: #c47a3a;
+/* Unlockable rooms — floor/wall/mug tints only (not shell --ship-* tokens).
+   Strong wall hue; light floor wash (wall darker than floor).
+   Desk vars stay on `.office-scene` — same espresso wood in every room.
+   Never change padding / min-height here. */
+.office-room-office {
   --office-wall: color-mix(
     in srgb,
-    var(--ship-warm) 38%,
+    var(--ship-sky) 62%,
     var(--ship-bg-elevated)
   );
   --office-floor: color-mix(
     in srgb,
-    var(--ship-upgrade-espresso) 10%,
+    var(--ship-sky) 12%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-room-break-room {
+  --office-mug: #c47a3a;
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-warm) 58%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-espresso) 11%,
     var(--ship-bg-elevated)
   );
 }
@@ -389,17 +446,12 @@ button:disabled {
 .office-room-review-lab {
   --office-wall: color-mix(
     in srgb,
-    var(--ship-upgrade-code-review) 28%,
+    var(--ship-upgrade-code-review) 56%,
     var(--ship-bg-elevated)
   );
   --office-floor: color-mix(
     in srgb,
-    var(--ship-upgrade-code-review) 8%,
-    var(--ship-bg-elevated)
-  );
-  --office-desk: color-mix(
-    in srgb,
-    var(--ship-upgrade-code-review) 18%,
+    var(--ship-upgrade-code-review) 12%,
     var(--ship-bg-elevated)
   );
 }
@@ -407,12 +459,12 @@ button:disabled {
 .office-room-ops-bay {
   --office-wall: color-mix(
     in srgb,
-    var(--ship-upgrade-ci-cd) 22%,
+    var(--ship-upgrade-ci-cd) 54%,
     var(--ship-bg-elevated)
   );
   --office-floor: color-mix(
     in srgb,
-    var(--ship-upgrade-on-call) 10%,
+    var(--ship-upgrade-ci-cd) 11%,
     var(--ship-bg-elevated)
   );
 }
@@ -420,23 +472,32 @@ button:disabled {
 .office-room-datacenter {
   --office-wall: color-mix(
     in srgb,
-    var(--ship-ink) 12%,
+    var(--ship-room-datacenter) 68%,
     var(--ship-bg-elevated)
   );
   --office-floor: color-mix(
     in srgb,
-    var(--ship-accent) 10%,
-    var(--ship-bg-elevated)
-  );
-  --office-desk: color-mix(
-    in srgb,
-    var(--ship-ink) 22%,
+    var(--ship-room-datacenter) 16%,
     var(--ship-bg-elevated)
   );
 }
 
 .office-room-switcher {
-  padding: var(--office-chrome-pad-top) var(--office-pad-x) 0;
+  padding: var(--office-chrome-pad-top) var(--office-pad-x)
+    var(--office-chrome-pad-top);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ship-ink) 22%, transparent)
+    transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.office-room-switcher::-webkit-scrollbar {
+  height: 4px;
+}
+
+.office-room-switcher::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ship-ink) 22%, transparent);
 }
 
 .office-room-tab:focus-visible {
@@ -448,7 +509,8 @@ button:disabled {
   background: linear-gradient(
     180deg,
     var(--office-wall) 0%,
-    color-mix(in srgb, var(--office-wall) 40%, transparent) 100%
+    color-mix(in srgb, var(--office-wall) 55%, var(--office-floor)) 70%,
+    color-mix(in srgb, var(--office-wall) 30%, var(--office-floor)) 100%
   );
 }
 
@@ -456,30 +518,44 @@ button:disabled {
   border-top: 1px solid var(--ship-line);
 }
 
+/* Floor stays a light wash — do not pull darker wall/ink into the band
+   (wall must read darker than floor). Soft elevated stops only. */
 .office-floor {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--office-floor) 55%, transparent) 0%,
-    var(--office-floor) 28%
+    color-mix(in srgb, var(--office-floor) 65%, var(--ship-bg-elevated)) 0%,
+    var(--office-floor) 48%,
+    color-mix(in srgb, var(--office-floor) 82%, var(--ship-bg-elevated)) 100%
   );
 }
 
 .office-desk-farm {
+  --office-desk-cell-w: 3rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
-  gap: 0.55rem 0.45rem;
-  align-content: end;
+  /* Fixed cell width; space-between spreads tracks so side margins disappear. */
+  grid-template-columns: repeat(6, var(--office-desk-cell-w));
+  justify-content: space-between;
+  row-gap: 0.55rem;
+  column-gap: 0.35rem;
+  align-content: start;
   padding: var(--office-desk-pad-top) var(--office-pad-x)
     var(--office-desk-pad-bottom);
   min-height: 12rem;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .office-desk-farm {
-    grid-template-columns: repeat(auto-fill, minmax(3.1rem, 1fr));
+    grid-template-columns: repeat(9, var(--office-desk-cell-w));
     min-height: 14rem;
-    gap: 0.65rem 0.55rem;
+    row-gap: 0.65rem;
+    column-gap: 0.4rem;
   }
+}
+
+/* Sparse stages keep desks grounded at the bottom of the farm. */
+.office-stage-empty .office-desk-farm,
+.office-stage-solo .office-desk-farm {
+  align-content: end;
 }
 
 .office-desk-cell {
@@ -491,17 +567,82 @@ button:disabled {
   min-height: 3.25rem;
 }
 
-.office-desk-surface {
+.office-desk-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  height: 0.45rem;
-  border-radius: 0.2rem;
-  background: var(--office-desk);
-  opacity: 0.35;
-  transition: opacity 160ms ease-out;
 }
 
-.office-desk-cell-occupied .office-desk-surface {
-  opacity: 0.95;
+.office-desk-surface {
+  position: relative;
+  width: 100%;
+  height: 0.45rem;
+  max-height: 0.5rem;
+  border-radius: 0.2rem;
+  /* Soft top-lit wood/metal — never a flat solid. */
+  background: linear-gradient(
+    180deg,
+    var(--office-desk-shine) 0%,
+    var(--office-desk) 48%,
+    var(--office-desk-edge) 100%
+  );
+  opacity: 0.78;
+  transition: opacity 160ms ease-out;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--office-desk-shine) 70%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--ship-ink) 14%, transparent);
+}
+
+.office-desk-surface-occupied {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.04rem;
+  padding: 0 0.1rem;
+  opacity: 1;
+  height: 0.5rem;
+  max-height: 0.5rem;
+  overflow: visible;
+  border-radius: 0.22rem 0.22rem 0.15rem 0.15rem;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--office-desk-shine) 75%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--ship-ink) 16%, transparent),
+    0 1px 0 color-mix(in srgb, var(--office-desk-edge) 55%, transparent);
+}
+
+.office-desk-slot {
+  flex: 1 1 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+  max-height: 0.5rem;
+}
+
+.office-desk-slot-center {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.office-desk-slot-right {
+  justify-content: flex-end;
+}
+
+.office-desk-slot-icon {
+  font-size: 0.42rem;
+  line-height: 1;
+  opacity: 0.9;
+  transform: translateY(-0.04rem);
+}
+
+.office-desk-notebook {
+  font-size: 0.72rem;
+  line-height: 1;
+  transform: translateY(-35%);
+  pointer-events: none;
 }
 
 .office-stage-empty .office-desk-cell-empty .office-desk-surface,
@@ -509,7 +650,7 @@ button:disabled {
 .office-stage-small-team .office-desk-cell-empty .office-desk-surface,
 .office-stage-open-plan .office-desk-cell-empty .office-desk-surface,
 .office-stage-crowded .office-desk-cell-empty .office-desk-surface {
-  opacity: 0.55;
+  opacity: 0.88;
 }
 
 .office-empty-hint {
@@ -527,8 +668,19 @@ button:disabled {
 .office-stage-crowded .office-floor {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--ship-accent) 8%, var(--office-floor)) 0%,
-    var(--office-floor) 40%
+    color-mix(
+        in srgb,
+        var(--ship-accent) 4%,
+        color-mix(in srgb, var(--office-floor) 65%, var(--ship-bg-elevated))
+      )
+      0%,
+    color-mix(in srgb, var(--ship-accent) 3%, var(--office-floor)) 48%,
+    color-mix(
+        in srgb,
+        var(--ship-accent) 2%,
+        color-mix(in srgb, var(--office-floor) 82%, var(--ship-bg-elevated))
+      )
+      100%
   );
 }
 
@@ -552,25 +704,6 @@ button:disabled {
 
 .office-stage-flash {
   animation: office-stage-flash 520ms ease-out;
-}
-
-.office-props-rail {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 0.5rem;
-  padding: var(--office-props-pad-y) var(--office-pad-x)
-    var(--office-props-pad-bottom);
-}
-
-.office-prop {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--ship-line);
-  background: color-mix(in srgb, var(--ship-bg-elevated) 88%, transparent);
-  padding: 0.2rem 0.4rem;
 }
 
 @keyframes shop-drawer-up {

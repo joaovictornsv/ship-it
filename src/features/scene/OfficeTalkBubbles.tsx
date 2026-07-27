@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { DEV_DIALOGUES } from './devTalk';
+import type { RoomId } from '../../data/rooms';
+import { roomDialogues } from './roomTalk';
 import {
-  pickTalkLine,
+  pickTalkBubble,
   type TalkContext,
+  type TalkMood,
   type TalkOwnedProps,
 } from './specialtyTalk';
 import type { SceneStageId } from './stages';
@@ -13,12 +15,15 @@ const SPAWN_MAX_MS = 8000;
 /** Visible long enough to read; then a soft fade-out. */
 const SHOW_MIN_MS = 7000;
 const SHOW_MAX_MS = 10000;
+/** Emotional peaks linger a beat longer. */
+const PEAK_SHOW_BONUS_MS = 1200;
 const FADE_OUT_MS = 700;
 const DIALOGUE_FOLLOW_MS = 2800;
 
 type Bubble = {
   id: number;
   text: string;
+  mood: TalkMood;
   left: number;
   top: number;
   fading: boolean;
@@ -28,6 +33,7 @@ export type OfficeTalkBubblesProps = {
   /** How many Devs are visible — no chatter when the office is empty. */
   visibleDevs: number;
   stageId: SceneStageId;
+  roomId: RoomId;
   tokensPerSecond: number;
   espressoOwned: number;
   codeReviewOwned: number;
@@ -79,15 +85,42 @@ function placeBubble(existing: readonly Bubble[]): {
   };
 }
 
+function bubbleClassName(mood: TalkMood, fading: boolean): string {
+  const motion = fading ? 'office-talk-bubble-out' : 'office-talk-bubble';
+  if (mood === 'angry') {
+    return [
+      motion,
+      'office-talk-bubble-peak office-talk-bubble-angry',
+      'absolute max-w-[11rem] -translate-x-1/2 rounded-xl px-2.5 py-1.5',
+      'text-[11px] font-bold leading-snug',
+    ].join(' ');
+  }
+  if (mood === 'happy') {
+    return [
+      motion,
+      'office-talk-bubble-peak office-talk-bubble-happy',
+      'absolute max-w-[11rem] -translate-x-1/2 rounded-xl px-2.5 py-1.5',
+      'text-[11px] font-bold leading-snug',
+    ].join(' ');
+  }
+  return [
+    motion,
+    'absolute max-w-[10.5rem] -translate-x-1/2 rounded-xl border border-[var(--ship-line)]',
+    'bg-[var(--ship-bg-elevated)] px-2.5 py-1.5 text-[11px] font-medium leading-snug text-[var(--ship-ink)]',
+    'shadow-[0_4px_12px_color-mix(in_srgb,var(--ship-ink)_10%,transparent)]',
+  ].join(' ');
+}
+
 /**
  * Natural office chatter over the desk farm — several bubbles at once.
  * Soft opacity fade in/out; slow spawn / long dwell. Off under reduced motion.
- * Rare specialty lines (GitHub / contributors / calendar / owned props) via
- * `specialtyTalk` — majority stays generic `DEV_LINES` / dialogues.
+ * Per-room copy + rare specialty / emotional peaks via `specialtyTalk` /
+ * `roomTalk` — majority stays neutral room lines / dialogues.
  */
 export function OfficeTalkBubbles({
   visibleDevs,
   stageId,
+  roomId,
   tokensPerSecond,
   espressoOwned,
   codeReviewOwned,
@@ -125,6 +158,7 @@ export function OfficeTalkBubbles({
         stageId,
         tokensPerSecond,
         owned,
+        roomId,
       };
     }
 
@@ -156,7 +190,7 @@ export function OfficeTalkBubbles({
       hideTimers.add(removeTimer);
     }
 
-    function show(text: string): Bubble | null {
+    function show(text: string, mood: TalkMood = 'neutral'): Bubble | null {
       const cap = maxBubblesFor(visibleDevs);
       if (live.length >= cap) {
         return null;
@@ -164,7 +198,7 @@ export function OfficeTalkBubbles({
       seq += 1;
       const id = seq;
       const spot = placeBubble(live);
-      const bubble: Bubble = { id, text, fading: false, ...spot };
+      const bubble: Bubble = { id, text, mood, fading: false, ...spot };
       recent.add(text);
       if (recent.size > 14) {
         const oldest = recent.values().next().value;
@@ -173,13 +207,13 @@ export function OfficeTalkBubbles({
         }
       }
       sync([...live, bubble]);
-      const fadeTimer = window.setTimeout(
-        () => {
-          hideTimers.delete(fadeTimer);
-          beginFade(id);
-        },
-        randomBetween(SHOW_MIN_MS, SHOW_MAX_MS),
-      );
+      const dwell =
+        randomBetween(SHOW_MIN_MS, SHOW_MAX_MS) +
+        (mood === 'neutral' ? 0 : PEAK_SHOW_BONUS_MS);
+      const fadeTimer = window.setTimeout(() => {
+        hideTimers.delete(fadeTimer);
+        beginFade(id);
+      }, dwell);
       hideTimers.add(fadeTimer);
       return bubble;
     }
@@ -192,20 +226,25 @@ export function OfficeTalkBubbles({
       const cap = maxBubblesFor(visibleDevs);
       const room = cap - live.length;
       if (room > 0) {
+        const dialogues = roomDialogues(roomId);
         const useDialogue = room >= 2 && Math.random() < 0.35;
-        if (useDialogue) {
+        if (useDialogue && dialogues.length > 0) {
           const dialogue =
-            DEV_DIALOGUES[Math.floor(Math.random() * DEV_DIALOGUES.length)]!;
-          show(dialogue.a);
+            dialogues[Math.floor(Math.random() * dialogues.length)]!;
+          show(dialogue.a, 'neutral');
           const followTimer = window.setTimeout(() => {
             hideTimers.delete(followTimer);
             if (!cancelled) {
-              show(dialogue.b);
+              show(dialogue.b, 'neutral');
             }
           }, DIALOGUE_FOLLOW_MS);
           hideTimers.add(followTimer);
         } else {
-          show(pickTalkLine({ exclude: recent, context: talkContext() }));
+          const pick = pickTalkBubble({
+            exclude: recent,
+            context: talkContext(),
+          });
+          show(pick.text, pick.mood);
         }
       }
 
@@ -228,6 +267,7 @@ export function OfficeTalkBubbles({
   }, [
     visibleDevs,
     stageId,
+    roomId,
     tokensPerSecond,
     espressoOwned,
     codeReviewOwned,
@@ -244,12 +284,7 @@ export function OfficeTalkBubbles({
       {bubbles.map((bubble) => (
         <span
           key={bubble.id}
-          className={[
-            'absolute max-w-[10.5rem] -translate-x-1/2 rounded-xl border border-[var(--ship-line)]',
-            'bg-[var(--ship-bg-elevated)] px-2.5 py-1.5 text-[11px] font-medium leading-snug text-[var(--ship-ink)]',
-            'shadow-[0_4px_12px_color-mix(in_srgb,var(--ship-ink)_10%,transparent)]',
-            bubble.fading ? 'office-talk-bubble-out' : 'office-talk-bubble',
-          ].join(' ')}
+          className={bubbleClassName(bubble.mood, bubble.fading)}
           style={{ left: `${bubble.left}%`, top: `${bubble.top}%` }}
         >
           {bubble.text}

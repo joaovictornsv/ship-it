@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  deskFarmCount,
   lodBadgeCount,
+  SCENE_DESK_COLUMNS_NARROW,
+  SCENE_DESK_COLUMNS_WIDE,
   SCENE_SPRITE_CAP,
   SCENE_SPRITE_CAP_MOBILE,
+  sceneDeskColumns,
   sceneSpriteCap,
   visibleDevCount,
 } from './lod';
@@ -15,6 +19,16 @@ describe('sceneSpriteCap', () => {
 
   it('uses leaner mobile budget below lg', () => {
     expect(sceneSpriteCap(false)).toBe(SCENE_SPRITE_CAP_MOBILE);
+  });
+});
+
+describe('sceneDeskColumns', () => {
+  it('uses 6 columns below lg (matches mobile LOD)', () => {
+    expect(sceneDeskColumns(false)).toBe(SCENE_DESK_COLUMNS_NARROW);
+  });
+
+  it('uses 9 columns at lg+ (matches desktop LOD)', () => {
+    expect(sceneDeskColumns(true)).toBe(SCENE_DESK_COLUMNS_WIDE);
   });
 });
 
@@ -35,7 +49,7 @@ describe('visibleDevCount', () => {
   });
 
   it('respects an explicit mobile cap', () => {
-    expect(visibleDevCount(20, SCENE_SPRITE_CAP_MOBILE)).toBe(
+    expect(visibleDevCount(30, SCENE_SPRITE_CAP_MOBILE)).toBe(
       SCENE_SPRITE_CAP_MOBILE,
     );
     expect(visibleDevCount(10, SCENE_SPRITE_CAP_MOBILE)).toBe(10);
@@ -54,13 +68,44 @@ describe('lodBadgeCount', () => {
   });
 
   it('returns total owned above the cap', () => {
-    expect(lodBadgeCount(33)).toBe(33);
+    expect(lodBadgeCount(SCENE_SPRITE_CAP + 1)).toBe(SCENE_SPRITE_CAP + 1);
     expect(lodBadgeCount(100)).toBe(100);
   });
 
   it('badges earlier under the mobile cap', () => {
-    expect(lodBadgeCount(16, SCENE_SPRITE_CAP_MOBILE)).toBeNull();
-    expect(lodBadgeCount(17, SCENE_SPRITE_CAP_MOBILE)).toBe(17);
+    expect(
+      lodBadgeCount(SCENE_SPRITE_CAP_MOBILE, SCENE_SPRITE_CAP_MOBILE),
+    ).toBeNull();
+    expect(
+      lodBadgeCount(SCENE_SPRITE_CAP_MOBILE + 1, SCENE_SPRITE_CAP_MOBILE),
+    ).toBe(SCENE_SPRITE_CAP_MOBILE + 1);
+  });
+});
+
+describe('deskFarmCount', () => {
+  it('pads to complete rows for the wide farm', () => {
+    expect(deskFarmCount(SCENE_SPRITE_CAP, 12, SCENE_DESK_COLUMNS_WIDE)).toBe(
+      SCENE_SPRITE_CAP,
+    );
+    expect(deskFarmCount(25, 10, SCENE_DESK_COLUMNS_WIDE)).toBe(27);
+    expect(deskFarmCount(1, 2, SCENE_DESK_COLUMNS_WIDE)).toBe(9);
+  });
+
+  it('pads to complete rows for the narrow farm', () => {
+    expect(
+      deskFarmCount(SCENE_SPRITE_CAP_MOBILE, 12, SCENE_DESK_COLUMNS_NARROW),
+    ).toBe(SCENE_SPRITE_CAP_MOBILE);
+    expect(deskFarmCount(5, 6, SCENE_DESK_COLUMNS_NARROW)).toBe(6);
+    expect(deskFarmCount(0, 4, SCENE_DESK_COLUMNS_NARROW)).toBe(6);
+  });
+
+  it('is 0 when nothing is needed', () => {
+    expect(deskFarmCount(0, 0, 9)).toBe(0);
+  });
+
+  it('keeps LOD caps aligned to a full grid (no vacant seats at cap)', () => {
+    expect(SCENE_SPRITE_CAP % SCENE_DESK_COLUMNS_WIDE).toBe(0);
+    expect(SCENE_SPRITE_CAP_MOBILE % SCENE_DESK_COLUMNS_NARROW).toBe(0);
   });
 });
 
