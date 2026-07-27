@@ -59,10 +59,11 @@ function placeBubble(existing: readonly Bubble[]): {
   left: number;
   top: number;
 } {
+  // Inset from edges: `-translate-x-1/2` + max-width can spill past left/right,
+  // and the stage body clips with the parent `overflow-hidden`.
   for (let attempt = 0; attempt < 10; attempt += 1) {
-    const left = 8 + Math.random() * 84;
-    // Full office height (props rail → floor), not just the top band.
-    const top = 10 + Math.random() * 72;
+    const left = 22 + Math.random() * 56;
+    const top = 14 + Math.random() * 58;
     const farEnough = existing.every((bubble) => {
       const dx = bubble.left - left;
       const dy = bubble.top - top;
@@ -73,13 +74,13 @@ function placeBubble(existing: readonly Bubble[]): {
     }
   }
   return {
-    left: 8 + Math.random() * 84,
-    top: 10 + Math.random() * 72,
+    left: 22 + Math.random() * 56,
+    top: 14 + Math.random() * 58,
   };
 }
 
 /**
- * Natural office chatter above the desk farm — several bubbles at once.
+ * Natural office chatter over the desk farm — several bubbles at once.
  * Soft opacity fade in/out; slow spawn / long dwell. Off under reduced motion.
  * Rare specialty lines (GitHub / contributors / calendar / owned props) via
  * `specialtyTalk` — majority stays generic `DEV_LINES` / dialogues.

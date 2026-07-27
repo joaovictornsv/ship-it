@@ -25,19 +25,19 @@ Buying a Dev increases tokens/s **and** spawns a visible character (until the LO
 
 ## Desk farm + sprites
 
-| Rule               | Value                                                                      |
-| ------------------ | -------------------------------------------------------------------------- |
-| Layout             | CSS Grid `.office-desk-farm` — occupied cells get a Dev + desk surface     |
-| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap |
-| Dev sprite         | Emoji faces (`upgradeEmoji` / `DEV_EMOJIS`) — warmer than Lucide notebooks |
-| Talk bubbles       | See **Talk bubbles** below                                                 |
-| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)  |
-| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                          |
-| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                |
-| Cap helper         | `sceneSpriteCap(isDesktop)`                                                |
-| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                    |
-| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                 |
-| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage              |
+| Rule               | Value                                                                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Layout             | Props rail above `.office-stage-body` (floor + talk + CSS Grid desk farm)                                                    |
+| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                                   |
+| Dev sprite         | Emoji faces (`upgradeEmoji` / `DEV_EMOJIS`) — warmer than Lucide notebooks                                                   |
+| Talk bubbles       | See **Talk bubbles** below — scoped to `.office-stage-body` (desk band) so `overflow-hidden` on the stage does not clip them |
+| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                                    |
+| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                                                                            |
+| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                                  |
+| Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                                  |
+| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                                      |
+| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                                   |
+| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                                |
 
 Helpers: `src/features/scene/lod.ts` (unit-tested).
 
@@ -45,7 +45,7 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 
 | Piece             | Behavior                                                                                                                                                                                     |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UI                | `OfficeTalkBubbles` — up to 4 bubbles; slow spawn (~5–8s), long dwell (~7–10s); **off** under `prefers-reduced-motion`                                                                       |
+| UI                | `OfficeTalkBubbles` — up to 4 bubbles over the desk band (not the props rail); inset placement; slow spawn (~5–8s), long dwell (~7–10s); **off** under `prefers-reduced-motion`              |
 | Majority copy     | `devTalk.ts` — generic `DEV_LINES` + `DEV_DIALOGUES`                                                                                                                                         |
 | Rare specialty    | `specialtyTalk.ts` — ~14% of non-dialogue spawns (`SPECIALTY_LINE_CHANCE`)                                                                                                                   |
 | Specialty buckets | Open GitHub issues (build-time snapshot), contributor name-drops, calendar (weekday / time-of-day), owned-upgrade props (Espresso / CI / on-call / code review), office stage, tokens/s band |
