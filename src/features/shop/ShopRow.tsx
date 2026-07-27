@@ -160,9 +160,11 @@ export function ShopRow({ upgrade, buyMode }: ShopRowProps) {
             onUpgradeOwnedChanged(upgrade.id, nextOwned);
           }}
         >
-          <span className="text-[0.65rem] font-semibold leading-none tabular-nums opacity-90">
-            ×{displayQuantity}
-          </span>
+          {displayQuantity > 1 ? (
+            <span className="text-[0.65rem] font-semibold leading-none tabular-nums opacity-90">
+              ×{displayQuantity}
+            </span>
+          ) : null}
           <span className="text-sm font-bold leading-none tabular-nums">
             {formatTokensCompact(previewCost)}
           </span>
