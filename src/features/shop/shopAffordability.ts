@@ -1,8 +1,11 @@
+import { officeThemes } from '../../data/officeThemes';
 import { upgrades, type UpgradeId } from '../../data/upgrades';
 import { maxAffordableOf, nextUpgradeCostForN } from '../../game/economy';
+import { canBuyOfficeTheme } from '../../game/themes';
 import type {
   OwnedBuildingUpgrades,
   OwnedShipUpgrades,
+  OwnedThemes,
   OwnedUpgrades,
   Tokens,
 } from '../../game/types';
@@ -35,19 +38,22 @@ export type ShopAffordabilityInput = {
   owned: OwnedUpgrades;
   shipOwned: OwnedShipUpgrades;
   buildingOwned: OwnedBuildingUpgrades;
+  themesOwned: OwnedThemes;
   buyMode: BuyModeName;
 };
 
 /**
  * True when at least one normal-shop purchase is affordable right now:
- * buildings (respecting bulk buy mode) or visible one-shot Ship / building
- * upgrades. Prestige / Rewrites shop is out of scope (#49).
+ * buildings (respecting bulk buy mode), visible one-shot Ship / building
+ * upgrades, or unowned office themes. Prestige / Rewrites shop is out of
+ * scope (#49).
  */
 export function hasAffordableShopPurchase({
   tokens,
   owned,
   shipOwned,
   buildingOwned,
+  themesOwned,
   buyMode,
 }: ShopAffordabilityInput): boolean {
   for (const upgrade of upgrades) {
@@ -65,6 +71,12 @@ export function hasAffordableShopPurchase({
 
   for (const item of visibleOneShotQueue(owned, shipOwned, buildingOwned)) {
     if (tokens >= item.cost) {
+      return true;
+    }
+  }
+
+  for (const theme of officeThemes) {
+    if (canBuyOfficeTheme(theme.name, themesOwned, tokens)) {
       return true;
     }
   }

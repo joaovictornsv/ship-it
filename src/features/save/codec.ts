@@ -37,6 +37,8 @@ function readRawGameState(raw: unknown): GameState {
     achievementsUnlocked,
     roomsUnlocked,
     activeRoom,
+    themesOwned,
+    activeTheme,
   } = raw;
   if (typeof tokens !== 'number' || !Number.isFinite(tokens)) {
     throw new Error('Save state.tokens must be a finite number');
@@ -176,6 +178,26 @@ function readRawGameState(raw: unknown): GameState {
       throw new Error('Save state.activeRoom must be a non-empty string');
     }
     base.activeRoom = activeRoom as GameState['activeRoom'];
+  }
+
+  if (themesOwned !== undefined) {
+    if (!isRecord(themesOwned)) {
+      throw new Error('Save state.themesOwned must be an object');
+    }
+    const ownedThemes: GameState['themesOwned'] = {};
+    for (const [id, flag] of Object.entries(themesOwned)) {
+      if (flag === true || flag === 1) {
+        ownedThemes[id as keyof GameState['themesOwned']] = true;
+      }
+    }
+    base.themesOwned = ownedThemes;
+  }
+
+  if (activeTheme !== undefined) {
+    if (typeof activeTheme !== 'string' || activeTheme.length === 0) {
+      throw new Error('Save state.activeTheme must be a non-empty string');
+    }
+    base.activeTheme = activeTheme as GameState['activeTheme'];
   }
 
   return base;

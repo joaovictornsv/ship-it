@@ -11,6 +11,7 @@ import {
 } from '../../data/upgrades';
 import { roomSceneClass } from '../../game/rooms';
 import { selectTokensPerSecond, useGameStore } from '../../game/state';
+import { themeSceneClass } from '../../game/themes';
 import { DevSprite } from './DevSprite';
 import { lodBadgeCount, sceneSpriteCap, visibleDevCount } from './lod';
 import { OfficeTalkBubbles } from './OfficeTalkBubbles';
@@ -39,6 +40,7 @@ export function OfficeScene() {
   const onCallOwned = useGameStore((s) => s.owned[ON_CALL.id] ?? 0);
   const tokensPerSecond = useGameStore(selectTokensPerSecond);
   const activeRoomId = useGameStore((s) => s.activeRoom);
+  const activeThemeId = useGameStore((s) => s.activeTheme);
   const room = getRoom(activeRoomId);
   const stage = sceneStageForOwned(devOwned);
   const visible = visibleDevCount(devOwned, cap);
@@ -47,6 +49,7 @@ export function OfficeScene() {
   const [stageFlash, setStageFlash] = useState(false);
   const prevStageRef = useRef(stage.name);
   const prevRoomRef = useRef(activeRoomId);
+  const prevThemeRef = useRef(activeThemeId);
   const bootedRef = useRef(false);
 
   useEffect(() => {
@@ -67,20 +70,23 @@ export function OfficeScene() {
       bootedRef.current = true;
       prevStageRef.current = stage.name;
       prevRoomRef.current = activeRoomId;
+      prevThemeRef.current = activeThemeId;
       return;
     }
     const stageChanged = prevStageRef.current !== stage.name;
     const roomChanged = prevRoomRef.current !== activeRoomId;
+    const themeChanged = prevThemeRef.current !== activeThemeId;
     prevStageRef.current = stage.name;
     prevRoomRef.current = activeRoomId;
-    if (!stageChanged && !roomChanged) {
+    prevThemeRef.current = activeThemeId;
+    if (!stageChanged && !roomChanged && !themeChanged) {
       return;
     }
     setStageFlash(false);
     requestAnimationFrame(() => {
       setStageFlash(true);
     });
-  }, [stage.name, activeRoomId]);
+  }, [stage.name, activeRoomId, activeThemeId]);
 
   const isEmptyOffice = devOwned === 0;
   const deskCount = Math.max(visible, stage.emptyDesks);
@@ -114,12 +120,14 @@ export function OfficeScene() {
         'border border-[var(--ship-line)]',
         'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_92%,transparent)]',
         `office-stage-${stage.name}`,
+        themeSceneClass(activeThemeId),
         roomSceneClass(activeRoomId),
         stageFlash ? 'office-stage-flash' : '',
       ].join(' ')}
       aria-label={`${room.label} — ${stage.label}, ${devOwned} Dev${devOwned === 1 ? '' : 's'}`}
       data-stage={stage.name}
       data-room={activeRoomId}
+      data-theme={activeThemeId}
       data-dev-owned={devOwned}
       onAnimationEnd={(event) => {
         if (event.animationName === 'office-stage-flash') {

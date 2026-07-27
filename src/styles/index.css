@@ -370,6 +370,47 @@ button:disabled {
   --office-desk-pad-bottom: 0.9rem;
 }
 
+/* Office themes — scene-wide tint base (issue #34). Rooms may further tint on top.
+   Never change padding / min-height here — chrome inset stays shared above. */
+.office-theme-default {
+  /* Explicit class for equip parity; tints match `.office-scene` base vars. */
+  --office-theme-id: default;
+}
+
+.office-theme-night-shift {
+  --office-mug: #7a8a9a;
+  --office-wall: color-mix(in srgb, var(--ship-ink) 22%, var(--ship-sky));
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-ink) 14%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-ink) 28%,
+    var(--ship-bg-elevated)
+  );
+}
+
+.office-theme-hackathon {
+  --office-mug: #c47a3a;
+  --office-wall: color-mix(
+    in srgb,
+    var(--ship-warm) 42%,
+    var(--ship-bg-elevated)
+  );
+  --office-floor: color-mix(
+    in srgb,
+    var(--ship-upgrade-sticky-notes) 16%,
+    var(--ship-bg-elevated)
+  );
+  --office-desk: color-mix(
+    in srgb,
+    var(--ship-upgrade-espresso) 14%,
+    var(--ship-bg-elevated)
+  );
+}
+
 /* Unlockable rooms — local floor/wall tints only (not shell --ship-* tokens).
    Never change padding / min-height here — chrome inset is shared above. */
 .office-room-break-room {

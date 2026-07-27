@@ -33,6 +33,8 @@ function sampleState(overrides: Partial<GameState> = {}): GameState {
     achievementsUnlocked: {},
     roomsUnlocked: { office: true },
     activeRoom: 'office',
+    themesOwned: { default: true },
+    activeTheme: 'default',
     lastTickAt: 1_700_000_000_000,
     ...overrides,
   };
@@ -131,7 +133,7 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(6);
+    expect(outcome.result.file.v).toBe(7);
     expect(outcome.result.file.state.shipOwned).toEqual({});
     expect(outcome.result.file.state.buildingOwned).toEqual({});
     expect(outcome.result.file.state.tokensEarnedThisRun).toBe(0);
@@ -143,6 +145,8 @@ describe('checksum + codec', () => {
     expect(outcome.result.file.state.achievementsUnlocked).toEqual({});
     expect(outcome.result.file.state.roomsUnlocked).toEqual({ office: true });
     expect(outcome.result.file.state.activeRoom).toBe('office');
+    expect(outcome.result.file.state.themesOwned).toEqual({ default: true });
+    expect(outcome.result.file.state.activeTheme).toBe('default');
     expect(outcome.result.file.state.tokens).toBe(12);
   });
 
@@ -166,13 +170,15 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(6);
+    expect(outcome.result.file.v).toBe(7);
     expect(outcome.result.file.state.tokensEarnedThisRun).toBe(0);
     expect(outcome.result.file.state.rewrites).toBe(0);
     expect(outcome.result.file.state.prestigeOwned).toEqual({});
     expect(outcome.result.file.state.lifetimeTokensEarned).toBe(0);
     expect(outcome.result.file.state.achievementsUnlocked).toEqual({});
     expect(outcome.result.file.state.buildingOwned).toEqual({});
+    expect(outcome.result.file.state.themesOwned).toEqual({ default: true });
+    expect(outcome.result.file.state.activeTheme).toBe('default');
   });
 
   it('loads a v3 blob (no achievements) with matching checksum then migrates', async () => {
@@ -198,12 +204,14 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(6);
+    expect(outcome.result.file.v).toBe(7);
     expect(outcome.result.file.state.lifetimeTokensEarned).toBe(55);
     expect(outcome.result.file.state.lifetimeClicks).toBe(0);
     expect(outcome.result.file.state.lifetimePurchases).toBe(0);
     expect(outcome.result.file.state.achievementsUnlocked).toEqual({});
     expect(outcome.result.file.state.buildingOwned).toEqual({});
+    expect(outcome.result.file.state.themesOwned).toEqual({ default: true });
+    expect(outcome.result.file.state.activeTheme).toBe('default');
   });
 
   it('checksum is stable across key order in owned', async () => {
@@ -222,10 +230,12 @@ describe('checksum + codec', () => {
       achievementsUnlocked: {},
       roomsUnlocked: { office: true },
       activeRoom: 'office',
+      themesOwned: { default: true },
+      activeTheme: 'default',
     });
     const b = await checksumState(
       JSON.parse(
-        `{"achievementsUnlocked":{},"activeRoom":"office","buildingOwned":{},"lastTickAt":0,"lifetimeClicks":0,"lifetimePurchases":0,"lifetimeTokensEarned":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"prestigeOwned":{},"rewrites":0,"roomsUnlocked":{"office":true},"shipOwned":{},"tokens":1,"tokensEarnedThisRun":0}`,
+        `{"achievementsUnlocked":{},"activeRoom":"office","activeTheme":"default","buildingOwned":{},"lastTickAt":0,"lifetimeClicks":0,"lifetimePurchases":0,"lifetimeTokensEarned":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"prestigeOwned":{},"rewrites":0,"roomsUnlocked":{"office":true},"shipOwned":{},"themesOwned":{"default":true},"tokens":1,"tokensEarnedThisRun":0}`,
       ) as GameState,
     );
     expect(a).toBe(b);
@@ -243,7 +253,7 @@ describe('migrateSaveFile', () => {
     expect(migrateSaveFile(file)).toEqual(file);
   });
 
-  it('migrates v1 saves through v2–v6 defaults', () => {
+  it('migrates v1 saves through v2–v7 defaults', () => {
     const v1State = {
       tokens: 10,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -255,7 +265,7 @@ describe('migrateSaveFile', () => {
       state: v1State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(6);
+    expect(migrated.v).toBe(7);
     expect(migrated.state.shipOwned).toEqual({});
     expect(migrated.state.buildingOwned).toEqual({});
     expect(migrated.state.tokensEarnedThisRun).toBe(0);
@@ -267,6 +277,8 @@ describe('migrateSaveFile', () => {
     expect(migrated.state.achievementsUnlocked).toEqual({});
     expect(migrated.state.roomsUnlocked).toEqual({ office: true });
     expect(migrated.state.activeRoom).toBe('office');
+    expect(migrated.state.themesOwned).toEqual({ default: true });
+    expect(migrated.state.activeTheme).toBe('default');
     expect(migrated.state.tokens).toBe(10);
     expect(migrated.state.owned[ESPRESSO_MACHINE_ID]).toBe(1);
   });
@@ -284,7 +296,7 @@ describe('migrateSaveFile', () => {
       state: v2State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(6);
+    expect(migrated.v).toBe(7);
     expect(migrated.state.tokensEarnedThisRun).toBe(0);
     expect(migrated.state.rewrites).toBe(0);
     expect(migrated.state.prestigeOwned).toEqual({});
@@ -293,6 +305,8 @@ describe('migrateSaveFile', () => {
     expect(migrated.state.buildingOwned).toEqual({});
     expect(migrated.state.roomsUnlocked).toEqual({ office: true });
     expect(migrated.state.activeRoom).toBe('office');
+    expect(migrated.state.themesOwned).toEqual({ default: true });
+    expect(migrated.state.activeTheme).toBe('default');
   });
 
   it('migrates v3 saves by seeding lifetime tokens then adding buildingOwned + rooms', () => {
@@ -311,13 +325,15 @@ describe('migrateSaveFile', () => {
       state: v3State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(6);
+    expect(migrated.v).toBe(7);
     expect(migrated.state.lifetimeTokensEarned).toBe(40);
     expect(migrated.state.lifetimeClicks).toBe(0);
     expect(migrated.state.achievementsUnlocked).toEqual({});
     expect(migrated.state.buildingOwned).toEqual({});
     expect(migrated.state.roomsUnlocked).toEqual({ office: true });
     expect(migrated.state.activeRoom).toBe('office');
+    expect(migrated.state.themesOwned).toEqual({ default: true });
+    expect(migrated.state.activeTheme).toBe('default');
   });
 
   it('migrates v4 saves by adding buildingOwned then rooms', () => {
@@ -340,14 +356,16 @@ describe('migrateSaveFile', () => {
       state: v4State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(6);
+    expect(migrated.v).toBe(7);
     expect(migrated.state.buildingOwned).toEqual({});
     expect(migrated.state.lifetimeTokensEarned).toBe(40);
     expect(migrated.state.roomsUnlocked).toEqual({ office: true });
     expect(migrated.state.activeRoom).toBe('office');
+    expect(migrated.state.themesOwned).toEqual({ default: true });
+    expect(migrated.state.activeTheme).toBe('default');
   });
 
-  it('migrates v5 saves by adding roomsUnlocked + activeRoom', () => {
+  it('migrates v5 saves by adding roomsUnlocked + activeRoom then themes', () => {
     const v5State = {
       tokens: 10,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -368,9 +386,40 @@ describe('migrateSaveFile', () => {
       state: v5State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(6);
+    expect(migrated.v).toBe(7);
     expect(migrated.state.roomsUnlocked).toEqual({ office: true });
     expect(migrated.state.activeRoom).toBe('office');
+    expect(migrated.state.themesOwned).toEqual({ default: true });
+    expect(migrated.state.activeTheme).toBe('default');
+  });
+
+  it('migrates v6 saves by adding themesOwned + activeTheme', () => {
+    const v6State = {
+      tokens: 10,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+      shipOwned: {},
+      buildingOwned: {},
+      tokensEarnedThisRun: 40,
+      rewrites: 0,
+      prestigeOwned: {},
+      lifetimeTokensEarned: 40,
+      lifetimeClicks: 0,
+      lifetimePurchases: 0,
+      achievementsUnlocked: {},
+      roomsUnlocked: { office: true },
+      activeRoom: 'office',
+      lastTickAt: 99,
+    } as GameState;
+    const migrated = migrateSaveFile({
+      v: 6,
+      savedAt: 1,
+      state: v6State,
+      checksum: 'abc',
+    });
+    expect(migrated.v).toBe(7);
+    expect(migrated.state.themesOwned).toEqual({ default: true });
+    expect(migrated.state.activeTheme).toBe('default');
+    expect(migrated.state.roomsUnlocked).toEqual({ office: true });
   });
 
   it('rejects newer-than-supported versions', () => {

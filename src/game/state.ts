@@ -8,6 +8,7 @@ import {
   getPrestigeUpgrade,
   type PrestigeUpgradeId,
 } from '../data/prestigeUpgrades';
+import { DEFAULT_THEME_ID, type ThemeId } from '../data/officeThemes';
 import { DEFAULT_ROOM_ID, type RoomId } from '../data/rooms';
 import {
   type ShipUpgradeId,
@@ -46,6 +47,12 @@ import {
   resolveActiveRoom,
   roomSnapshotFromState,
 } from './rooms';
+import {
+  canBuyOfficeTheme,
+  ensureDefaultThemeOwned,
+  officeThemeCost,
+  resolveActiveTheme,
+} from './themes';
 import { applyProductionTick, resumeWithoutAccrual } from './tick';
 import type { GameState, OwnedAchievements, OwnedRooms, Tokens } from './types';
 
@@ -63,6 +70,8 @@ export const initialGameState: GameState = {
   achievementsUnlocked: {},
   roomsUnlocked: { [DEFAULT_ROOM_ID]: true },
   activeRoom: DEFAULT_ROOM_ID,
+  themesOwned: { [DEFAULT_THEME_ID]: true },
+  activeTheme: DEFAULT_THEME_ID,
   lastTickAt: 0,
 };
 
@@ -170,6 +179,13 @@ type GameActions = {
   dismissAchievementToast: () => void;
   /** Switch the viewed room (must already be unlocked). */
   setActiveRoom: (id: RoomId) => boolean;
+  /**
+   * Buy an office theme with tokens if not already owned.
+   * Returns true when the purchase succeeded.
+   */
+  buyOfficeTheme: (id: ThemeId) => boolean;
+  /** Equip an owned office theme. Returns true when equipped. */
+  setActiveTheme: (id: ThemeId) => boolean;
 };
 
 export type GameStore = GameState &
@@ -304,7 +320,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         buildingOwned: {},
         tokensEarnedThisRun: 0,
         rewrites: state.rewrites + gained,
-        // prestigeOwned, lifetime*, achievementsUnlocked, rooms* kept via base
+        // prestigeOwned, lifetime*, achievementsUnlocked, rooms*, themes* kept via base
       }),
     );
     return gained;
@@ -318,6 +334,36 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({
       roomsUnlocked: unlocked,
       activeRoom: resolveActiveRoom(id, unlocked),
+    });
+    return true;
+  },
+  buyOfficeTheme: (id) => {
+    const state = get();
+    if (!canBuyOfficeTheme(id, state.themesOwned, state.tokens)) {
+      return false;
+    }
+    const cost = officeThemeCost(id);
+    const themesOwned = ensureDefaultThemeOwned({
+      ...state.themesOwned,
+      [id]: true,
+    });
+    set({
+      tokens: state.tokens - cost,
+      themesOwned,
+      // Auto-equip on buy so the purchase feels immediate.
+      activeTheme: resolveActiveTheme(id, themesOwned),
+    });
+    return true;
+  },
+  setActiveTheme: (id) => {
+    const state = get();
+    const owned = ensureDefaultThemeOwned(state.themesOwned);
+    if (owned[id] !== true) {
+      return false;
+    }
+    set({
+      themesOwned: owned,
+      activeTheme: resolveActiveTheme(id, owned),
     });
     return true;
   },
@@ -358,6 +404,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       roomsBase,
     );
     const roomsUnlocked = mergeUnlockedRooms(roomsBase, newlyRooms);
+    const themesOwned = ensureDefaultThemeOwned(saved.themesOwned ?? {});
     set({
       tokens: saved.tokens,
       owned: { ...saved.owned },
@@ -375,6 +422,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       ),
       roomsUnlocked,
       activeRoom: resolveActiveRoom(saved.activeRoom, roomsUnlocked),
+      themesOwned,
+      activeTheme: resolveActiveTheme(saved.activeTheme, themesOwned),
       lastTickAt: nowMs,
       saveUntrusted: untrusted,
       achievementToastQueue: [],
@@ -422,6 +471,8 @@ export function selectPersistedState(state: GameState): GameState {
     achievementsUnlocked: state.achievementsUnlocked,
     roomsUnlocked: state.roomsUnlocked,
     activeRoom: state.activeRoom,
+    themesOwned: state.themesOwned,
+    activeTheme: state.activeTheme,
     lastTickAt: state.lastTickAt,
   };
 }

@@ -2,18 +2,20 @@
 
 DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), **unlockable rooms**, animation / `prefers-reduced-motion`.
 
-**Status:** active — desk-grid office + emoji sprites + richer talk bubbles (#28 / #31); mobile sprite lean from #8; unlockable rooms + prestige keep-list (#11).
+**Status:** active — desk-grid office + emoji sprites + richer talk bubbles (#28 / #31); mobile sprite lean from #8; unlockable rooms + prestige keep-list (#11); office themes shop (#34).
 
 ## Owned by
 
 - `src/features/scene/` — `OfficeScene`, `RoomSwitcher`, `DevSprite`, `OfficeTalkBubbles`, `devTalk`, `specialtyTalk`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
 - `src/data/rooms.ts` — unlockable room catalog (`Rooms` / `createEnum`)
 - `src/game/rooms.ts` — pure unlock + active-room helpers
+- `src/data/officeThemes.ts` — buyable office theme catalog (`OfficeThemes` / `createEnum`)
+- `src/game/themes.ts` — pure buy/equip + `themeSceneClass` helpers
 - `src/data/openIssues.ts` — build-time open-issue snapshot for rare GitHub talk (`pnpm snapshot:issues`)
 - `src/data/contributors.ts` — opt-in contributor skins + talk name-drops (`pnpm generate:contributors`)
 - `src/data/talkNames.ts` — re-exports talk names from the skins catalog
 - `src/app/breakpoints.ts` / `useMediaQuery` — desktop vs mobile sprite budget
-- `src/styles/index.css` — `.office-*` desk farm, room tints, stage density, bob / spawn / stage flash / talk
+- `src/styles/index.css` — `.office-*` desk farm, theme + room tints, stage density, bob / spawn / stage flash / talk
 - `src/app/PlayView.tsx` — mounts `OfficeScene` as the play stage above the HUD + Ship It cluster
 - `src/app/CreditsView.tsx` — contributor skin attribution (`#/credits`)
 
@@ -25,6 +27,7 @@ DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), **un
 | `onUpgradeOwnedChanged(id, n)` | Notifies `sceneEvents` → spawn pop on Dev buy                 |
 | `owned[espresso-machine]` etc. | Emoji prop chips in the props rail (espresso, PR, CI, pager)  |
 | `roomsUnlocked` / `activeRoom` | Room map tabs + per-room floor/wall tint; kept across Rewrite |
+| `themesOwned` / `activeTheme`  | Scene-wide office look class; kept across Rewrite (#34)       |
 
 Buying a Dev increases tokens/s **and** spawns a visible character (until the LOD cap). Non-Dev producers densify the props rail; rooms share the same chrome padding and differ by floor/wall tint.
 
@@ -81,6 +84,25 @@ Data-driven map spaces in `src/data/rooms.ts`. Unlock once → sticky in `roomsU
 - Empty-state hint copy is per-room (`emptyHint` on the catalog entry).
 - Prestige keep-list: see `prestige.md`.
 
+## Office themes
+
+Buyable **scene-wide** cosmetics in `src/data/officeThemes.ts` (shop **Themes** section — see `shop.md`). Distinct from unlockable **rooms** (map spaces) and contributor **Dev skins** (per-sprite). Themes tint the office stage only — not shell `--ship-*` chrome.
+
+| ID            | Label          | Cost (tokens) | Feel                                    |
+| ------------- | -------------- | ------------- | --------------------------------------- |
+| `default`     | Classic office | Free (always) | Cool slate wash — base `.office-scene`  |
+| `night-shift` | Night shift    | 500 (flat)    | Dimmer ink-washed walls for after-hours |
+| `hackathon`   | Hackathon haze | 2_500 (flat)  | Warm sticky-note / pizza chaos          |
+
+- Persist: `themesOwned` + `activeTheme` (save **v7**); classic `default` always owned after normalize / hydrate.
+- Store: `buyOfficeTheme(id)` spends tokens and auto-equips; `setActiveTheme(id)` equips if owned.
+- Pure helpers: `resolveActiveTheme` / `themeSceneClass` / `canBuyOfficeTheme` in `src/game/themes.ts` (unit-tested).
+- CSS: `.office-theme-{id}` on `.office-scene` sets local tint vars (`--office-wall` / `--office-floor` / `--office-desk` / `--office-mug`). Defined **before** `.office-room-*` so rooms may further tint on top.
+- Composition layers on the office root: **stage** (`office-stage-*`) → **theme** (`office-theme-*`) → **room** (`office-room-*`).
+- Equipping a theme (or room / stage change) reuses `.office-stage-flash`.
+- Catalog placeholders are intentional — expand names/art later without changing the buy + equip + persist pipeline.
+- Prestige keep-list: see `prestige.md`.
+
 ## Milestone densification
 
 Discrete **scene stages** keyed off **Dev** owned count. Crossing a threshold shifts the office (empty desk count / floor tint), not only +1 sprite. Stage changes briefly flash the panel (`.office-stage-flash`). Room changes reuse the same flash.
@@ -115,7 +137,7 @@ The play-tip below Ship It stays about clicking / tokens; this hint is place-spe
 | ------------------------ | ---------------------- | ---------------------------------------------------------------- |
 | `office-dev-bob`         | `.office-dev`          | Light idle bob (~2.4s); **off** under `prefers-reduced-motion`   |
 | `office-spawn-pop`       | `.office-dev-spawn`    | Short celebration when a Dev is bought                           |
-| `office-stage-flash`     | `.office-stage-flash`  | Inset flash on milestone stage change                            |
+| `office-stage-flash`     | `.office-stage-flash`  | Inset flash on milestone / room / theme change                   |
 | `office-talk-in` / `out` | `.office-talk-bubble`  | Soft opacity fade; slow spawn (~5–8s), long dwell (~7–10s)       |
 | Desk opacity             | `.office-desk-surface` | Short opacity ease when stage changes; none under reduced motion |
 

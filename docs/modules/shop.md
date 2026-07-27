@@ -2,11 +2,11 @@
 
 Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke copy.
 
-**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal one-shot upgrades queue (#30 + #37 building mults); Rewrites prestige in Rewrite flow only (#9 + #49); scan-first rows (#28); responsive shell (#8); mobile drawer no H-scroll + closed-trigger affordability cue (#53).
+**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal one-shot upgrades queue (#30 + #37 building mults); Rewrites prestige in Rewrite flow only (#9 + #49); scan-first rows (#28); responsive shell (#8); mobile drawer no H-scroll + closed-trigger affordability cue (#53); office themes section (#34).
 
 ## Owned by
 
-- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, `ShopBuildingTile`, `ShopPrestigeRow`, `RewritesShop`, `RewritePanel`, `RewriteConfirmDialog`, icons/colors, `useBuyMode`, `useProductionTick`, `visibleOneShotQueue`, `shopAffordability`
+- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, `ShopBuildingTile`, `ShopThemeRow`, `ShopPrestigeRow`, `RewritesShop`, `RewritePanel`, `RewriteConfirmDialog`, icons/colors, `useBuyMode`, `useProductionTick`, `visibleOneShotQueue`, `shopAffordability`
 - `src/app/breakpoints.ts` — shared `lg` breakpoint (`DESKTOP_MIN_WIDTH_PX = 1024`)
 - `src/features/scene/` — living office reads owned from store; `onUpgradeOwnedChanged` fans out spawn FX
 - `src/app/PlayView.tsx` — mounts `RewritePanel` under Ship It
@@ -24,7 +24,7 @@ Sheet layout **constrains width** (`overflow-x-hidden` on the panel + scroll bod
 
 ### Closed-trigger affordability cue
 
-While the drawer is **closed**, the fixed bottom **Shop** trigger shows a small accent dot when at least one normal-shop purchase is currently affordable (buildings under the active buy mode, or visible Ship / building one-shots). Same cost helpers as buy rows (`shopAffordability` / `hasAffordableShopPurchase`). Cue clears when nothing is affordable or when the drawer is open. Accessible via trigger `aria-label` (`Shop, affordable purchases available`). No second HUD strip or floating badge cluster — cue lives on the existing trigger only.
+While the drawer is **closed**, the fixed bottom **Shop** trigger shows a small accent dot when at least one normal-shop purchase is currently affordable (buildings under the active buy mode, visible Ship / building one-shots, or unowned office themes). Same cost helpers as buy rows (`shopAffordability` / `hasAffordableShopPurchase`). Cue clears when nothing is affordable or when the drawer is open. Accessible via trigger `aria-label` (`Shop, affordable purchases available`). No second HUD strip or floating badge cluster — cue lives on the existing trigger only.
 
 ## Sections
 
@@ -32,8 +32,9 @@ While the drawer is **closed**, the fixed bottom **Shop** trigger shows a small 
 
 1. **Upgrades** — Cookie-style **wrapping** one-shot queue **above** buildings (`ShopShipTile` + `ShopBuildingTile`). Ship ladder next-step + unlocked building boosts, interleaved by cost (`visibleOneShotQueue`). Owned upgrades live on Achievements, not here.
 2. **Buildings** — tokens/s producers (`ShopRow`) with a compact **buy-mode** control in the section header
+3. **Themes** — office look cosmetics (`ShopThemeRow`): flat token costs, buy once, equip one active theme. Scene-only tints — see `scene.md`
 
-**Rewrites shop** is **not** in the normal catalog (#49). Prestige rows live in the Rewrite flow only (`RewritesShop` inside `RewriteConfirmDialog` after confirm). Rail/drawer subtitles stay **buildings + ship**.
+**Rewrites shop** is **not** in the normal catalog (#49). Prestige rows live in the Rewrite flow only (`RewritesShop` inside `RewriteConfirmDialog` after confirm). Rail/drawer subtitles stay **buildings + ship + themes**.
 
 Do not add a second panel, floating badge cluster, or HUD strip of click meta. Keep the buy-mode control in shop chrome — not on the first-paint play column.
 
@@ -90,9 +91,21 @@ Sorted by ascending cost (then id). Empty state copy when the queue has nothing 
 
 Successful buy flashes the tile (`buy-spend-flash`). Ship glyphs/hues live on each Ship def (`--ship-upgrade-*`); building tiles **reuse** the target producer’s `--ship-upgrade-*` hue.
 
+## Themes row
+
+Office cosmetics (`ShopThemeRow`) — flat **token** costs; not Rewrites:
+
+| State    | Control                                                 |
+| -------- | ------------------------------------------------------- |
+| Locked   | Buy button with compact cost (disabled if unaffordable) |
+| Owned    | **Equip** (auto-equip on successful buy)                |
+| Equipped | Disabled **Equipped** label + light accent ring         |
+
+Details ⓘ shows blurb + “Office look · scene only”. Themes do not use buy mode. Catalog + CSS contract: `scene.md`.
+
 ## Copy
 
-English only. Building rate label is always **tokens/s**. Ship tiles say tokens per click / click power; building tiles name the producer and the mult — never mix currencies. Prestige rows show **Rewrites** costs only.
+English only. Building rate label is always **tokens/s**. Ship tiles say tokens per click / click power; building tiles name the producer and the mult — never mix currencies. Prestige rows show **Rewrites** costs only. Theme rows show **tokens** costs only.
 
 ## Ship It CTA
 

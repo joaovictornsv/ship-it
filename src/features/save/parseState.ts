@@ -5,12 +5,18 @@ import type {
   OwnedPrestigeUpgrades,
   OwnedRooms,
   OwnedShipUpgrades,
+  OwnedThemes,
   OwnedUpgrades,
 } from '../../game/types';
 import type { AchievementId } from '../../data/achievements';
 import { achievements } from '../../data/achievements';
 import type { BuildingUpgradeId } from '../../data/buildingUpgrades';
 import { buildingUpgrades } from '../../data/buildingUpgrades';
+import {
+  getOfficeThemeByName,
+  officeThemes,
+  type ThemeId,
+} from '../../data/officeThemes';
 import type { PrestigeUpgradeId } from '../../data/prestigeUpgrades';
 import { prestigeUpgrades } from '../../data/prestigeUpgrades';
 import { getRoomByName, rooms, type RoomId } from '../../data/rooms';
@@ -19,6 +25,7 @@ import { shipUpgrades } from '../../data/shipUpgrades';
 import type { UpgradeId } from '../../data/upgrades';
 import { upgrades } from '../../data/upgrades';
 import { ensureOfficeUnlocked, resolveActiveRoom } from '../../game/rooms';
+import { ensureDefaultThemeOwned, resolveActiveTheme } from '../../game/themes';
 
 const knownUpgradeIds = new Set<string>(upgrades.map((u) => u.id));
 const knownShipUpgradeIds = new Set<string>(shipUpgrades.map((u) => u.id));
@@ -30,6 +37,7 @@ const knownPrestigeUpgradeIds = new Set<string>(
 );
 const knownAchievementIds = new Set<string>(achievements.map((a) => a.name));
 const knownRoomIds = new Set<string>(rooms.map((r) => r.name));
+const knownThemeIds = new Set<string>(officeThemes.map((t) => t.name));
 
 /**
  * Soft-normalize a game state for play.
@@ -170,6 +178,36 @@ export function normalizeGameState(state: GameState): {
     );
   }
 
+  const themesOwned: OwnedThemes = {};
+  const rawThemes = state.themesOwned ?? {};
+  for (const [id, flag] of Object.entries(rawThemes)) {
+    if (flag !== true && flag !== 1) {
+      warnings.push(`themesOwned.${id} is not owned-true; skipped`);
+      continue;
+    }
+    if (!knownThemeIds.has(id)) {
+      warnings.push(`unknown theme id "${id}"; kept for forward-compat`);
+    }
+    themesOwned[id as ThemeId] = true;
+  }
+  const safeThemes = ensureDefaultThemeOwned(themesOwned);
+  const activeTheme = resolveActiveTheme(state.activeTheme, safeThemes);
+  if (
+    state.activeTheme != null &&
+    getOfficeThemeByName(String(state.activeTheme)) == null
+  ) {
+    warnings.push(
+      `unknown activeTheme "${String(state.activeTheme)}"; fell back to ${activeTheme}`,
+    );
+  } else if (
+    state.activeTheme != null &&
+    safeThemes[state.activeTheme as ThemeId] !== true
+  ) {
+    warnings.push(
+      `activeTheme "${String(state.activeTheme)}" is locked; fell back to ${activeTheme}`,
+    );
+  }
+
   return {
     state: {
       tokens: state.tokens,
@@ -185,6 +223,8 @@ export function normalizeGameState(state: GameState): {
       achievementsUnlocked,
       roomsUnlocked: safeRooms,
       activeRoom,
+      themesOwned: safeThemes,
+      activeTheme,
       lastTickAt: state.lastTickAt,
     },
     warnings,

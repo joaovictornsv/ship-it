@@ -1,9 +1,11 @@
+import { officeThemes } from '../../data/officeThemes';
 import { upgrades } from '../../data/upgrades';
 import { useGameStore } from '../../game/state';
 import { ShopBuildingTile } from './ShopBuildingTile';
 import { ShopBuyModeControl } from './ShopBuyModeControl';
 import { ShopRow } from './ShopRow';
 import { ShopShipTile } from './ShopShipTile';
+import { ShopThemeRow } from './ShopThemeRow';
 import { useBuyMode } from './useBuyMode';
 import { visibleOneShotQueue } from './visibleOneShotQueue';
 
@@ -70,6 +72,27 @@ export function ShopCatalog() {
           {upgrades.map((upgrade) => (
             <li key={upgrade.id}>
               <ShopRow upgrade={upgrade} buyMode={buyMode} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="shop-themes-heading">
+        <div className="mb-2 px-0.5">
+          <h3
+            id="shop-themes-heading"
+            className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]"
+          >
+            Themes
+          </h3>
+          <p className="text-xs text-[var(--ship-muted)]">
+            office look · scene cosmetics
+          </p>
+        </div>
+        <ul className="flex list-none flex-col gap-2 p-0">
+          {officeThemes.map((theme) => (
+            <li key={theme.name}>
+              <ShopThemeRow theme={theme} />
             </li>
           ))}
         </ul>

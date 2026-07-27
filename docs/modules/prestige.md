@@ -1,8 +1,8 @@
 # Prestige (Rewrite)
 
-Soft reset, Rewrites currency, prestige shop, what resets vs keeps (rooms kept).
+Soft reset, Rewrites currency, prestige shop, what resets vs keeps (rooms + themes kept).
 
-**Status:** active — issue #9; UX pacing + chrome (#49).
+**Status:** active — issue #9; UX pacing + chrome (#49); office themes on keep-list (#34).
 
 ## Owned by
 
@@ -35,8 +35,9 @@ Track **`tokensEarnedThisRun`** (clicks + passive), not the spendable bank — b
 | Token bank                                | Rewrites bank                                                                |
 | Owned buildings (`owned`)                 | Prestige shop upgrades (Postmortem / Muscle memory / Stub repo)              |
 | Ship upgrades (`shipOwned`) — click track | Cosmetics / **unlocked rooms** (`roomsUnlocked` + `activeRoom`)              |
-| Building upgrades (`buildingOwned`)       | Banked Rewrites passive tokens/s mult                                        |
-| `tokensEarnedThisRun`                     | Achievements + lifetime counters (`achievementsUnlocked`, `lifetime*`) — #33 |
+| Building upgrades (`buildingOwned`)       | Cosmetics / **office themes** (`themesOwned` + `activeTheme`) — #34          |
+| `tokensEarnedThisRun`                     | Banked Rewrites passive tokens/s mult                                        |
+|                                           | Achievements + lifetime counters (`achievementsUnlocked`, `lifetime*`) — #33 |
 
 **Stub repo:** after Rewrite, `owned` starts with **1 Espresso machine** when owned.
 
@@ -66,4 +67,4 @@ click    = (1 + Σ flat) × Π mult × (1 + Muscle memory %)
 
 ## Save
 
-Schema **v3** adds `tokensEarnedThisRun`, `rewrites`, `prestigeOwned`. Achievement keep fields land in **v4** — see `saves.md` / `achievements.md`. Unlockable rooms (`roomsUnlocked`, `activeRoom`) land in **v6** — see `scene.md` / `saves.md`.
+Schema **v3** adds `tokensEarnedThisRun`, `rewrites`, `prestigeOwned`. Achievement keep fields land in **v4** — see `saves.md` / `achievements.md`. Unlockable rooms (`roomsUnlocked`, `activeRoom`) land in **v6** — see `scene.md` / `saves.md`. Office themes (`themesOwned`, `activeTheme`) land in **v7** — see `scene.md` / `saves.md`.

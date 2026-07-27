@@ -135,7 +135,7 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 
 Always respect `prefers-reduced-motion` (already in `index.css`). Prefer light CSS motion; no audio in MVP.
 
-Scene-local flavor (e.g. `--office-mug` on `.office-scene`) may use warmer prop colors without promoting them to shell `--ship-*` tokens — see `scene.md`. Per-upgrade hues above are shared shell tokens for shop + props.
+Scene-local flavor (e.g. `--office-mug` on `.office-scene`) may use warmer prop colors without promoting them to shell `--ship-*` tokens — see `scene.md`. Office **themes** (`office-theme-*`) and **rooms** (`office-room-*`) override the same local tint vars only; they must not fork HUD chrome. Per-upgrade hues above are shared shell tokens for shop + props.
 
 ## Checklist for UI PRs
 

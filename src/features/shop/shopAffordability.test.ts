@@ -48,6 +48,7 @@ describe('hasAffordableShopPurchase', () => {
         owned: {},
         shipOwned: {},
         buildingOwned: {},
+        themesOwned: { default: true },
         buyMode: 'x1',
       }),
     ).toBe(false);
@@ -61,6 +62,7 @@ describe('hasAffordableShopPurchase', () => {
         owned: {},
         shipOwned: {},
         buildingOwned: {},
+        themesOwned: { default: true },
         buyMode: 'x1',
       }),
     ).toBe(true);
@@ -76,6 +78,7 @@ describe('hasAffordableShopPurchase', () => {
         owned: {},
         shipOwned: {},
         buildingOwned: {},
+        themesOwned: { default: true },
         buyMode: 'x10',
       }),
     ).toBe(false);
@@ -85,6 +88,7 @@ describe('hasAffordableShopPurchase', () => {
         owned: {},
         shipOwned: {},
         buildingOwned: {},
+        themesOwned: { default: true },
         buyMode: 'x1',
       }),
     ).toBe(true);
@@ -98,6 +102,7 @@ describe('hasAffordableShopPurchase', () => {
         owned: { [ESPRESSO_MACHINE_ID]: 1 },
         shipOwned: {},
         buildingOwned: {},
+        themesOwned: { default: true },
         // ×100 so buildings stay unaffordable on this bank
         buyMode: 'x100',
       }),
@@ -113,6 +118,7 @@ describe('hasAffordableShopPurchase', () => {
         owned: { [ESPRESSO_MACHINE_ID]: 1 },
         shipOwned: { [RUBBER_DUCK_ID]: true },
         buildingOwned: {},
+        themesOwned: { default: true },
         buyMode: 'x100',
       }),
     ).toBe(true);
@@ -122,6 +128,38 @@ describe('hasAffordableShopPurchase', () => {
         owned: { [ESPRESSO_MACHINE_ID]: 1 },
         shipOwned: { [RUBBER_DUCK_ID]: true },
         buildingOwned: { [DOUBLE_SHOT_ID]: true },
+        themesOwned: {
+          default: true,
+          'night-shift': true,
+          hackathon: true,
+        },
+        buyMode: 'x100',
+      }),
+    ).toBe(false);
+  });
+
+  it('detects an affordable office theme when buildings stay out of reach', () => {
+    expect(
+      hasAffordableShopPurchase({
+        tokens: 500,
+        owned: {},
+        shipOwned: {},
+        buildingOwned: {},
+        themesOwned: { default: true },
+        buyMode: 'x100',
+      }),
+    ).toBe(true);
+    expect(
+      hasAffordableShopPurchase({
+        tokens: 500,
+        owned: {},
+        shipOwned: {},
+        buildingOwned: {},
+        themesOwned: {
+          default: true,
+          'night-shift': true,
+          hackathon: true,
+        },
         buyMode: 'x100',
       }),
     ).toBe(false);

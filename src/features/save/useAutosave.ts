@@ -12,7 +12,8 @@ function getPersistedSnapshot() {
 /**
  * Trailing autosave ~1.5s after tokens / owned / shipOwned / buildingOwned /
  * prestige /
- * achievement counter changes, plus sync flush on `visibilitychange` (hidden)
+ * achievement counter / room / theme changes, plus sync flush on
+ * `visibilitychange` (hidden)
  * and `pagehide` via a warmed base64 blob.
  *
  * `lastTickAt`-only updates do not schedule a save. Token accrual from the
@@ -105,7 +106,9 @@ export function useAutosave(enabled: boolean = true): void {
         state.lifetimePurchases === prev.lifetimePurchases &&
         state.achievementsUnlocked === prev.achievementsUnlocked &&
         state.roomsUnlocked === prev.roomsUnlocked &&
-        state.activeRoom === prev.activeRoom
+        state.activeRoom === prev.activeRoom &&
+        state.themesOwned === prev.themesOwned &&
+        state.activeTheme === prev.activeTheme
       ) {
         return;
       }

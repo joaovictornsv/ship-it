@@ -44,6 +44,8 @@ describe('useGameStore', () => {
     expect(state.achievementsUnlocked).toEqual({});
     expect(state.roomsUnlocked).toEqual({ office: true });
     expect(state.activeRoom).toBe('office');
+    expect(state.themesOwned).toEqual({ default: true });
+    expect(state.activeTheme).toBe('default');
   });
 
   it('shipIt adds clickPower tokens and returns the amount earned', () => {
@@ -244,6 +246,8 @@ describe('useGameStore', () => {
         datacenter: true,
       },
       activeRoom: 'datacenter',
+      themesOwned: { default: true, 'night-shift': true },
+      activeTheme: 'night-shift',
       lastTickAt: 99,
     });
     expect(useGameStore.getState().rewrite()).toBe(1);
@@ -270,6 +274,24 @@ describe('useGameStore', () => {
       datacenter: true,
     });
     expect(state.activeRoom).toBe('datacenter');
+    expect(state.themesOwned).toEqual({
+      default: true,
+      'night-shift': true,
+    });
+    expect(state.activeTheme).toBe('night-shift');
+  });
+
+  it('buys and equips office themes with tokens', () => {
+    useGameStore.setState({ tokens: 500, themesOwned: { default: true } });
+    expect(useGameStore.getState().buyOfficeTheme('night-shift')).toBe(true);
+    const state = useGameStore.getState();
+    expect(state.tokens).toBe(0);
+    expect(state.themesOwned['night-shift']).toBe(true);
+    expect(state.activeTheme).toBe('night-shift');
+    expect(state.setActiveTheme('default')).toBe(true);
+    expect(useGameStore.getState().activeTheme).toBe('default');
+    expect(useGameStore.getState().setActiveTheme('hackathon')).toBe(false);
+    expect(useGameStore.getState().buyOfficeTheme('night-shift')).toBe(false);
   });
 
   it('buying espresso unlocks break-room and switches active room', () => {
@@ -323,6 +345,8 @@ describe('useGameStore', () => {
         achievementsUnlocked: { 'first-ship': true },
         roomsUnlocked: { office: true, 'break-room': true },
         activeRoom: 'break-room',
+        themesOwned: { default: true, hackathon: true },
+        activeTheme: 'hackathon',
         lastTickAt: 1,
       },
       { untrusted: true, nowMs: 9_000 },
@@ -345,6 +369,8 @@ describe('useGameStore', () => {
     expect(state.roomsUnlocked['break-room']).toBe(true);
     expect(state.roomsUnlocked.datacenter).toBe(true);
     expect(state.activeRoom).toBe('break-room');
+    expect(state.themesOwned.hackathon).toBe(true);
+    expect(state.activeTheme).toBe('hackathon');
     expect(state.achievementToastQueue).toEqual([]);
     expect(state.lastTickAt).toBe(9_000);
     expect(state.saveUntrusted).toBe(true);

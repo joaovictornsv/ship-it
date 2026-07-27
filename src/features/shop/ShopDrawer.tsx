@@ -21,11 +21,13 @@ export function ShopDrawer() {
   const owned = useGameStore((s) => s.owned);
   const shipOwned = useGameStore((s) => s.shipOwned);
   const buildingOwned = useGameStore((s) => s.buildingOwned);
+  const themesOwned = useGameStore((s) => s.themesOwned);
   const hasAffordable = hasAffordableShopPurchase({
     tokens,
     owned,
     shipOwned,
     buildingOwned,
+    themesOwned,
     buyMode,
   });
   // Cue only while closed — open drawer shows the catalog itself.
@@ -121,7 +123,7 @@ export function ShopDrawer() {
                   Shop
                 </h2>
                 <p className="text-xs text-[var(--ship-muted)]">
-                  buildings + ship
+                  buildings + ship + themes
                 </p>
               </div>
               <button

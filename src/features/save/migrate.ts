@@ -89,6 +89,21 @@ const migrators: Record<number, Migrator> = {
       activeRoom: legacy.activeRoom ?? 'office',
     };
   },
+  /**
+   * v6 → v7: office themes (scene-wide cosmetics).
+   * Always seed classic `default`; no retroactive owned credit for paid themes.
+   */
+  6: (state) => {
+    const legacy = state as GameState & {
+      themesOwned?: GameState['themesOwned'];
+      activeTheme?: GameState['activeTheme'];
+    };
+    return {
+      ...legacy,
+      themesOwned: legacy.themesOwned ?? { default: true },
+      activeTheme: legacy.activeTheme ?? 'default',
+    };
+  },
 };
 
 /**
