@@ -1,8 +1,9 @@
 /**
  * Display names for rare office-talk name-drops.
- * Until contributor skins (#10) fill `contributors`, keep a tiny public allowlist
- * (repo owner). Skins can merge into this list later.
+ * Sourced from the opt-in contributor skins catalog so bubbles and sprites stay
+ * in sync. Prefer importing from `./contributors` for new code.
  */
-export const TALK_CONTRIBUTOR_NAMES = ['joaovictornsv'] as const;
-
-export type TalkContributorName = (typeof TALK_CONTRIBUTOR_NAMES)[number];
+export {
+  TALK_CONTRIBUTOR_NAMES,
+  type TalkContributorName,
+} from './contributors';

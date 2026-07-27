@@ -8,10 +8,12 @@ DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), room
 
 - `src/features/scene/` — `OfficeScene`, `DevSprite`, `OfficeTalkBubbles`, `devTalk`, `specialtyTalk`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
 - `src/data/openIssues.ts` — build-time open-issue snapshot for rare GitHub talk (`pnpm snapshot:issues`)
-- `src/data/talkNames.ts` — contributor name-drop allowlist for bubbles
+- `src/data/contributors.ts` — opt-in contributor skins + talk name-drops (`pnpm generate:contributors`)
+- `src/data/talkNames.ts` — re-exports talk names from the skins catalog
 - `src/app/breakpoints.ts` / `useMediaQuery` — desktop vs mobile sprite budget
 - `src/styles/index.css` — `.office-*` desk farm, stage density, bob / spawn / stage flash / talk
 - `src/app/PlayView.tsx` — mounts `OfficeScene` as the play stage above the HUD + Ship It cluster
+- `src/app/CreditsView.tsx` — contributor skin attribution (`#/credits`)
 
 ## Presence
 
@@ -25,19 +27,19 @@ Buying a Dev increases tokens/s **and** spawns a visible character (until the LO
 
 ## Desk farm + sprites
 
-| Rule               | Value                                                                                                                        |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| Layout             | Props rail above `.office-stage-body` (floor + talk + CSS Grid desk farm)                                                    |
-| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                                   |
-| Dev sprite         | Emoji faces (`upgradeEmoji` / `DEV_EMOJIS`) — warmer than Lucide notebooks                                                   |
-| Talk bubbles       | See **Talk bubbles** below — scoped to `.office-stage-body` (desk band) so `overflow-hidden` on the stage does not clip them |
-| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                                    |
-| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                                                                            |
-| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                                  |
-| Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                                  |
-| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                                      |
-| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                                   |
-| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                                |
+| Rule               | Value                                                                                                                                                 |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout             | Props rail above `.office-stage-body` (floor + talk + CSS Grid desk farm)                                                                             |
+| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                                                            |
+| Dev sprite         | Opt-in contributor avatar when catalog non-empty; else emoji (`upgradeEmoji` / `DEV_EMOJIS`). Hover `title` = display name. Avatar `onError` → emoji. |
+| Talk bubbles       | See **Talk bubbles** below — scoped to `.office-stage-body` (desk band) so `overflow-hidden` on the stage does not clip them                          |
+| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                                                             |
+| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                                                                                                     |
+| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                                                           |
+| Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                                                           |
+| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                                                               |
+| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                                                            |
+| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                                                         |
 
 Helpers: `src/features/scene/lod.ts` (unit-tested).
 
@@ -50,12 +52,12 @@ Helpers: `src/features/scene/lod.ts` (unit-tested).
 | Rare specialty    | `specialtyTalk.ts` — ~14% of non-dialogue spawns (`SPECIALTY_LINE_CHANCE`)                                                                                                                   |
 | Specialty buckets | Open GitHub issues (build-time snapshot), contributor name-drops, calendar (weekday / time-of-day), owned-upgrade props (Espresso / CI / on-call / code review), office stage, tokens/s band |
 | Issue data        | `src/data/openIssues.ts` via `pnpm snapshot:issues` (server/CI; optional `SHIP_IT_GITHUB_TOKEN`; **no client secrets**). Stale-OK; empty snapshot → skip GitHub bucket                       |
-| Contributor names | `src/data/talkNames.ts` allowlist (owner first); expands with skins pool (#10)                                                                                                               |
+| Contributor names | `src/data/contributors.ts` opt-in skins → `TALK_CONTRIBUTOR_NAMES` (re-exported via `talkNames.ts`)                                                                                          |
 | Motion / chrome   | Reuses `.office-talk-bubble` tokens from `ui.md` — specialty is **copy/selection only**                                                                                                      |
 
-### Contributor skins (#10 extension point)
+### Contributor skins
 
-`DevSprite` documents the swap point: keep the desk-cell layout contract and replace the emoji glyph (or wrap the component) with a skin-aware renderer fed by the opt-in contributor pool. `sceneEvents` / `onUpgradeOwnedChanged` stay the buy-side hook for spawn FX.
+`DevSprite` resolves desk index via `resolveDevSkin` against the opt-in pool in `src/data/contributors.ts` — each contributor avatar appears at most once on screen; overflow desks use emoji glyphs. Avatars are static files under `public/contributors/avatars/`; bake with `pnpm generate:contributors`. Credits / attribution: `#/credits` (`CreditsView`). See `docs/modules/contributors.md`.
 
 ## Milestone densification
 
@@ -100,5 +102,5 @@ Shell motion (`ship-press`, `floater-rise`, `shop-drawer-up`, atmosphere, HUD pu
 ## Out of scope (here)
 
 - Unlockable rooms / prestige keep-list (#11)
-- Contributor skins implementation (#10)
 - Pixel art pipeline
+- Rare / unlockable skins tied to milestones

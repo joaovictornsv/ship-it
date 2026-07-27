@@ -1,4 +1,4 @@
-import { Medal, Save } from 'lucide-react';
+import { Medal, Save, Users } from 'lucide-react';
 import { AchievementUnlockToast } from '../features/achievements';
 import {
   SaveUntrustedBanner,
@@ -8,6 +8,7 @@ import {
 import { useProductionTick } from '../features/shop';
 import { AchievementsView } from './AchievementsView';
 import { Atmosphere } from './Atmosphere';
+import { CreditsView } from './CreditsView';
 import { PlayView } from './PlayView';
 import { SaveView } from './SaveView';
 import { useAppView } from './useAppView';
@@ -54,6 +55,14 @@ export function App() {
               <button
                 type="button"
                 className={iconNavClass}
+                aria-label="Credits"
+                onClick={() => setView('credits')}
+              >
+                <Users className="size-5" strokeWidth={2} aria-hidden />
+              </button>
+              <button
+                type="button"
+                className={iconNavClass}
                 aria-label="Save"
                 onClick={() => setView('save')}
               >
@@ -91,6 +100,8 @@ export function App() {
         <SaveView />
       ) : view === 'achievements' ? (
         <AchievementsView />
+      ) : view === 'credits' ? (
+        <CreditsView />
       ) : (
         <PlayView />
       )}

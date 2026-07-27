@@ -18,6 +18,10 @@ export const AppViews = createEnum({
     hashPath: 'achievements',
     getHash: () => '#/achievements' as const,
   },
+  credits: {
+    hashPath: 'credits',
+    getHash: () => '#/credits' as const,
+  },
 });
 
 export type AppView = keyof typeof AppViews;
@@ -33,7 +37,7 @@ export function parseAppView(hash: string): AppView {
   return getEnumByName(AppViews, path)?.name ?? AppViews.play.name;
 }
 
-/** Canonical hash for a view (`#/` play, `#/save`, `#/achievements`). */
+/** Canonical hash for a view (`#/` play, `#/save`, `#/achievements`, `#/credits`). */
 export function appViewHash(view: AppView): string {
   return AppViews[view].getHash();
 }

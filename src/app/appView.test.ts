@@ -13,6 +13,11 @@ describe('parseAppView', () => {
     expect(parseAppView('#achievements')).toBe('achievements');
   });
 
+  it('maps credits hashes to credits', () => {
+    expect(parseAppView('#/credits')).toBe('credits');
+    expect(parseAppView('#credits')).toBe('credits');
+  });
+
   it('falls back to play for empty or unknown hashes', () => {
     expect(parseAppView('')).toBe('play');
     expect(parseAppView('#/')).toBe('play');
@@ -26,5 +31,6 @@ describe('appViewHash', () => {
     expect(appViewHash('play')).toBe('#/');
     expect(appViewHash('save')).toBe('#/save');
     expect(appViewHash('achievements')).toBe('#/achievements');
+    expect(appViewHash('credits')).toBe('#/credits');
   });
 });

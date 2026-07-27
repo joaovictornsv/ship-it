@@ -417,6 +417,14 @@ button:disabled {
   animation: office-dev-bob 2.4s ease-in-out infinite;
 }
 
+.office-dev-avatar {
+  display: block;
+  border: 1px solid color-mix(in srgb, var(--ship-ink) 12%, transparent);
+  background: color-mix(in srgb, var(--ship-bg-elevated) 80%, transparent);
+  pointer-events: none;
+  user-select: none;
+}
+
 .office-dev-spawn {
   animation:
     office-spawn-pop 420ms ease-out,

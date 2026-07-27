@@ -20,7 +20,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "roadmap:create-issue": "node --experimental-strip-types scripts/create-issue-from-roadmap.ts",
-    "snapshot:issues": "node --experimental-strip-types scripts/snapshot-open-issues.ts"
+    "snapshot:issues": "node --experimental-strip-types scripts/snapshot-open-issues.ts",
+    "generate:contributors": "node --experimental-strip-types scripts/generate-contributors.ts"
   },
   "dependencies": {
     "lucide-react": "^1.27.0",

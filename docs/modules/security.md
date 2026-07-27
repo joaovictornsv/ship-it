@@ -28,6 +28,20 @@ Threat model for the browser-only Ship It client, and what the save checksum act
 - Contributor skins/data stay static and public; attribution stays honest.
 - When adding network features later, revisit this doc — client trust does not transfer to a server.
 
+## Contributor skins (static pipeline)
+
+Office Dev skins celebrate opt-in repo contributors (and joke bots). Rules:
+
+| Rule    | Detail                                                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Client  | Ships only public display names + static avatar paths under `/contributors/avatars/` — never a token                      |
+| Consent | Pool is opt-in (`public/contributors/opt-in.json`); do not scrape private profiles or add people without consent          |
+| Bake    | Optional `pnpm generate:contributors` fetches public `github.com/{login}.png` in CI/local scripts only — **not** `VITE_*` |
+| Failure | Missing or unloadable avatar → generic Dev emoji glyph; empty pool → all emoji. Scene never calls GitHub at runtime       |
+| Credits | `#/credits` attributes skins honestly (tribute framing)                                                                   |
+
+See `docs/modules/contributors.md`.
+
 ## Open-issues snapshot (office talk)
 
 Rare office bubbles may reference open GitHub issues. Data is a **build-time snapshot** (`src/data/openIssues.ts`), regenerated with `pnpm snapshot:issues`:
