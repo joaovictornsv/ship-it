@@ -27,3 +27,14 @@ Threat model for the browser-only Ship It client, and what the save checksum act
 - Prefer soft warnings over hard blocks for plausibility checks.
 - Contributor skins/data stay static and public; attribution stays honest.
 - When adding network features later, revisit this doc — client trust does not transfer to a server.
+
+## Open-issues snapshot (office talk)
+
+Rare office bubbles may reference open GitHub issues. Data is a **build-time snapshot** (`src/data/openIssues.ts`), regenerated with `pnpm snapshot:issues`:
+
+| Rule    | Detail                                                                                                                                                                       |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Client  | Ships only public fields (`number`, `title`) — never a token                                                                                                                 |
+| Auth    | Optional `SHIP_IT_GITHUB_TOKEN` (fine-grained **Issues: Read-only** on `ship-it`) for server/CI/local scripts only; unauthenticated public API also works (lower rate limit) |
+| Storage | Token in Actions secrets / local `.env.local` (gitignored) — **not** `VITE_*`                                                                                                |
+| Failure | Empty or stale snapshot → skip the GitHub talk bucket; generic lines still work                                                                                              |

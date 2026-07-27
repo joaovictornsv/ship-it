@@ -2,11 +2,13 @@
 
 DOM + CSS living office, LOD caps (24–48 desktop lean; leaner on mobile), rooms, animation / `prefers-reduced-motion`.
 
-**Status:** active — desk-grid office + emoji sprites + talk bubbles (issue #28); mobile sprite lean from #8.
+**Status:** active — desk-grid office + emoji sprites + richer talk bubbles (#28 / #31); mobile sprite lean from #8.
 
 ## Owned by
 
-- `src/features/scene/` — `OfficeScene`, `DevSprite`, `OfficeTalkBubbles`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
+- `src/features/scene/` — `OfficeScene`, `DevSprite`, `OfficeTalkBubbles`, `devTalk`, `specialtyTalk`, LOD / stage helpers, `sceneEvents`, `onUpgradeOwnedChanged`
+- `src/data/openIssues.ts` — build-time open-issue snapshot for rare GitHub talk (`pnpm snapshot:issues`)
+- `src/data/talkNames.ts` — contributor name-drop allowlist for bubbles
 - `src/app/breakpoints.ts` / `useMediaQuery` — desktop vs mobile sprite budget
 - `src/styles/index.css` — `.office-*` desk farm, stage density, bob / spawn / stage flash / talk
 - `src/app/PlayView.tsx` — mounts `OfficeScene` as the play stage above the HUD + Ship It cluster
@@ -23,21 +25,33 @@ Buying a Dev increases tokens/s **and** spawns a visible character (until the LO
 
 ## Desk farm + sprites
 
-| Rule               | Value                                                                                                          |
-| ------------------ | -------------------------------------------------------------------------------------------------------------- |
-| Layout             | CSS Grid `.office-desk-farm` — occupied cells get a Dev + desk surface                                         |
-| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap                                     |
-| Dev sprite         | Emoji faces (`upgradeEmoji` / `DEV_EMOJIS`) — warmer than Lucide notebooks                                     |
-| Talk bubbles       | `OfficeTalkBubbles` + `devTalk.ts` — natural office lines/dialogues; up to 4 at once; off under reduced motion |
-| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)                                      |
-| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                                                              |
-| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                                                    |
-| Cap helper         | `sceneSpriteCap(isDesktop)`                                                                                    |
-| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                                                        |
-| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                                                     |
-| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage                                                  |
+| Rule               | Value                                                                      |
+| ------------------ | -------------------------------------------------------------------------- |
+| Layout             | CSS Grid `.office-desk-farm` — occupied cells get a Dev + desk surface     |
+| Empty desks        | Stage-driven minimum desk count so the office densifies before the LOD cap |
+| Dev sprite         | Emoji faces (`upgradeEmoji` / `DEV_EMOJIS`) — warmer than Lucide notebooks |
+| Talk bubbles       | See **Talk bubbles** below                                                 |
+| Breakpoint         | Same as shop: Tailwind `lg` / `min-width: 1024px` (`DESKTOP_MEDIA_QUERY`)  |
+| Desktop sprite cap | `SCENE_SPRITE_CAP = 32` (mid-range of 24–48 lean)                          |
+| Mobile sprite cap  | `SCENE_SPRITE_CAP_MOBILE = 16` (below `lg`)                                |
+| Cap helper         | `sceneSpriteCap(isDesktop)`                                                |
+| Visible sprites    | `min(owned, cap)` via `visibleDevCount`                                    |
+| Badge              | When `owned > cap`, show `×{owned}` so 100+ stays readable                 |
+| Stage panel        | `max-w-xl` → `sm:max-w-2xl`, `rounded-2xl` — reads as a stage              |
 
 Helpers: `src/features/scene/lod.ts` (unit-tested).
+
+### Talk bubbles
+
+| Piece             | Behavior                                                                                                                                                                                     |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI                | `OfficeTalkBubbles` — up to 4 bubbles; slow spawn (~5–8s), long dwell (~7–10s); **off** under `prefers-reduced-motion`                                                                       |
+| Majority copy     | `devTalk.ts` — generic `DEV_LINES` + `DEV_DIALOGUES`                                                                                                                                         |
+| Rare specialty    | `specialtyTalk.ts` — ~14% of non-dialogue spawns (`SPECIALTY_LINE_CHANCE`)                                                                                                                   |
+| Specialty buckets | Open GitHub issues (build-time snapshot), contributor name-drops, calendar (weekday / time-of-day), owned-upgrade props (Espresso / CI / on-call / code review), office stage, tokens/s band |
+| Issue data        | `src/data/openIssues.ts` via `pnpm snapshot:issues` (server/CI; optional `SHIP_IT_GITHUB_TOKEN`; **no client secrets**). Stale-OK; empty snapshot → skip GitHub bucket                       |
+| Contributor names | `src/data/talkNames.ts` allowlist (owner first); expands with skins pool (#10)                                                                                                               |
+| Motion / chrome   | Reuses `.office-talk-bubble` tokens from `ui.md` — specialty is **copy/selection only**                                                                                                      |
 
 ### Contributor skins (#10 extension point)
 

@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { DEV_DIALOGUES, DEV_LINES } from './devTalk';
+import { DEV_DIALOGUES } from './devTalk';
+import {
+  pickTalkLine,
+  type TalkContext,
+  type TalkOwnedProps,
+} from './specialtyTalk';
+import type { SceneStageId } from './stages';
 
 /** New bubbles arrive slowly so the office doesn’t chatter constantly. */
 const SPAWN_MIN_MS = 4500;
@@ -18,9 +24,15 @@ type Bubble = {
   fading: boolean;
 };
 
-type OfficeTalkBubblesProps = {
+export type OfficeTalkBubblesProps = {
   /** How many Devs are visible — no chatter when the office is empty. */
   visibleDevs: number;
+  stageId: SceneStageId;
+  tokensPerSecond: number;
+  espressoOwned: number;
+  codeReviewOwned: number;
+  ciOwned: number;
+  onCallOwned: number;
 };
 
 function maxBubblesFor(visibleDevs: number): number {
@@ -41,12 +53,6 @@ function maxBubblesFor(visibleDevs: number): number {
 
 function randomBetween(min: number, max: number): number {
   return min + Math.random() * (max - min);
-}
-
-function pickLine(exclude: Set<string>): string {
-  const pool = DEV_LINES.filter((line) => !exclude.has(line));
-  const source = pool.length > 0 ? pool : [...DEV_LINES];
-  return source[Math.floor(Math.random() * source.length)]!;
 }
 
 function placeBubble(existing: readonly Bubble[]): {
@@ -75,8 +81,18 @@ function placeBubble(existing: readonly Bubble[]): {
 /**
  * Natural office chatter above the desk farm — several bubbles at once.
  * Soft opacity fade in/out; slow spawn / long dwell. Off under reduced motion.
+ * Rare specialty lines (GitHub / contributors / calendar / owned props) via
+ * `specialtyTalk` — majority stays generic `DEV_LINES` / dialogues.
  */
-export function OfficeTalkBubbles({ visibleDevs }: OfficeTalkBubblesProps) {
+export function OfficeTalkBubbles({
+  visibleDevs,
+  stageId,
+  tokensPerSecond,
+  espressoOwned,
+  codeReviewOwned,
+  ciOwned,
+  onCallOwned,
+}: OfficeTalkBubblesProps) {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
   useEffect(() => {
@@ -95,6 +111,21 @@ export function OfficeTalkBubbles({ visibleDevs }: OfficeTalkBubblesProps) {
     let seq = 0;
     let live: Bubble[] = [];
     const recent = new Set<string>();
+    const owned: TalkOwnedProps = {
+      espresso: espressoOwned,
+      codeReview: codeReviewOwned,
+      ci: ciOwned,
+      onCall: onCallOwned,
+    };
+
+    function talkContext(): TalkContext {
+      return {
+        now: new Date(),
+        stageId,
+        tokensPerSecond,
+        owned,
+      };
+    }
 
     function sync(next: Bubble[]) {
       live = next;
@@ -173,7 +204,7 @@ export function OfficeTalkBubbles({ visibleDevs }: OfficeTalkBubblesProps) {
           }, DIALOGUE_FOLLOW_MS);
           hideTimers.add(followTimer);
         } else {
-          show(pickLine(recent));
+          show(pickTalkLine({ exclude: recent, context: talkContext() }));
         }
       }
 
@@ -193,7 +224,15 @@ export function OfficeTalkBubbles({ visibleDevs }: OfficeTalkBubblesProps) {
       });
       hideTimers.clear();
     };
-  }, [visibleDevs]);
+  }, [
+    visibleDevs,
+    stageId,
+    tokensPerSecond,
+    espressoOwned,
+    codeReviewOwned,
+    ciOwned,
+    onCallOwned,
+  ]);
 
   if (visibleDevs <= 0 || bubbles.length === 0) {
     return null;

@@ -8,7 +8,7 @@ import {
   ESPRESSO_MACHINE,
   ON_CALL,
 } from '../../data/upgrades';
-import { useGameStore } from '../../game/state';
+import { selectTokensPerSecond, useGameStore } from '../../game/state';
 import { DevSprite } from './DevSprite';
 import { lodBadgeCount, sceneSpriteCap, visibleDevCount } from './lod';
 import { OfficeTalkBubbles } from './OfficeTalkBubbles';
@@ -34,6 +34,7 @@ export function OfficeScene() {
   const codeReviewOwned = useGameStore((s) => s.owned[CODE_REVIEW.id] ?? 0);
   const ciOwned = useGameStore((s) => s.owned[CI_CD.id] ?? 0);
   const onCallOwned = useGameStore((s) => s.owned[ON_CALL.id] ?? 0);
+  const tokensPerSecond = useGameStore(selectTokensPerSecond);
   const stage = sceneStageForOwned(devOwned);
   const visible = visibleDevCount(devOwned, cap);
   const badge = lodBadgeCount(devOwned, cap);
@@ -117,7 +118,15 @@ export function OfficeScene() {
       <div className="office-sky pointer-events-none absolute inset-x-0 top-0 h-1/3" />
       <div className="office-floor pointer-events-none absolute inset-x-0 bottom-0 h-2/3" />
 
-      <OfficeTalkBubbles visibleDevs={visible} />
+      <OfficeTalkBubbles
+        visibleDevs={visible}
+        stageId={stage.name}
+        tokensPerSecond={tokensPerSecond}
+        espressoOwned={espressoOwned}
+        codeReviewOwned={codeReviewOwned}
+        ciOwned={ciOwned}
+        onCallOwned={onCallOwned}
+      />
 
       {props.length > 0 ? (
         <div className="office-props-rail relative z-[1]" aria-hidden>
