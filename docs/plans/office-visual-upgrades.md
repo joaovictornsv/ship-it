@@ -6,9 +6,9 @@ Canonical art prompts and integration notes for the living office scene. Module 
 
 ## Locked scope
 
-**Done:** titles, people-only sprites, flex desk (laptop + snack), centered name tip, single `office.jpeg` trial (to be replaced).
+**Done:** titles, people-only sprites, flex desk, centered name tip, office **wall + floor** strips wired.
 
-**Final:** **two** pixel strips per room — **minimalist wall** + **floor** — not one full-stage image.
+**Remaining:** wall + floor art for other rooms (`break-room`, `review-lab`, `ops-bay`, `datacenter`).
 
 Not in scope: buyable office themes (#34), economy changes, new rooms.
 
