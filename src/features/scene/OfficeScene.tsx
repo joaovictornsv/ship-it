@@ -13,7 +13,13 @@ import { roomSceneClass } from '../../game/rooms';
 import { selectTokensPerSecond, useGameStore } from '../../game/state';
 import { DevSprite } from './DevSprite';
 import { DeskStack } from './DeskStack';
-import { sceneSpriteCap, visibleDevCount } from './lod';
+import {
+  deskFarmCount,
+  lodBadgeCount,
+  sceneDeskColumns,
+  sceneSpriteCap,
+  visibleDevCount,
+} from './lod';
 import { OfficeTalkBubbles } from './OfficeTalkBubbles';
 import { RoomSwitcher } from './RoomSwitcher';
 import { isDevSpawnEvent, subscribeUpgradeOwnedChanged } from './sceneEvents';
@@ -22,11 +28,12 @@ import { sceneStageForOwned } from './stages';
 /**
  * Shared DOM+CSS living office: Devs spawn from owned count, LOD-capped,
  * CSS Grid desk farm, discrete milestone stages + unlockable rooms (#11).
- * Below `lg`, uses the leaner mobile sprite budget.
+ * Below `lg`, uses the leaner mobile sprite budget + 6-col fixed desk farm.
  */
 export function OfficeScene() {
   const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);
   const cap = sceneSpriteCap(isDesktop);
+  const columns = sceneDeskColumns(isDesktop);
   const devOwned = useGameStore((s) => s.owned[DEV_ID] ?? 0);
   const espressoOwned = useGameStore((s) => s.owned[ESPRESSO_MACHINE.id] ?? 0);
   const codeReviewOwned = useGameStore((s) => s.owned[CODE_REVIEW.id] ?? 0);
@@ -37,6 +44,8 @@ export function OfficeScene() {
   const room = getRoom(activeRoomId);
   const stage = sceneStageForOwned(devOwned);
   const visible = visibleDevCount(devOwned, cap);
+  const badge = lodBadgeCount(devOwned, cap);
+  const deskCount = deskFarmCount(visible, stage.emptyDesks, columns);
   const [spawnIndex, setSpawnIndex] = useState<number | null>(null);
   const [stageFlash, setStageFlash] = useState(false);
   const prevStageRef = useRef(stage.name);
@@ -77,7 +86,6 @@ export function OfficeScene() {
   }, [stage.name, activeRoomId]);
 
   const isEmptyOffice = devOwned === 0;
-  const deskCount = Math.max(visible, stage.emptyDesks);
 
   return (
     <section
@@ -149,6 +157,20 @@ export function OfficeScene() {
             );
           })}
 
+          {badge !== null ? (
+            <span
+              className={[
+                'absolute right-3 top-3 rounded-lg',
+                'border border-[var(--ship-line)]',
+                'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_90%,transparent)]',
+                'px-2 py-1 text-sm font-bold tabular-nums text-[var(--ship-ink)]',
+              ].join(' ')}
+              aria-label={`${badge} Devs total`}
+            >
+              ×{badge}
+            </span>
+          ) : null}
+
           {isEmptyOffice ? (
             <p className="office-empty-hint text-sm text-[var(--ship-muted)]">
               {room.emptyHint}
@@ -160,7 +182,7 @@ export function OfficeScene() {
       <p className="sr-only">
         {room.label}. {stage.label}. {devOwned} Dev
         {devOwned === 1 ? '' : 's'} owned
-        {devOwned > visible ? `, showing ${visible} on screen` : ''}.
+        {badge !== null ? `, showing ${visible} on screen` : ''}.
       </p>
     </section>
   );

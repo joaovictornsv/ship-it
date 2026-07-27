@@ -26,42 +26,43 @@ Agents and humans that change player-facing UI **must** read this doc and follow
 
 Defined on `:root` in `src/styles/index.css`. Prefer these over raw hex in components.
 
-| Token                           | Value                  | Use                                                   |
-| ------------------------------- | ---------------------- | ----------------------------------------------------- |
-| `--ship-bg`                     | `#e6edf5`              | Page base (under gradient / grid)                     |
-| `--ship-bg-elevated`            | `#f4f7fb`              | Header / panel surfaces                               |
-| `--ship-ink`                    | `#122033`              | Primary text                                          |
-| `--ship-muted`                  | `#5b6b7c`              | Secondary text, helper copy                           |
-| `--ship-accent`                 | `#0f7a74`              | Primary actions (Ship It, buy), focus rings, floaters |
-| `--ship-accent-deep`            | `#0a524e`              | Accent press shadow / depth                           |
-| `--ship-line`                   | `color-mix(… ink 12%)` | Borders / hairlines                                   |
-| `--ship-token`                  | `#d4a017`              | Currency numeral accent in the HUD                    |
-| `--ship-token-soft`             | `#f0d78c`              | Soft token wash (optional highlights)                 |
-| `--ship-sky`                    | `#9ec5e8`              | Backdrop / office wall wash                           |
-| `--ship-warm`                   | `#e8c47c`              | Warm backdrop accent (not cream+terracotta shell)     |
-| `--ship-upgrade-espresso`       | `#c47a3a`              | Espresso icon / prop                                  |
-| `--ship-upgrade-dev`            | `#0f7a74`              | Dev icon (aligns with accent)                         |
-| `--ship-upgrade-code-review`    | `#6b5b95`              | Code review icon / Review lab room tint               |
-| `--ship-upgrade-ci-cd`          | `#2a9d6e`              | CI / CD icon / prop                                   |
-| `--ship-upgrade-on-call`        | `#d97706`              | On-call icon / prop                                   |
-| `--ship-upgrade-rubber-duck`    | `#d4a017`              | Ship upgrade: Rubber duck                             |
-| `--ship-upgrade-keyboard`       | `#5b6b7c`              | Ship upgrade: Mechanical keyboard                     |
-| `--ship-upgrade-standup`        | `#0f7a74`              | Ship upgrade: Standup                                 |
-| `--ship-upgrade-stack-overflow` | `#c47a3a`              | Ship upgrade: Stack Overflow tab                      |
-| `--ship-upgrade-sticky-notes`   | `#e8c47c`              | Ship upgrade: Sticky notes                            |
-| `--ship-upgrade-dark-mode`      | `#3d5a80`              | Ship upgrade: Dark mode                               |
-| `--ship-upgrade-pair`           | `#3d7ea6`              | Ship upgrade: Pair programming                        |
-| `--ship-upgrade-lgtm`           | `#2a9d6e`              | Ship upgrade: LGTM stamp                              |
-| `--ship-upgrade-pomodoro`       | `#d97706`              | Ship upgrade: Pomodoro                                |
-| `--ship-upgrade-green-build`    | `#2a9d6e`              | Ship upgrade: Green build                             |
-| `--ship-upgrade-readme`         | `#5b6b7c`              | Ship upgrade: README-driven                           |
-| `--ship-upgrade-friday`         | `#0f7a74`              | Ship upgrade: Ship-it Friday                          |
-| `--ship-prestige-postmortem`    | `#3d7ea6`              | Prestige: Postmortem                                  |
-| `--ship-prestige-muscle`        | `#0f7a74`              | Prestige: Muscle memory                               |
-| `--ship-prestige-stub`          | `#c47a3a`              | Prestige: Stub repo                                   |
-| `--ship-rewrite`                | `#5b6b7c`              | Rewrites currency numeral (distinct from token gold)  |
-| `--ship-talk-angry`             | `#c44536`              | Occasional angry peak talk bubble (critic / bug)      |
-| `--ship-talk-happy`             | `#2a9d6e`              | Occasional happy peak talk bubble (ship / promo)      |
+| Token                           | Value                  | Use                                                    |
+| ------------------------------- | ---------------------- | ------------------------------------------------------ |
+| `--ship-bg`                     | `#e6edf5`              | Page base (under gradient / grid)                      |
+| `--ship-bg-elevated`            | `#f4f7fb`              | Header / panel surfaces                                |
+| `--ship-ink`                    | `#122033`              | Primary text                                           |
+| `--ship-muted`                  | `#5b6b7c`              | Secondary text, helper copy                            |
+| `--ship-accent`                 | `#0f7a74`              | Primary actions (Ship It, buy), focus rings, floaters  |
+| `--ship-accent-deep`            | `#0a524e`              | Accent press shadow / depth                            |
+| `--ship-line`                   | `color-mix(… ink 12%)` | Borders / hairlines                                    |
+| `--ship-token`                  | `#d4a017`              | Currency numeral accent in the HUD                     |
+| `--ship-token-soft`             | `#f0d78c`              | Soft token wash (optional highlights)                  |
+| `--ship-sky`                    | `#9ec5e8`              | Backdrop / office wall wash                            |
+| `--ship-warm`                   | `#e8c47c`              | Warm backdrop accent (not cream+terracotta shell)      |
+| `--ship-upgrade-espresso`       | `#c47a3a`              | Espresso icon / prop                                   |
+| `--ship-upgrade-dev`            | `#0f7a74`              | Dev icon (aligns with accent)                          |
+| `--ship-upgrade-code-review`    | `#6b5b95`              | Code review icon / Review lab room tint                |
+| `--ship-upgrade-ci-cd`          | `#2a9d6e`              | CI / CD icon / prop                                    |
+| `--ship-upgrade-on-call`        | `#d97706`              | On-call icon / prop                                    |
+| `--ship-upgrade-rubber-duck`    | `#d4a017`              | Ship upgrade: Rubber duck                              |
+| `--ship-upgrade-keyboard`       | `#5b6b7c`              | Ship upgrade: Mechanical keyboard                      |
+| `--ship-upgrade-standup`        | `#0f7a74`              | Ship upgrade: Standup                                  |
+| `--ship-upgrade-stack-overflow` | `#c47a3a`              | Ship upgrade: Stack Overflow tab                       |
+| `--ship-upgrade-sticky-notes`   | `#e8c47c`              | Ship upgrade: Sticky notes                             |
+| `--ship-upgrade-dark-mode`      | `#3d5a80`              | Ship upgrade: Dark mode                                |
+| `--ship-room-datacenter`        | `#0d4f9c`              | Datacenter room wall / floor tint (strong marine blue) |
+| `--ship-upgrade-pair`           | `#3d7ea6`              | Ship upgrade: Pair programming                         |
+| `--ship-upgrade-lgtm`           | `#2a9d6e`              | Ship upgrade: LGTM stamp                               |
+| `--ship-upgrade-pomodoro`       | `#d97706`              | Ship upgrade: Pomodoro                                 |
+| `--ship-upgrade-green-build`    | `#2a9d6e`              | Ship upgrade: Green build                              |
+| `--ship-upgrade-readme`         | `#5b6b7c`              | Ship upgrade: README-driven                            |
+| `--ship-upgrade-friday`         | `#0f7a74`              | Ship upgrade: Ship-it Friday                           |
+| `--ship-prestige-postmortem`    | `#3d7ea6`              | Prestige: Postmortem                                   |
+| `--ship-prestige-muscle`        | `#0f7a74`              | Prestige: Muscle memory                                |
+| `--ship-prestige-stub`          | `#c47a3a`              | Prestige: Stub repo                                    |
+| `--ship-rewrite`                | `#5b6b7c`              | Rewrites currency numeral (distinct from token gold)   |
+| `--ship-talk-angry`             | `#c44536`              | Occasional angry peak talk bubble (critic / bug)       |
+| `--ship-talk-happy`             | `#2a9d6e`              | Occasional happy peak talk bubble (ship / promo)       |
 
 **Do not** reintroduce coffee-brown shell chrome (`#8b5a2b`, cream `#f3eee4`, etc.). Scene mug tint (`--office-mug`) stays local on `.office-scene`.
 
