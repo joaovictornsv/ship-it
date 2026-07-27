@@ -116,9 +116,15 @@ gh issue edit N --repo joaovictornsv/ship-it --body "…"
 gh issue comment N --repo joaovictornsv/ship-it --body "…"
 ```
 
+## After create
+
+- Return the issue URL to the user.
+- Do **not** start implementing unless asked (`implement-issue`).
+- For roadmap items that are agent/docs-only, **UI rules** may be `N/A — no player-facing UI`.
+
 ## Do not
 
 - Invent labels outside the allowed set.
-- Open #3–#13 by hand-waving without reading `docs/ISSUES.md`.
-- Create GitHub Releases / tags as part of this skill.
+- Open roadmap issues by hand-waving without reading `docs/ISSUES.md`.
+- Create GitHub Releases / tags as part of this skill (`create-release` remains deferred).
 - Omit the **UI rules** section from new issue bodies.

@@ -3,7 +3,8 @@
 Orchestrates verify → review → (optional) audit before a PR.
 
 Read [`.cursor/check-quality-reference.md`](../check-quality-reference.md) for
-scope and report templates.
+scope, skip rules, and report templates. Skill:
+[`.cursor/skills/check-quality/SKILL.md`](../skills/check-quality/SKILL.md).
 
 ## Pipeline (run in this order)
 
@@ -17,15 +18,17 @@ If verify fails, **stop** — do not run review.
 
 ### 2. Review
 
-Follow [`.cursor/commands/review.md`](./review.md):
+Follow [`.cursor/commands/review.md`](./review.md) when `src/` (or behavior
+module docs) changed. Otherwise mark review **skipped**.
 
 1. Enum logic centralization
 2. REVIEW.md code quality
 
-### 3. Audit (optional / when save or scene touched)
+### 3. Audit (when save or scene/tick touched)
 
 Follow [`.cursor/commands/audit.md`](./audit.md) when the change touches saves,
-checksums, security assumptions, scene LOD, or the tick loop.
+checksums, security assumptions, scene LOD, or the tick loop. Otherwise mark
+audit **skipped**.
 
 ## Final report
 

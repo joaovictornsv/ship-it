@@ -1,21 +1,26 @@
 ---
 name: create-pr
 description: >-
-  Open a pull request after quality checks with a structured body. Stub until
-  roadmap #13.
+  Open a Ship It pull request after quality checks with Summary, Agent test
+  plan (agent-checked), and Human test plan (left unchecked). Use when opening
+  or updating a PR, or when implement-issue reaches the PR step.
 ---
 
-# create-pr (stub)
+# create-pr
 
-**Status:** thin stub — deepen in issue #13.
+Open a PR against `main` after quality gates pass. Structured body + assignee.
 
 **Assignee:** always assign `@joaovictornsv` on the PR.
 
-Before opening:
+## Before opening
 
-1. Run every **Agent test plan** command (at minimum `pnpm lint && pnpm typecheck && pnpm test && pnpm build`). Fix failures before opening.
-2. Push the branch
-3. `gh pr create` with Summary + **Agent test plan** + **Human test plan**; link the issue (`Closes #N` when appropriate); assign yourself.
+1. Confirm branch is pushed and tracks `origin` (`git push -u origin HEAD` if new).
+2. Run **`check-quality`** (see that skill / `.cursor/commands/check-quality.md`):
+   - Always: verify (`pnpm lint && pnpm typecheck && pnpm test && pnpm build`)
+   - When `src/` changed: review tier (enum + REVIEW.md)
+   - When save / checksum / scene LOD / tick touched: audit tier
+3. Fix failures before opening. Do not open a red PR.
+4. Follow `git-workflow`: no force push, no rebase, no squash, PR-only to `main`.
 
 ## Test plan sections
 
@@ -23,7 +28,7 @@ Always split verification into two checklists. Do not mix them.
 
 ### Agent test plan — agent owns
 
-Commands an agent can run. Examples: `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, or a chained `pnpm lint && pnpm typecheck && pnpm build`. Optionally note which suites or areas the command covers after an em dash.
+Commands an agent can run. Examples: `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, or a chained `pnpm lint && pnpm typecheck && pnpm test && pnpm build`. Optionally note which suites or areas the command covers after an em dash.
 
 **The opening agent must execute these commands and mark them done.** Do not leave agent items unchecked for the human reviewer.
 
@@ -35,7 +40,7 @@ Commands an agent can run. Examples: `pnpm test`, `pnpm lint`, `pnpm typecheck`,
 ```markdown
 ## Agent test plan
 
-- [x] `pnpm test` — codec round-trip, mismatch load-anyway, storage slot, hydrate
+- [x] `pnpm test` — economy / save / feature suites touched by this PR
 - [x] `pnpm lint && pnpm typecheck && pnpm build`
 ```
 
@@ -52,7 +57,9 @@ Manual UI / playthrough steps only — no shell commands. Write actions a human 
 - [ ] Tamper checksum in DevTools / edit export — load warns but still plays
 ```
 
-Omit a section only if it has nothing useful (rare). Prefer at least one agent command checklist and one human playthrough item when the change is player-facing.
+For agent-only / docs-only PRs (no player-facing UI), still include a short Human test plan when useful (e.g. “N/A — docs/skills only; spot-check AGENTS.md links”), or one smoke item. Prefer at least one agent command checklist.
+
+Omit a section only if it has nothing useful (rare).
 
 ## Create
 
@@ -60,14 +67,15 @@ Omit a section only if it has nothing useful (rare). Prefer at least one agent c
 # After agent commands succeed — agent items are already checked:
 gh pr create --repo joaovictornsv/ship-it \
   --assignee joaovictornsv \
+  --base main \
   --title "TITLE" \
   --body "$(cat <<'EOF'
 ## Summary
-…
+- …
+- …
 
 ## Agent test plan
-- [x] `pnpm test`
-- [x] `pnpm lint && pnpm typecheck && pnpm build`
+- [x] `pnpm lint && pnpm typecheck && pnpm test && pnpm build`
 
 ## Human test plan
 - [ ] …
@@ -77,10 +85,19 @@ EOF
 )"
 ```
 
+Title: short human summary of the change (not necessarily the raw issue title). Body **Summary** is 1–3 bullets of what landed. Use `Closes #N` when this PR fully completes the issue.
+
 If the PR already exists without an assignee:
 
 ```bash
 gh pr edit N --repo joaovictornsv/ship-it --add-assignee joaovictornsv
 ```
 
-Do not force-push to `main`. Do not invent release tags.
+After create, paste the PR URL onto the issue’s `(PR)` execution-checklist line via `gh issue edit` (body-file), not as a status comment.
+
+## Do not
+
+- Force-push to `main`.
+- Invent release tags or ship `create-release` while the roadmap defers it.
+- Leave Agent test plan boxes unchecked for the human.
+- Ask the human to run `pnpm` / lint / test / build for you.

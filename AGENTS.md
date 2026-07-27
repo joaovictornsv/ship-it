@@ -29,6 +29,20 @@ Lefthook runs format + lint (staged) + typecheck on pre-commit (`pnpm exec lefth
 
 **Stack (locked):** Vite, React 19, TypeScript strict, Tailwind, Zustand, Vitest, pnpm, Lefthook, Node 24 CI. Scene = DOM + CSS. Saves = versioned + SHA-256 + base64. English-only UI copy.
 
+## Issue → PR loop
+
+Canonical delivery path (hardened in roadmap #13):
+
+1. **`create-issue`** — file work from `docs/ISSUES.md` or a bug (allowed labels only; include **UI rules**).
+2. **`implement-issue`** — sync clean `main`, assign, append `## Execution checklist` to the **issue body**, implement item-by-item with proof (no status comments).
+3. **`write-tests`** + **`update-docs`** as behavior/contracts change (same PR).
+4. **`check-quality`** — verify → review (when `src/` changes) → audit (when save/scene/tick changes). Shared reference: [`.cursor/check-quality-reference.md`](./.cursor/check-quality-reference.md).
+5. **`create-pr`** — push branch, open PR with Summary + **Agent test plan** (agent runs and checks) + **Human test plan** (left unchecked); link `Closes #N`; assign `@joaovictornsv`.
+6. Domain helpers when needed: `add-upgrade`, `save-migrate`, `balance-pass`, `prestige-change`.
+7. **`create-release`** — deferred while the roadmap says not to ship Releases/tags.
+
+**Dry-run:** issue [#13](https://github.com/joaovictornsv/ship-it/issues/13) itself was delivered with this loop (checklist in the issue body → skills/docs PR → `create-pr`).
+
 ## Do
 
 - Open / implement issues from `docs/ISSUES.md` in order.
@@ -54,17 +68,24 @@ squash, no amend after push, PR-only to `main`, issue-linked commit subjects.
 
 ## Skills & commands
 
-| Skill / command                             | Status                                                 |
-| ------------------------------------------- | ------------------------------------------------------ |
-| `git-workflow`                              | **Usable** — git rules + issue-linked commit format    |
-| `create-issue`                              | **Usable** — open roadmap issues from `docs/ISSUES.md` |
-| `implement-issue`                           | Stub until #13                                         |
-| `create-pr`                                 | Stub until #13                                         |
-| `check-quality` (+ verify / review / audit) | Stub until #13                                         |
-| `write-tests` / `update-docs`               | Stub until #13                                         |
-| Domain skills (`add-upgrade`, …)            | Stub until needed / #13                                |
+| Skill / command                             | Status                                                                              |
+| ------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `git-workflow`                              | **Usable** — git rules + issue-linked commit format                                 |
+| `create-issue`                              | **Usable** — open roadmap issues from `docs/ISSUES.md`                              |
+| `implement-issue`                           | **Usable** — execution checklist in issue body → proof → PR                         |
+| `create-pr`                                 | **Usable** — quality gates + agent/human test plans                                 |
+| `check-quality` (+ verify / review / audit) | **Usable** — orchestrated tiers + [reference](./.cursor/check-quality-reference.md) |
+| `write-tests`                               | **Usable** — Vitest patterns for economy / saves / pure helpers                     |
+| `update-docs`                               | **Usable** — module docs + self-heal                                                |
+| `add-upgrade`                               | **Usable** — catalog entry + shop/scene/docs/tests                                  |
+| `save-migrate`                              | **Usable** — bump `v`, migrator, tests, `saves.md`                                  |
+| `balance-pass`                              | **Usable** — tune costs/CPS/constants + docs/tests                                  |
+| `prestige-change`                           | **Usable** — Rewrite rules + prestige docs (+ migrate if needed)                    |
+| `create-release`                            | **Deferred** — do not ship while roadmap forbids Releases/tags                      |
 
-Entrypoints: `.cursor/skills/`, `.cursor/commands/`, `.cursor/check-quality-reference.md`.
+Entrypoints: `.cursor/skills/*/SKILL.md`, `.cursor/commands/*.md`, `.cursor/check-quality-reference.md`.
+
+Slash commands: `/create-issue`, `/implement-issue`, `/create-pr`, `/check-quality`, `/verify`, `/review`, `/audit`.
 
 ## Self-heal
 

@@ -1,15 +1,29 @@
 ---
 name: implement-issue
 description: >-
-  Implement a GitHub issue with an execution checklist and proof. Stub until
-  roadmap #13 hardens the delivery loop.
+  Implement a GitHub issue with an execution checklist in the issue body,
+  item-by-item proof, then open a PR via create-pr. Use when the user runs
+  /implement-issue or asks to implement a Ship It GitHub issue.
 ---
 
-# implement-issue (stub)
+# implement-issue
 
-**Status:** thin stub — deepen in issue #13.
+Turn a GitHub issue into a PR with a living **Execution checklist** in the
+issue body (not in comments).
 
-**Assignee:** always assign `@joaovictornsv` on the issue (and on the PR via `create-pr`).
+**Assignee:** always assign `@joaovictornsv` on the issue (and on the PR via
+`create-pr`).
+
+## Companion skills
+
+| When                          | Skill                                                               |
+| ----------------------------- | ------------------------------------------------------------------- |
+| Commits / push / branch rules | `git-workflow`                                                      |
+| Pure formulas / migrations    | `write-tests`                                                       |
+| Module / PRODUCT / TECHNICAL  | `update-docs`                                                       |
+| Pre-PR quality gate           | `check-quality` (verify → review → optional audit)                  |
+| Open the PR                   | `create-pr`                                                         |
+| Domain change                 | `add-upgrade` / `save-migrate` / `balance-pass` / `prestige-change` |
 
 ## Core rules
 
@@ -69,7 +83,13 @@ git checkout main
 git pull
 ```
 
-Then create / switch to the feature branch for the issue as usual. Do not start implementation from a stale or dirty tree without the user deciding.
+Then create / switch to the feature branch for the issue:
+
+```bash
+git checkout -b feature/<N>-<short-slug>
+```
+
+Do not start implementation from a stale or dirty tree without the user deciding.
 
 ### 1. Load and assign
 
@@ -94,10 +114,13 @@ For each item: mark `(IN PROGRESS)` in the body → implement → focused proof 
 
 When committing (only if the user asks), follow the `git-workflow` skill: `#<number> <issue title>` from GitHub, then `- ` bullets for the changes in that commit. No quality gates required before the commit.
 
+When behavior or contracts change, follow `update-docs` and `write-tests` in the same change (or the matching checklist lines).
+
 ### 4. Closeout
 
-1. Open a PR with `create-pr` (that skill runs the **Agent test plan**, marks those boxes `- [x]` on the PR body, and leaves **Human test plan** items unchecked for the reviewer). Put the PR URL on the `(PR)` checklist line as `(DONE)`.
-2. Do **not** ask the human to run or check agent test-plan commands — that is the agent's job when opening/updating the PR.
-3. Leave the issue body as the single source of execution-checklist truth.
+1. Run `check-quality` (at least verify; review when `src/` changed; audit when save/scene/tick touched).
+2. Open a PR with `create-pr` (that skill runs the **Agent test plan**, marks those boxes `- [x]` on the PR body, and leaves **Human test plan** items unchecked for the reviewer). Put the PR URL on the `(PR)` checklist line as `(DONE)`.
+3. Do **not** ask the human to run or check agent test-plan commands — that is the agent's job when opening/updating the PR.
+4. Leave the issue body as the single source of execution-checklist truth.
 
 See `AGENTS.md` and `.cursor/check-quality-reference.md`.

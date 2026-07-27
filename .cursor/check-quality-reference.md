@@ -4,7 +4,11 @@ Shared scope and report templates for check-quality tiers.
 
 ## Scope
 
-Review and audit tiers cover changed files under `src/` (and related `docs/modules/` when behavior changes). Verify runs repo-wide scripts.
+| Tier   | Scope                                                                          |
+| ------ | ------------------------------------------------------------------------------ |
+| verify | Repo-wide scripts (lint, typecheck, test, build)                               |
+| review | Changed files under `src/` (+ matching `docs/modules/` when contracts move)    |
+| audit  | Save/security assumptions and/or scene LOD + tick cost when those areas change |
 
 ## Tiers
 
@@ -14,6 +18,16 @@ Review and audit tiers cover changed files under `src/` (and related `docs/modul
 | `verify`        | `pnpm lint`, typecheck, test, build                                    |
 | `review`        | REVIEW.md / AGENTS patterns, **enum centralization**, module-doc drift |
 | `audit`         | Save/security assumptions + scene/tick perf                            |
+
+## When to run which tier
+
+| Change kind                                   | verify | review | audit             |
+| --------------------------------------------- | ------ | ------ | ----------------- |
+| Docs / skills / AGENTS only                   | yes    | skip   | skip              |
+| `src/` feature or game logic                  | yes    | yes    | skip unless below |
+| Save codec, migrator, checksum, export/import | yes    | yes    | yes (security)    |
+| Scene LOD, rooms, tick loop, production raf   | yes    | yes    | yes (perf)        |
+| Both save and scene                           | yes    | yes    | yes (both)        |
 
 ## Fast path (verify)
 
@@ -27,6 +41,15 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ## Check quality — review
 - enum logic: pass | pass (skipped) | fail
 - code quality (REVIEW.md): pass | fail
+Notes:
+```
+
+## Audit-tier report template
+
+```text
+## Check quality — audit
+- security (saves / secrets): pass | pass (skipped) | fail
+- perf (scene LOD / tick): pass | pass (skipped) | fail
 Notes:
 ```
 
