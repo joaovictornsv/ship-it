@@ -2,14 +2,14 @@
 
 Soft reset, Rewrites currency, prestige shop, what resets vs keeps (rooms kept).
 
-**Status:** active — issue #9.
+**Status:** active — issue #9; UX pacing + chrome (#49).
 
 ## Owned by
 
 - `src/game/economy.ts` — pure prestige formulas (`rewritesGained`, mults, costs)
 - `src/data/prestigeUpgrades.ts` — Postmortem / Muscle memory / Stub repo catalog
 - `src/game/state.ts` — earn tracking, `rewrite()`, `buyPrestigeUpgrade()`
-- `src/features/shop/` — `RewritePanel`, `RewriteConfirmDialog`, `ShopPrestigeRow`, Rewrites section in `ShopCatalog`
+- `src/features/shop/` — `RewritePanel`, `RewriteConfirmDialog`, `RewritesShop`, `ShopPrestigeRow`
 - `docs/modules/economy.md`, `saves.md` — cross-links
 
 ## Formula (locked)
@@ -18,13 +18,13 @@ Soft reset, Rewrites currency, prestige shop, what resets vs keeps (rooms kept).
 rewritesGained = floor(sqrt(tokensEarnedThisRun / K))
 ```
 
-| Constant                | Value  | Notes                                              |
-| ----------------------- | ------ | -------------------------------------------------- |
-| `REWRITE_K`             | 10_000 | First Rewrite at ≥10k tokens earned this run       |
-| `REWRITE_TPS_BONUS_PER` | 0.05   | +5% tokens/s per banked Rewrite                    |
-| `PRESTIGE_COST_GROWTH`  | 1.5    | Rising Rewrites cost for repeatable prestige tiers |
+| Constant                | Value   | Notes                                               |
+| ----------------------- | ------- | --------------------------------------------------- |
+| `REWRITE_K`             | 100_000 | First Rewrite at ≥100k tokens earned this run (#49) |
+| `REWRITE_TPS_BONUS_PER` | 0.05    | +5% tokens/s per banked Rewrite                     |
+| `PRESTIGE_COST_GROWTH`  | 1.5     | Rising Rewrites cost for repeatable prestige tiers  |
 
-Unlock when `rewritesGained ≥ 1` (⇔ `tokensEarnedThisRun ≥ K`). UI may show tokens remaining earlier.
+Unlock when `rewritesGained ≥ 1` (⇔ `tokensEarnedThisRun ≥ K`). Before unlock, only a muted one-line progress hint (`Rewrite · N more`) — no grayed panel (#49).
 
 Track **`tokensEarnedThisRun`** (clicks + passive), not the spendable bank — buying must not delay prestige.
 
@@ -59,8 +59,8 @@ click    = (1 + Σ flat) × Π mult × (1 + Muscle memory %)
 
 ## Player UI
 
-- **Rewrite panel** under Ship It: grayed until available; opens confirm dialog (tokens lost vs Rewrites gained + new ×tokens/s).
-- **Rewrites shop** section in `ShopCatalog` (rail + drawer): bank + three prestige rows.
+- **Rewrite CTA** under Ship It: when available (`rewritesGained ≥ 1`), centered status + secondary outline button (not the solid Ship It teal). When locked, a single muted status line (`Rewrite · N more`) with an accessible label — no panel chrome, bank, or mult preview (#49).
+- **Rewrite flow** (`RewriteConfirmDialog`): confirm soft reset (tokens lost vs Rewrites gained + new ×tokens/s) → post-confirm **Rewrites shop** (`RewritesShop` + prestige rows). Not in the normal shop rail/drawer.
 - HUD may show banked Rewrites under tokens/s when `rewrites > 0`.
 - Chrome follows `docs/modules/ui.md` (`--ship-prestige-*`, `--ship-rewrite`).
 

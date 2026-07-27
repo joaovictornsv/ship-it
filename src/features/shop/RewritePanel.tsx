@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   isRewriteAvailable,
-  prestigeTokensPerSecondMult,
   previewRewritePower,
   rewritesGained,
   tokensUntilRewrite,
@@ -11,8 +10,9 @@ import { useGameStore } from '../../game/state';
 import { RewriteConfirmDialog } from './RewriteConfirmDialog';
 
 /**
- * Rewrite status + CTA near the token bank.
- * Grayed preview until ≥1 Rewrite is available; confirm before soft reset.
+ * Rewrite affordance under Ship It (#49):
+ * - Locked: one muted progress line (tokens until next whole Rewrite)
+ * - Available: compact CTA → confirm → Rewrites shop
  */
 export function RewritePanel() {
   const tokens = useGameStore((s) => s.tokens);
@@ -22,66 +22,47 @@ export function RewritePanel() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const available = isRewriteAvailable(tokensEarnedThisRun);
+
+  if (!available) {
+    const until = tokensUntilRewrite(tokensEarnedThisRun);
+    const untilLabel = formatTokensCompact(until);
+    return (
+      <p
+        className="w-full text-center text-xs tabular-nums text-[var(--ship-muted)]"
+        role="status"
+        aria-label={`Rewrite locked. Earn ${untilLabel} more tokens this run to unlock.`}
+      >
+        Rewrite · {untilLabel} more
+      </p>
+    );
+  }
+
   const gained = rewritesGained(tokensEarnedThisRun);
-  const until = tokensUntilRewrite(tokensEarnedThisRun);
   const preview = previewRewritePower(rewrites, gained, prestigeOwned);
-  const currentMult = prestigeTokensPerSecondMult(rewrites, prestigeOwned);
 
   return (
     <>
-      <div
-        className={[
-          'w-full rounded-xl border border-[var(--ship-line)]',
-          'bg-[color-mix(in_srgb,var(--ship-bg-elevated)_88%,transparent)] px-3 py-2.5',
-          'text-left',
-        ].join(' ')}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold tracking-tight text-[var(--ship-ink)]">
-              Rewrite
-            </p>
-            <p className="mt-0.5 text-xs text-[var(--ship-muted)]">
-              {available
-                ? `Ready — bank ${formatTokensCompact(gained)} Rewrite${gained === 1 ? '' : 's'}`
-                : `Earn ${formatTokensCompact(until)} more tokens this run`}
-            </p>
-            {rewrites > 0 || currentMult > 1 ? (
-              <p className="mt-1 text-xs tabular-nums text-[var(--ship-muted)]">
-                Bank{' '}
-                <span className="font-semibold text-[var(--ship-rewrite)]">
-                  {formatTokensCompact(rewrites)}
-                </span>{' '}
-                · ×{currentMult.toFixed(2)} tokens/s
-              </p>
-            ) : null}
-          </div>
-          <button
-            type="button"
-            className={[
-              'shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold',
-              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]',
-              available
-                ? 'bg-[var(--ship-accent)] text-white hover:brightness-110'
-                : 'cursor-not-allowed bg-[color-mix(in_srgb,var(--ship-ink)_8%,transparent)] text-[color-mix(in_srgb,var(--ship-muted)_70%,transparent)]',
-            ].join(' ')}
-            disabled={!available}
-            aria-label={
-              available
-                ? `Rewrite and bank ${formatTokensCompact(gained)} Rewrites`
-                : `Rewrite locked — earn ${formatTokensCompact(until)} more tokens`
-            }
-            onClick={() => setConfirmOpen(true)}
-          >
-            Rewrite
-          </button>
-        </div>
-        {available ? (
-          <p className="mt-2 text-xs tabular-nums text-[var(--ship-muted)]">
-            Lose {formatTokensCompact(tokens)} tokens · new power ×
-            {preview.tpsMult.toFixed(2)} tokens/s
-          </p>
-        ) : null}
+      <div className="flex items-center justify-center gap-2.5">
+        <p className="text-xs leading-none text-[var(--ship-muted)]">
+          <span className="font-semibold text-[var(--ship-ink)]">Rewrite</span>
+          {' · '}
+          bank {formatTokensCompact(gained)} Rewrite
+          {gained === 1 ? '' : 's'}
+        </p>
+        <button
+          type="button"
+          className={[
+            'inline-flex h-8 shrink-0 items-center rounded-lg px-3',
+            'border border-[var(--ship-accent)] bg-[var(--ship-bg-elevated)]',
+            'text-sm font-semibold leading-none text-[var(--ship-accent)]',
+            'hover:bg-[color-mix(in_srgb,var(--ship-accent)_10%,var(--ship-bg-elevated))]',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ship-accent)]',
+          ].join(' ')}
+          aria-label={`Rewrite and bank ${formatTokensCompact(gained)} Rewrites`}
+          onClick={() => setConfirmOpen(true)}
+        >
+          Rewrite
+        </button>
       </div>
 
       {confirmOpen ? (

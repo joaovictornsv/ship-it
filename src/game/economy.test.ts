@@ -382,6 +382,10 @@ describe('building upgrades unlock / queue', () => {
 });
 
 describe('rewritesGained', () => {
+  it('uses playtest K raised for later first Rewrite (#49)', () => {
+    expect(REWRITE_K).toBe(100_000);
+  });
+
   it('is 0 below K and 1 at K', () => {
     expect(rewritesGained(REWRITE_K - 1)).toBe(0);
     expect(rewritesGained(REWRITE_K)).toBe(1);

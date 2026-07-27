@@ -158,7 +158,7 @@ Big milestone → **Rewrite** → reset run economy → keep permanent power fro
 
 - Track **tokens earned this run** (not current bank — spending must not delay prestige).
 - **Rewrite** becomes available when the projected gain is **≥ 1 Rewrite**.
-- UI may show a grayed preview earlier (“Earn X more tokens to Rewrite”) so the goal is visible.
+- Shell chrome stays quiet until then: a muted one-line progress hint until unlock, then a discrete Rewrite CTA (no always-on grayed panel or Rewrites shop in the normal shop). Prestige spend happens in the Rewrite flow after confirm.
 
 ### Rewrites gained (formula lean)
 

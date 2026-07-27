@@ -5,6 +5,7 @@ export { ShopRail } from './ShopRail';
 export { ShopRow } from './ShopRow';
 export { ShopShipTile } from './ShopShipTile';
 export { ShopPrestigeRow } from './ShopPrestigeRow';
+export { RewritesShop } from './RewritesShop';
 export { RewritePanel } from './RewritePanel';
 export { RewriteConfirmDialog } from './RewriteConfirmDialog';
 export { useBuyMode } from './useBuyMode';

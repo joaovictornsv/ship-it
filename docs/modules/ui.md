@@ -96,6 +96,7 @@ Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 | Cluster       | `gap-2`–`gap-4`                                                                          | Tight groups (HUD + Ship It, header row)                                  |
 | Header nav    | Brand + **Achievements** (Medal) + **Credits** (Users) + **Save** icon buttons           | Lightweight hash views (`#/` / `#/achievements` / `#/credits` / `#/save`) |
 | HUD           | Tokens + tokens/s docked on the Ship It cluster (`max-w-md`)                             | PRODUCT §4 — currency next to the click target                            |
+| Rewrite CTA   | Locked: muted `Rewrite · N more`; available: centered label + secondary outline button   | Secondary to Ship It; Rewrites shop lives in the Rewrite dialog only      |
 | Panel pad     | `px-3 py-2` (shop rows); HUD `px-4 py-3`                                                 | Dense Cookie-style buy rows; readable bank                                |
 | Content max   | `max-w-6xl` (shell), office stage `max-w-xl`→`max-w-2xl`, shop rail `lg:w-80`            | Scene reads as a stage, not a tiny card                                   |
 | Main vertical | `py-8`; below `lg` add `pb-28` for the fixed Shop trigger                                | Primary play area + mobile shop clearance                                 |

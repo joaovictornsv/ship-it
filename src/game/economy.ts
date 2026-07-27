@@ -40,9 +40,9 @@ export const COST_GROWTH = 1.15;
 
 /**
  * Rewrite unlock constant: `rewritesGained = floor(sqrt(tokensEarnedThisRun / K))`.
- * Playtest-tuned for first Rewrite ~20–40 min of engaged play.
+ * Playtest-tuned for first Rewrite ~20–40 min of engaged play (#49 raised from 10k).
  */
-export const REWRITE_K = 10_000;
+export const REWRITE_K = 100_000;
 
 /** Passive tokens/s bonus per banked Rewrite (0.05 = +5% each). */
 export const REWRITE_TPS_BONUS_PER = 0.05;
