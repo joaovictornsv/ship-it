@@ -1,12 +1,15 @@
 import type {
   GameState,
   OwnedAchievements,
+  OwnedBuildingUpgrades,
   OwnedPrestigeUpgrades,
   OwnedShipUpgrades,
   OwnedUpgrades,
 } from '../../game/types';
 import type { AchievementId } from '../../data/achievements';
 import { achievements } from '../../data/achievements';
+import type { BuildingUpgradeId } from '../../data/buildingUpgrades';
+import { buildingUpgrades } from '../../data/buildingUpgrades';
 import type { PrestigeUpgradeId } from '../../data/prestigeUpgrades';
 import { prestigeUpgrades } from '../../data/prestigeUpgrades';
 import type { ShipUpgradeId } from '../../data/shipUpgrades';
@@ -16,6 +19,9 @@ import { upgrades } from '../../data/upgrades';
 
 const knownUpgradeIds = new Set<string>(upgrades.map((u) => u.id));
 const knownShipUpgradeIds = new Set<string>(shipUpgrades.map((u) => u.id));
+const knownBuildingUpgradeIds = new Set<string>(
+  buildingUpgrades.map((u) => u.id),
+);
 const knownPrestigeUpgradeIds = new Set<string>(
   prestigeUpgrades.map((u) => u.id),
 );
@@ -81,6 +87,21 @@ export function normalizeGameState(state: GameState): {
     shipOwned[id as ShipUpgradeId] = true;
   }
 
+  const buildingOwned: OwnedBuildingUpgrades = {};
+  const rawBuilding = state.buildingOwned ?? {};
+  for (const [id, flag] of Object.entries(rawBuilding)) {
+    if (flag !== true && flag !== 1) {
+      warnings.push(`buildingOwned.${id} is not owned-true; skipped`);
+      continue;
+    }
+    if (!knownBuildingUpgradeIds.has(id)) {
+      warnings.push(
+        `unknown building upgrade id "${id}"; kept for forward-compat`,
+      );
+    }
+    buildingOwned[id as BuildingUpgradeId] = true;
+  }
+
   const prestigeOwned: OwnedPrestigeUpgrades = {};
   const rawPrestige = state.prestigeOwned ?? {};
   for (const [id, count] of Object.entries(rawPrestige)) {
@@ -120,6 +141,7 @@ export function normalizeGameState(state: GameState): {
       tokens: state.tokens,
       owned,
       shipOwned,
+      buildingOwned,
       tokensEarnedThisRun: Math.max(0, state.tokensEarnedThisRun ?? 0),
       rewrites: Math.max(0, state.rewrites ?? 0),
       prestigeOwned,

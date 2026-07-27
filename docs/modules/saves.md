@@ -2,7 +2,7 @@
 
 Versioned single-slot persistence: autosave, SHA-256 integrity, base64 export/import.
 
-**Status:** active — MVP contract from TECHNICAL §3 (issue #5); prestige fields in v3 (issue #9); achievements in v4 (issue #33).
+**Status:** active — MVP contract from TECHNICAL §3 (issue #5); prestige fields in v3 (issue #9); achievements in v4 (issue #33); building upgrades in v5 (issue #37).
 
 ## Owned by
 
@@ -13,9 +13,9 @@ Versioned single-slot persistence: autosave, SHA-256 integrity, base64 export/im
 
 ```ts
 type SaveFile = {
-  v: number; // schema version (CURRENT_SAVE_VERSION = 4)
+  v: number; // schema version (CURRENT_SAVE_VERSION = 5)
   savedAt: number; // epoch ms
-  state: GameState; // tokens, owned, shipOwned, tokensEarnedThisRun, rewrites, prestigeOwned,
+  state: GameState; // tokens, owned, shipOwned, buildingOwned, tokensEarnedThisRun, rewrites, prestigeOwned,
   // lifetimeTokensEarned, lifetimeClicks, lifetimePurchases, achievementsUnlocked, lastTickAt
   checksum: string; // SHA-256 hex of canonical state JSON
 };
@@ -29,11 +29,11 @@ type SaveFile = {
 - Algorithm = SHA-256 via Web Crypto (`crypto.subtle`).
 - On mismatch: **load anyway**, set `saveUntrusted`, show dismissible banner.
 - Deterrence only — see `security.md`.
-- Older blobs omit later fields (`shipOwned`, prestige, achievements); `readRawGameState` preserves wire shape so pre-migration checksums still match.
+- Older blobs omit later fields (`shipOwned`, prestige, achievements, `buildingOwned`); `readRawGameState` preserves wire shape so pre-migration checksums still match.
 
 ## Autosave
 
-- Trailing ~1.5s window after _*tokens / owned / shipOwned / tokensEarnedThisRun / rewrites / prestigeOwned / lifetime* / achievementsUnlocked_* changes (`lastTickAt`-only and toast-queue noise do not schedule; an already-pending timer is not reset).
+- Trailing ~1.5s window after _*tokens / owned / shipOwned / buildingOwned / tokensEarnedThisRun / rewrites / prestigeOwned / lifetime* / achievementsUnlocked_* changes (`lastTickAt`-only and toast-queue noise do not schedule; an already-pending timer is not reset).
 - Autosave + production tick stay **disabled until hydrate finishes** (avoids writing an empty store over a good slot).
 - Flush on `visibilitychange` → `hidden` and on `pagehide`; prefers a warmed base64 blob for a **sync** `localStorage` write.
 - On hydrate: restore all persisted fields; set `lastTickAt` to now (**no offline accrual**); silently catch up achievement unlocks.
@@ -44,13 +44,14 @@ type SaveFile = {
 - **v1 → v2:** add `shipOwned: {}` (Ship upgrades click-power track). v1 blobs omit `shipOwned` so pre-migration checksums still match.
 - **v2 → v3:** add `tokensEarnedThisRun: 0`, `rewrites: 0`, `prestigeOwned: {}`. Mid-run v2 saves get **no retroactive** earn credit.
 - **v3 → v4:** add `lifetimeTokensEarned` (seeded from `tokensEarnedThisRun`), `lifetimeClicks: 0`, `lifetimePurchases: 0`, `achievementsUnlocked: {}`.
+- **v4 → v5:** add `buildingOwned: {}` (per-producer tokens/s building upgrades).
 - Bump `v` only with an explicit migrator + tests.
 
 ## Export / import
 
 - **Export:** download `ship-it-save.txt` (base64 blob).
 - **Import:** file upload or paste; writes the single slot after a successful parse.
-- Soft plausibility warnings (negative tokens / Rewrites / lifetime counters, unknown upgrade / ship / prestige / achievement ids) never block play.
+- Soft plausibility warnings (negative tokens / Rewrites / lifetime counters, unknown upgrade / ship / building / prestige / achievement ids) never block play.
 
 ## Player UI
 

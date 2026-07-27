@@ -16,7 +16,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 /**
  * Minimal structural read of `state` before checksum (no clamping).
- * Omits `shipOwned` / prestige fields when absent so older checksums still match.
+ * Omits `shipOwned` / `buildingOwned` / prestige fields when absent so older checksums still match.
  */
 function readRawGameState(raw: unknown): GameState {
   if (!isRecord(raw)) {
@@ -27,6 +27,7 @@ function readRawGameState(raw: unknown): GameState {
     owned,
     lastTickAt,
     shipOwned,
+    buildingOwned,
     tokensEarnedThisRun,
     rewrites,
     prestigeOwned,
@@ -65,6 +66,19 @@ function readRawGameState(raw: unknown): GameState {
       }
     }
     base.shipOwned = shipFlags;
+  }
+
+  if (buildingOwned !== undefined) {
+    if (!isRecord(buildingOwned)) {
+      throw new Error('Save state.buildingOwned must be an object');
+    }
+    const buildingFlags: GameState['buildingOwned'] = {};
+    for (const [id, flag] of Object.entries(buildingOwned)) {
+      if (flag === true || flag === 1) {
+        buildingFlags[id as keyof GameState['buildingOwned']] = true;
+      }
+    }
+    base.buildingOwned = buildingFlags;
   }
 
   if (tokensEarnedThisRun !== undefined) {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DOUBLE_SHOT_ID } from '../data/buildingUpgrades';
 import { ESPRESSO_MACHINE_ID } from '../data/upgrades';
 import { applyProductionTick, resumeWithoutAccrual } from './tick';
 
@@ -10,6 +11,7 @@ describe('applyProductionTick', () => {
         owned: { [ESPRESSO_MACHINE_ID]: 1 },
         rewrites: 0,
         prestigeOwned: {},
+        buildingOwned: {},
         lastTickAt: 1_000,
       },
       2_000,
@@ -27,6 +29,7 @@ describe('applyProductionTick', () => {
         owned: {},
         rewrites: 0,
         prestigeOwned: {},
+        buildingOwned: {},
         lastTickAt: 0,
       },
       5_000,
@@ -43,6 +46,7 @@ describe('applyProductionTick', () => {
         owned: { [ESPRESSO_MACHINE_ID]: 10 },
         rewrites: 0,
         prestigeOwned: {},
+        buildingOwned: {},
         lastTickAt: 100,
       },
       100,
@@ -59,11 +63,27 @@ describe('applyProductionTick', () => {
         owned: { [ESPRESSO_MACHINE_ID]: 1 },
         rewrites: 2,
         prestigeOwned: {},
+        buildingOwned: {},
         lastTickAt: 0,
       },
       1_000,
     );
     expect(result.earned).toBeCloseTo(0.1 * 1.1);
+  });
+
+  it('applies building upgrades to accrual', () => {
+    const result = applyProductionTick(
+      {
+        tokens: 0,
+        owned: { [ESPRESSO_MACHINE_ID]: 1 },
+        rewrites: 0,
+        prestigeOwned: {},
+        buildingOwned: { [DOUBLE_SHOT_ID]: true },
+        lastTickAt: 0,
+      },
+      1_000,
+    );
+    expect(result.earned).toBeCloseTo(0.2);
   });
 });
 

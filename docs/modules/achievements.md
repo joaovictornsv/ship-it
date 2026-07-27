@@ -10,7 +10,7 @@ Durable milestone badges across lifetime play stats (issue #33).
 - `src/game/achievements.ts` — pure threshold checks / progress labels
 - `src/game/state.ts` — lifetime counters, unlock merge, ephemeral toast queue, Rewrite keep
 - `src/features/achievements/` — `AchievementUnlockToast` HUD feedback
-- `src/app/AchievementsView.tsx` — milestones panel + this-run Ship upgrades gallery
+- `src/app/AchievementsView.tsx` — milestones panel + this-run Ship / building upgrades galleries
 - `src/app/appView.ts` — `#/achievements` hash view
 - Header Medal icon in `App.tsx` (play view)
 
@@ -22,7 +22,7 @@ Each entry has stable `name` (id), English `title` / `blurb`, `family`, and a `g
 | ------------------- | ----------------------------------------------------- |
 | `lifetimeTokens`    | `lifetimeTokensEarned` (all-time clicks + passive)    |
 | `lifetimeClicks`    | `lifetimeClicks` (Ship It presses)                    |
-| `lifetimePurchases` | Producer unit buys + Ship upgrade buys                |
+| `lifetimePurchases` | Producer unit buys + Ship / building upgrade buys     |
 | `owned`             | Live `owned[upgradeId]` (unlock persists after reset) |
 | `rewrites`          | Banked Rewrites                                       |
 
@@ -31,17 +31,17 @@ Starter set covers **tokens**, **clicks**, **owned**, **purchases**, and **rewri
 ## Unlock rules
 
 - Pure helpers evaluate goals; store merges newly met ids into `achievementsUnlocked`.
-- Unlock is automatic on `shipIt` / `buyUpgrade` / `buyShipUpgrade` / `tick` / `rewrite`.
+- Unlock is automatic on `shipIt` / `buyUpgrade` / `buyShipUpgrade` / `buyBuildingUpgrade` / `tick` / `rewrite`.
 - Hydrate catch-up merges missing unlocks **silently** (no toast spam on load).
 - Unlocks + lifetime counters **persist** across reload and **Rewrite** (cosmetics-class keep-list).
 
 ## Player UI
 
-| Surface            | Behavior                                                                   |
-| ------------------ | -------------------------------------------------------------------------- |
-| Achievements panel | Unlocked + locked rows with progress (`current / threshold`); Ship gallery |
-| Unlock toast       | Fixed top HUD banner; FIFO queue (cap 5); auto-dismiss ~3.2s; `aria-live`  |
-| Motion             | `achievement-toast-in`; off under `prefers-reduced-motion`                 |
+| Surface            | Behavior                                                                                |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| Achievements panel | Unlocked + locked rows with progress (`current / threshold`); Ship + building galleries |
+| Unlock toast       | Fixed top HUD banner; FIFO queue (cap 5); auto-dismiss ~3.2s; `aria-live`               |
+| Motion             | `achievement-toast-in`; off under `prefers-reduced-motion`                              |
 
 **Locked vs unlocked (panel):** unlocked = solid elevated surface, accent inset bar, Check glyph, accent status chip; locked = dashed border, muted ink wash, Lock glyph, muted title/progress. Same `--ship-*` tokens only.
 

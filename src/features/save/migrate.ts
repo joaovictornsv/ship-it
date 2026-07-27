@@ -61,6 +61,16 @@ const migrators: Record<number, Migrator> = {
       lifetimeClicks: legacy.lifetimeClicks ?? 0,
       lifetimePurchases: legacy.lifetimePurchases ?? 0,
       achievementsUnlocked: legacy.achievementsUnlocked ?? {},
+    } as GameState;
+  },
+  /** v4 → v5: add this-run building upgrades map (per-producer tokens/s mults). */
+  4: (state) => {
+    const legacy = state as GameState & {
+      buildingOwned?: GameState['buildingOwned'];
+    };
+    return {
+      ...legacy,
+      buildingOwned: legacy.buildingOwned ?? {},
     };
   },
 };

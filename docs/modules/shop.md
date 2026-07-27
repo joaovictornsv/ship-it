@@ -2,11 +2,11 @@
 
 Shop UX: desktop right rail + mobile bottom drawer; scan-first buy rows; joke copy.
 
-**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal Ship upgrades queue (#30); Rewrites prestige shop (#9); scan-first rows (#28); responsive shell (#8).
+**Status:** active — bulk buy ×1 / ×10 / ×100 / Max for buildings (issue #38); horizontal one-shot upgrades queue (#30 + #37 building mults); Rewrites prestige shop (#9); scan-first rows (#28); responsive shell (#8).
 
 ## Owned by
 
-- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, `ShopPrestigeRow`, `RewritePanel`, `RewriteConfirmDialog`, icons/colors, `useBuyMode`, `useProductionTick`
+- `src/features/shop/` — `ShopRail`, `ShopDrawer`, `ShopCatalog`, `ShopBuyModeControl`, `ShopRow`, `ShopShipTile`, `ShopBuildingTile`, `ShopPrestigeRow`, `RewritePanel`, `RewriteConfirmDialog`, icons/colors, `useBuyMode`, `useProductionTick`, `visibleOneShotQueue`
 - `src/app/breakpoints.ts` — shared `lg` breakpoint (`DESKTOP_MIN_WIDTH_PX = 1024`)
 - `src/features/scene/` — living office reads owned from store; `onUpgradeOwnedChanged` fans out spawn FX
 - `src/app/PlayView.tsx` — mounts `RewritePanel` under Ship It
@@ -24,7 +24,7 @@ Mobile first paint keeps **one primary action** (Ship It). The drawer is `aria-m
 
 `ShopCatalog` renders (rail + drawer share the list):
 
-1. **Ship upgrades** — Cookie-style **horizontal** one-shot queue **above** buildings (`ShopShipTile`). Owned upgrades live on Achievements, not here.
+1. **Upgrades** — Cookie-style **horizontal** one-shot queue **above** buildings (`ShopShipTile` + `ShopBuildingTile`). Ship ladder next-step + unlocked building boosts, interleaved by cost (`visibleOneShotQueue`). Owned upgrades live on Achievements, not here.
 2. **Buildings** — tokens/s producers (`ShopRow`) with a compact **buy-mode** control in the section header
 3. **Rewrites shop** — permanent prestige rows (`ShopPrestigeRow`) spent in **Rewrites**, never tokens
 
@@ -50,7 +50,7 @@ Compact control above the building list: **×1** / **×10** / **×100** / **Max*
 - Session-backed via `sessionStorage` (`ship-it:shop-buy-mode`) so rail remounts / drawer open-close keep the selection
 - Cost preview on each row uses `nextUpgradeCostForN` / `maxAffordableOf` (see `economy.md`)
 - Buy control shows **×quantity** above the mode total for ×10 / ×100 / Max (×1 stays cost-only)
-- Ship upgrade tiles ignore buy mode (still one-shot)
+- Ship / building upgrade tiles ignore buy mode (still one-shot)
 - English labels only; totals use `formatTokensCompact`
 
 ## Building row
@@ -60,31 +60,31 @@ Each producer renders as a dense interactive row (card only because it wraps buy
 | Priority     | Element                             | Notes                                                                                  |
 | ------------ | ----------------------------------- | -------------------------------------------------------------------------------------- |
 | Primary scan | Emoji · **name** · **×N** · **buy** | Owned count is the big number only; buy shows cost, plus **×qty** for ×10 / ×100 / Max |
-| Details      | Joke blurb + `+X tokens/s each`     | Hidden by default                                                                      |
+| Details      | Joke blurb + `+X tokens/s each`     | Hidden by default; catalog base rate (building mults fold into header tokens/s)        |
 
-## Ship upgrade queue
+## One-shot upgrade queue
 
-Horizontal scroll of compact tiles (`visibleShipUpgradeQueue`):
+Horizontal scroll of compact tiles (`visibleOneShotQueue`):
 
-| Shown                                        | Hidden                                     |
-| -------------------------------------------- | ------------------------------------------ |
-| Only the **next available** (not owned) step | Owned upgrades; locked future ladder steps |
+| Shown                                                                                     | Hidden                                                               |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Next **Ship** ladder step (when unlocked) + all unlocked, not-owned **building** upgrades | Owned upgrades; locked future Ship steps / unmet building thresholds |
 
-Empty state copy when the queue has nothing to buy:
+Sorted by ascending cost (then id). Empty state copy when the queue has nothing to buy:
 
-- Soft-locked (no building yet): “Buy a building to unlock the Ship upgrades queue.”
-- Ladder complete: “No Ship upgrades available. Check Achievements for what you own.”
+- Soft-locked (no building yet): “Buy a building to unlock the upgrades queue.”
+- Nothing left: “No upgrades available. Check Achievements for what you own.”
 
-| Tile scan | Element                                   | Notes                                                                                       |
-| --------- | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Primary   | Glyph · short name · cost                 | Whole tile is the buy control                                                               |
-| Details   | ⓘ tooltip: blurb, click effect, CTA label | Hover / keyboard focus / touch toggle; portaled to `body` so shop overflow does not clip it |
+| Tile scan | Element                                                         | Notes                                                                                       |
+| --------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Primary   | Glyph · short name · cost                                       | Whole tile is the buy control                                                               |
+| Details   | ⓘ tooltip: blurb + effect (click power **or** named building ×) | Hover / keyboard focus / touch toggle; portaled to `body` so shop overflow does not clip it |
 
-Successful buy flashes the tile (`buy-spend-flash`). Glyphs and hues live on each Ship upgrade def (`emoji`, `colorVar` → `--ship-upgrade-*`).
+Successful buy flashes the tile (`buy-spend-flash`). Ship glyphs/hues live on each Ship def (`--ship-upgrade-*`); building tiles **reuse** the target producer’s `--ship-upgrade-*` hue.
 
 ## Copy
 
-English only. Building rate label is always **tokens/s**. Ship tiles say tokens per click / click power — never mix currencies. Prestige rows show **Rewrites** costs only.
+English only. Building rate label is always **tokens/s**. Ship tiles say tokens per click / click power; building tiles name the producer and the mult — never mix currencies. Prestige rows show **Rewrites** costs only.
 
 ## Ship It CTA
 
@@ -94,8 +94,8 @@ Each owned Ship upgrade evolves the CTA via `shipItCta` (highest owned wins):
 - **Glyph** — emoji from that upgrade beside the label
 - **Accent** — button background mixes the upgrade’s `--ship-upgrade-*` hue with deploy teal
 
-Press still uses `ship-press` / `floater-rise`. Size hierarchy unchanged; Ship It stays the dominant primary action.
+Press still uses `ship-press` / `floater-rise`. Size hierarchy unchanged; Ship It stays the dominant primary action. Building upgrades do **not** change the CTA.
 
 ## Related views
 
-Owned Ship upgrades also appear on the **Achievements** page (`#/achievements`) — see `achievements.md`.
+Owned Ship and building upgrades also appear on the **Achievements** page (`#/achievements`) — see `achievements.md`.

@@ -29,10 +29,16 @@ import {
   ESPRESSO_MACHINE_ID,
 } from '../data/upgrades';
 import {
+  DOUBLE_SHOT_ID,
+  visibleBuildingUpgradeQueue,
+} from '../data/buildingUpgrades';
+import {
+  canBuyBuildingUpgrade,
   canBuyPrestigeUpgrade,
   clickPower,
   COST_GROWTH,
   espressoMachineCost,
+  hasBuildingUpgrade,
   hasShipUpgrade,
   hasStubRepo,
   highestShipUpgrade,
@@ -42,6 +48,7 @@ import {
   nextShipUpgradeId,
   ownedAfterRewrite,
   prestigeTokensPerSecondMult,
+  producerTokensPerSecondMult,
   REWRITE_K,
   REWRITE_TPS_BONUS_PER,
   rewritesGained,
@@ -294,6 +301,83 @@ describe('tokensPerSecond', () => {
         [POSTMORTEM_ID]: 2,
       }),
     ).toBeCloseTo(base * 1.1);
+  });
+
+  it('applies building upgrades as per-producer tokens/s mults', () => {
+    const base = ESPRESSO_MACHINE.tokensPerSecond;
+    expect(
+      tokensPerSecond(
+        { [ESPRESSO_MACHINE_ID]: 3 },
+        0,
+        {},
+        {
+          [DOUBLE_SHOT_ID]: true,
+        },
+      ),
+    ).toBeCloseTo(base * 3 * 2);
+
+    expect(
+      producerTokensPerSecondMult(
+        { [DOUBLE_SHOT_ID]: true },
+        ESPRESSO_MACHINE_ID,
+      ),
+    ).toBe(2);
+    expect(producerTokensPerSecondMult({}, ESPRESSO_MACHINE_ID)).toBe(1);
+    expect(
+      producerTokensPerSecondMult({ [DOUBLE_SHOT_ID]: true }, DEV_ID),
+    ).toBe(1);
+  });
+
+  it('stacks building mult with prestige tokens/s mult', () => {
+    const base = ESPRESSO_MACHINE.tokensPerSecond;
+    expect(
+      tokensPerSecond(
+        { [ESPRESSO_MACHINE_ID]: 1 },
+        2,
+        { [POSTMORTEM_ID]: 1 },
+        { [DOUBLE_SHOT_ID]: true },
+      ),
+    ).toBeCloseTo(base * 2 * (1 + 2 * REWRITE_TPS_BONUS_PER) * 1.05);
+  });
+});
+
+describe('building upgrades unlock / queue', () => {
+  it('unlocks when the target producer is owned', () => {
+    expect(canBuyBuildingUpgrade(DOUBLE_SHOT_ID, {}, {}, 1_000)).toBe(false);
+    expect(
+      canBuyBuildingUpgrade(
+        DOUBLE_SHOT_ID,
+        { [ESPRESSO_MACHINE_ID]: 1 },
+        {},
+        1_000,
+      ),
+    ).toBe(true);
+    expect(
+      canBuyBuildingUpgrade(
+        DOUBLE_SHOT_ID,
+        { [ESPRESSO_MACHINE_ID]: 1 },
+        { [DOUBLE_SHOT_ID]: true },
+        1_000,
+      ),
+    ).toBe(false);
+    expect(hasBuildingUpgrade({ [DOUBLE_SHOT_ID]: true }, DOUBLE_SHOT_ID)).toBe(
+      true,
+    );
+  });
+
+  it('shows unlocked not-owned building upgrades in the queue', () => {
+    expect(visibleBuildingUpgradeQueue({}, {}).map((u) => u.id)).toEqual([]);
+    expect(
+      visibleBuildingUpgradeQueue({ [ESPRESSO_MACHINE_ID]: 1 }, {}).map(
+        (u) => u.id,
+      ),
+    ).toEqual([DOUBLE_SHOT_ID]);
+    expect(
+      visibleBuildingUpgradeQueue(
+        { [ESPRESSO_MACHINE_ID]: 1 },
+        { [DOUBLE_SHOT_ID]: true },
+      ),
+    ).toEqual([]);
   });
 });
 
