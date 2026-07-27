@@ -1,0 +1,15 @@
+{
+  "$schemaComment": "Opt-in consent list for Ship It contributor skins. Add a login only with consent. Bots (dependabot) are allowed as joke skins. Regenerated assets: pnpm generate:contributors",
+  "contributors": [
+    {
+      "login": "joaovictornsv",
+      "displayName": "joaovictornsv",
+      "kind": "human"
+    },
+    {
+      "login": "dependabot",
+      "displayName": "dependabot",
+      "kind": "bot"
+    }
+  ]
+}

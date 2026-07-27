@@ -75,13 +75,13 @@ For translucent mixes, use `color-mix` with underscores in arbitrary values, e.g
 
 ## Typography
 
-| Role                         | Spec                                                                                                                                                                           |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Family                       | **Space Grotesk** (`index.html` Google Fonts), then `ui-sans-serif, system-ui, sans-serif`                                                                                     |
-| Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy                                                                                          |
-| Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                                                                                                               |
-| Numbers (bank, costs, rates) | `tabular-nums`                                                                                                                                                                 |
-| Hierarchy (shell today)      | Brand `text-lg`; HUD bank `text-3xl`→`text-4xl`; Ship It CTA `text-3xl` (mobile) → `text-2xl` (`lg+`); shop name `text-sm`; meta `text-xs`; header Achievements + Save = icons |
+| Role                         | Spec                                                                                                                                                                                     |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Family                       | **Space Grotesk** (`index.html` Google Fonts), then `ui-sans-serif, system-ui, sans-serif`                                                                                               |
+| Body                         | Inherited ink color; default size from browser / Tailwind `text-base` for helper copy                                                                                                    |
+| Brand / titles               | `font-semibold` or `font-bold`, `tracking-tight`                                                                                                                                         |
+| Numbers (bank, costs, rates) | `tabular-nums`                                                                                                                                                                           |
+| Hierarchy (shell today)      | Brand `text-lg`; HUD bank `text-3xl`→`text-4xl`; Ship It CTA `text-3xl` (mobile) → `text-2xl` (`lg+`); shop name `text-sm`; meta `text-xs`; header Achievements + Credits + Save = icons |
 
 Do not add Inter / Roboto / Arial as the primary UI face. Do not introduce a second display font without updating this doc.
 
@@ -89,19 +89,19 @@ Do not add Inter / Roboto / Arial as the primary UI face. Do not introduce a sec
 
 Use Tailwind’s default spacing scale. Prefer this shell rhythm:
 
-| Token-ish     | Tailwind                                                                                 | Use                                                            |
-| ------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Page gutter   | `px-4`                                                                                   | Header / main horizontal padding                               |
-| Section stack | `gap-5`–`gap-8`                                                                          | Play column: scene → HUD → CTA                                 |
-| Cluster       | `gap-2`–`gap-4`                                                                          | Tight groups (HUD + Ship It, header row)                       |
-| Header nav    | Brand + **Achievements** (Medal) + **Save** icon buttons                                 | Lightweight hash views (`#/` / `#/achievements` / `#/save`)    |
-| HUD           | Tokens + tokens/s docked on the Ship It cluster (`max-w-md`)                             | PRODUCT §4 — currency next to the click target                 |
-| Panel pad     | `px-3 py-2` (shop rows); HUD `px-4 py-3`                                                 | Dense Cookie-style buy rows; readable bank                     |
-| Content max   | `max-w-6xl` (shell), office stage `max-w-xl`→`max-w-2xl`, shop rail `lg:w-80`            | Scene reads as a stage, not a tiny card                        |
-| Main vertical | `py-8`; below `lg` add `pb-28` for the fixed Shop trigger                                | Primary play area + mobile shop clearance                      |
-| Ship It CTA   | Mobile: `min-h-36` + `w-full max-w-sm` + `text-3xl`; `lg+`: `min-h-28 min-w-56 text-2xl` | Large phone tap target; desktop stays compact                  |
-| Shop drawer   | Fixed bottom trigger (`max-w-md`); sheet `max-h-[min(78dvh,36rem)]`, `rounded-t-2xl`     | Below `lg` only; closed by default so Ship It owns first paint |
-| Atmosphere    | `.ship-atmosphere` fixed blobs behind `.ship-shell`                                      | Fills dead space; static under reduced motion                  |
+| Token-ish     | Tailwind                                                                                 | Use                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Page gutter   | `px-4`                                                                                   | Header / main horizontal padding                                          |
+| Section stack | `gap-5`–`gap-8`                                                                          | Play column: scene → HUD → CTA                                            |
+| Cluster       | `gap-2`–`gap-4`                                                                          | Tight groups (HUD + Ship It, header row)                                  |
+| Header nav    | Brand + **Achievements** (Medal) + **Credits** (Users) + **Save** icon buttons           | Lightweight hash views (`#/` / `#/achievements` / `#/credits` / `#/save`) |
+| HUD           | Tokens + tokens/s docked on the Ship It cluster (`max-w-md`)                             | PRODUCT §4 — currency next to the click target                            |
+| Panel pad     | `px-3 py-2` (shop rows); HUD `px-4 py-3`                                                 | Dense Cookie-style buy rows; readable bank                                |
+| Content max   | `max-w-6xl` (shell), office stage `max-w-xl`→`max-w-2xl`, shop rail `lg:w-80`            | Scene reads as a stage, not a tiny card                                   |
+| Main vertical | `py-8`; below `lg` add `pb-28` for the fixed Shop trigger                                | Primary play area + mobile shop clearance                                 |
+| Ship It CTA   | Mobile: `min-h-36` + `w-full max-w-sm` + `text-3xl`; `lg+`: `min-h-28 min-w-56 text-2xl` | Large phone tap target; desktop stays compact                             |
+| Shop drawer   | Fixed bottom trigger (`max-w-md`); sheet `max-h-[min(78dvh,36rem)]`, `rounded-t-2xl`     | Below `lg` only; closed by default so Ship It owns first paint            |
+| Atmosphere    | `.ship-atmosphere` fixed blobs behind `.ship-shell`                                      | Fills dead space; static under reduced motion                             |
 
 **Radius:** interactive panels `rounded-xl`; stage `rounded-2xl`; small controls `rounded-lg`; primary Ship It CTA `rounded-2xl`.
 

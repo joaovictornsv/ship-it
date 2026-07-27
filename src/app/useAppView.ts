@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { type AppView, appViewHash, parseAppView } from './appView';
 
 /**
- * Lightweight hash navigation (`#/` play, `#/save`, `#/achievements`) without a
- * router.
+ * Lightweight hash navigation (`#/` play, `#/save`, `#/achievements`,
+ * `#/credits`) without a router.
  * Progress stays in Zustand; changing views does not touch the save slot.
  */
 export function useAppView(): [AppView, (view: AppView) => void] {
