@@ -35,6 +35,32 @@ const migrators: Record<number, Migrator> = {
       tokensEarnedThisRun: legacy.tokensEarnedThisRun ?? 0,
       rewrites: legacy.rewrites ?? 0,
       prestigeOwned: legacy.prestigeOwned ?? {},
+    } as GameState;
+  },
+  /**
+   * v3 → v4: achievement counters + unlock map.
+   * Seed lifetime tokens from this-run earnings only (no deeper retroactive credit).
+   */
+  3: (state) => {
+    const legacy = state as GameState & {
+      lifetimeTokensEarned?: GameState['lifetimeTokensEarned'];
+      lifetimeClicks?: GameState['lifetimeClicks'];
+      lifetimePurchases?: GameState['lifetimePurchases'];
+      achievementsUnlocked?: GameState['achievementsUnlocked'];
+    };
+    return {
+      tokens: legacy.tokens,
+      owned: legacy.owned,
+      shipOwned: legacy.shipOwned ?? {},
+      lastTickAt: legacy.lastTickAt,
+      tokensEarnedThisRun: legacy.tokensEarnedThisRun ?? 0,
+      rewrites: legacy.rewrites ?? 0,
+      prestigeOwned: legacy.prestigeOwned ?? {},
+      lifetimeTokensEarned:
+        legacy.lifetimeTokensEarned ?? legacy.tokensEarnedThisRun ?? 0,
+      lifetimeClicks: legacy.lifetimeClicks ?? 0,
+      lifetimePurchases: legacy.lifetimePurchases ?? 0,
+      achievementsUnlocked: legacy.achievementsUnlocked ?? {},
     };
   },
 };

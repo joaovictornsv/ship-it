@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { AchievementId } from '../data/achievements';
 import {
   getPrestigeUpgrade,
   type PrestigeUpgradeId,
@@ -9,6 +10,11 @@ import {
   shipUpgradeLadderIndex,
 } from '../data/shipUpgrades';
 import { ESPRESSO_MACHINE_ID, type UpgradeId } from '../data/upgrades';
+import {
+  achievementSnapshotFromState,
+  mergeUnlockedAchievements,
+  newlyUnlockedAchievements,
+} from './achievements';
 import {
   canBuyPrestigeUpgrade,
   clickPower,
@@ -25,7 +31,7 @@ import {
   tokensPerSecond,
 } from './economy';
 import { applyProductionTick, resumeWithoutAccrual } from './tick';
-import type { GameState, Tokens } from './types';
+import type { GameState, OwnedAchievements, Tokens } from './types';
 
 export const initialGameState: GameState = {
   tokens: 0,
@@ -34,8 +40,50 @@ export const initialGameState: GameState = {
   tokensEarnedThisRun: 0,
   rewrites: 0,
   prestigeOwned: {},
+  lifetimeTokensEarned: 0,
+  lifetimeClicks: 0,
+  lifetimePurchases: 0,
+  achievementsUnlocked: {},
   lastTickAt: 0,
 };
+
+/** Ephemeral HUD toast queue — not persisted. */
+const MAX_TOAST_QUEUE = 5;
+
+type AchievementPatch = {
+  achievementsUnlocked: OwnedAchievements;
+  achievementToastQueue: AchievementId[];
+};
+
+function withAchievementUnlocks(
+  state: GameState & { achievementToastQueue: AchievementId[] },
+  patch: Partial<GameState>,
+): Partial<GameState> & AchievementPatch {
+  const next: GameState = { ...state, ...patch };
+  const newly = newlyUnlockedAchievements(
+    achievementSnapshotFromState(next),
+    next.achievementsUnlocked,
+  );
+  if (newly.length === 0) {
+    return {
+      ...patch,
+      achievementsUnlocked: next.achievementsUnlocked,
+      achievementToastQueue: state.achievementToastQueue,
+    };
+  }
+  const queue = [...state.achievementToastQueue, ...newly].slice(
+    0,
+    MAX_TOAST_QUEUE,
+  );
+  return {
+    ...patch,
+    achievementsUnlocked: mergeUnlockedAchievements(
+      next.achievementsUnlocked,
+      newly,
+    ),
+    achievementToastQueue: queue,
+  };
+}
 
 type GameActions = {
   /** Earn tokens from a Ship It click; returns amount granted (for UI FX). */
@@ -78,24 +126,36 @@ type GameActions = {
   ) => void;
   /** Clear the integrity-warning banner. */
   dismissSaveWarning: () => void;
+  /** Pop the front achievement toast after it auto-dismisses. */
+  dismissAchievementToast: () => void;
 };
 
 export type GameStore = GameState &
   GameActions & {
     /** True when the loaded save failed checksum (still playable). */
     saveUntrusted: boolean;
+    /**
+     * Pending achievement unlock toasts (FIFO). Ephemeral — not in SaveFile.
+     * Capped so multi-unlocks coalesce instead of spamming the HUD.
+     */
+    achievementToastQueue: AchievementId[];
   };
 
 export const useGameStore = create<GameStore>((set, get) => ({
   ...initialGameState,
   saveUntrusted: false,
+  achievementToastQueue: [],
   shipIt: () => {
     const state = get();
     const earned = clickPower(state.shipOwned, state.prestigeOwned);
-    set({
-      tokens: state.tokens + earned,
-      tokensEarnedThisRun: state.tokensEarnedThisRun + earned,
-    });
+    set(
+      withAchievementUnlocks(state, {
+        tokens: state.tokens + earned,
+        tokensEarnedThisRun: state.tokensEarnedThisRun + earned,
+        lifetimeTokensEarned: state.lifetimeTokensEarned + earned,
+        lifetimeClicks: state.lifetimeClicks + 1,
+      }),
+    );
     return earned;
   },
   buyUpgrade: (id, quantity = 1) => {
@@ -108,10 +168,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (state.tokens < cost) {
       return false;
     }
-    set({
-      tokens: state.tokens - cost,
-      owned: { ...state.owned, [id]: ownedCount + quantity },
-    });
+    set(
+      withAchievementUnlocks(state, {
+        tokens: state.tokens - cost,
+        owned: { ...state.owned, [id]: ownedCount + quantity },
+        lifetimePurchases: state.lifetimePurchases + quantity,
+      }),
+    );
     return true;
   },
   buyShipUpgrade: (id) => {
@@ -136,10 +199,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     // Touch catalog so a typo id throws before mutating state.
     getShipUpgrade(id);
-    set({
-      tokens: state.tokens - cost,
-      shipOwned: { ...state.shipOwned, [id]: true },
-    });
+    set(
+      withAchievementUnlocks(state, {
+        tokens: state.tokens - cost,
+        shipOwned: { ...state.shipOwned, [id]: true },
+        lifetimePurchases: state.lifetimePurchases + 1,
+      }),
+    );
     return true;
   },
   buyPrestigeUpgrade: (id) => {
@@ -166,14 +232,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return 0;
     }
     const gained = rewritesGained(state.tokensEarnedThisRun);
-    set({
-      tokens: 0,
-      owned: ownedAfterRewrite(state.prestigeOwned),
-      shipOwned: {},
-      tokensEarnedThisRun: 0,
-      rewrites: state.rewrites + gained,
-      // prestigeOwned kept
-    });
+    set(
+      withAchievementUnlocks(state, {
+        tokens: 0,
+        owned: ownedAfterRewrite(state.prestigeOwned),
+        shipOwned: {},
+        tokensEarnedThisRun: 0,
+        rewrites: state.rewrites + gained,
+        // prestigeOwned, lifetime*, achievementsUnlocked kept via spread base
+      }),
+    );
     return gained;
   },
   tick: (nowMs) => {
@@ -182,12 +250,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (result.lastTickAt === state.lastTickAt) {
       return 0;
     }
-    set({
-      tokens: result.tokens,
-      lastTickAt: result.lastTickAt,
-      tokensEarnedThisRun:
-        state.tokensEarnedThisRun + (result.earned > 0 ? result.earned : 0),
-    });
+    const earned = result.earned > 0 ? result.earned : 0;
+    set(
+      withAchievementUnlocks(state, {
+        tokens: result.tokens,
+        lastTickAt: result.lastTickAt,
+        tokensEarnedThisRun: state.tokensEarnedThisRun + earned,
+        lifetimeTokensEarned: state.lifetimeTokensEarned + earned,
+      }),
+    );
     return result.earned;
   },
   resumeFromHidden: (nowMs) => {
@@ -199,6 +270,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
   },
   hydrateFromSave: (saved, { untrusted, nowMs }) => {
+    // Catch up unlocks from current counters silently (no HUD toast spam on load).
+    const newly = newlyUnlockedAchievements(
+      achievementSnapshotFromState(saved),
+      saved.achievementsUnlocked,
+    );
     set({
       tokens: saved.tokens,
       owned: { ...saved.owned },
@@ -206,12 +282,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
       tokensEarnedThisRun: saved.tokensEarnedThisRun,
       rewrites: saved.rewrites,
       prestigeOwned: { ...saved.prestigeOwned },
+      lifetimeTokensEarned: saved.lifetimeTokensEarned,
+      lifetimeClicks: saved.lifetimeClicks,
+      lifetimePurchases: saved.lifetimePurchases,
+      achievementsUnlocked: mergeUnlockedAchievements(
+        saved.achievementsUnlocked,
+        newly,
+      ),
       lastTickAt: nowMs,
       saveUntrusted: untrusted,
+      achievementToastQueue: [],
     });
   },
   dismissSaveWarning: () => {
     set({ saveUntrusted: false });
+  },
+  dismissAchievementToast: () => {
+    const queue = get().achievementToastQueue;
+    if (queue.length === 0) {
+      return;
+    }
+    set({ achievementToastQueue: queue.slice(1) });
   },
 }));
 
@@ -233,6 +324,10 @@ export function selectPersistedState(state: GameState): GameState {
     tokensEarnedThisRun: state.tokensEarnedThisRun,
     rewrites: state.rewrites,
     prestigeOwned: state.prestigeOwned,
+    lifetimeTokensEarned: state.lifetimeTokensEarned,
+    lifetimeClicks: state.lifetimeClicks,
+    lifetimePurchases: state.lifetimePurchases,
+    achievementsUnlocked: state.achievementsUnlocked,
     lastTickAt: state.lastTickAt,
   };
 }

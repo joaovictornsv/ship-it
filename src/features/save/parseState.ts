@@ -1,9 +1,12 @@
 import type {
   GameState,
+  OwnedAchievements,
   OwnedPrestigeUpgrades,
   OwnedShipUpgrades,
   OwnedUpgrades,
 } from '../../game/types';
+import type { AchievementId } from '../../data/achievements';
+import { achievements } from '../../data/achievements';
 import type { PrestigeUpgradeId } from '../../data/prestigeUpgrades';
 import { prestigeUpgrades } from '../../data/prestigeUpgrades';
 import type { ShipUpgradeId } from '../../data/shipUpgrades';
@@ -16,6 +19,7 @@ const knownShipUpgradeIds = new Set<string>(shipUpgrades.map((u) => u.id));
 const knownPrestigeUpgradeIds = new Set<string>(
   prestigeUpgrades.map((u) => u.id),
 );
+const knownAchievementIds = new Set<string>(achievements.map((a) => a.name));
 
 /**
  * Soft-normalize a game state for play.
@@ -35,6 +39,15 @@ export function normalizeGameState(state: GameState): {
   }
   if (state.rewrites < 0) {
     warnings.push('rewrites is negative; clamped to 0');
+  }
+  if (state.lifetimeTokensEarned < 0) {
+    warnings.push('lifetimeTokensEarned is negative; clamped to 0');
+  }
+  if (state.lifetimeClicks < 0) {
+    warnings.push('lifetimeClicks is negative; clamped to 0');
+  }
+  if (state.lifetimePurchases < 0) {
+    warnings.push('lifetimePurchases is negative; clamped to 0');
   }
 
   const owned: OwnedUpgrades = {};
@@ -89,6 +102,19 @@ export function normalizeGameState(state: GameState): {
     }
   }
 
+  const achievementsUnlocked: OwnedAchievements = {};
+  const rawAchievements = state.achievementsUnlocked ?? {};
+  for (const [id, flag] of Object.entries(rawAchievements)) {
+    if (flag !== true && flag !== 1) {
+      warnings.push(`achievementsUnlocked.${id} is not owned-true; skipped`);
+      continue;
+    }
+    if (!knownAchievementIds.has(id)) {
+      warnings.push(`unknown achievement id "${id}"; kept for forward-compat`);
+    }
+    achievementsUnlocked[id as AchievementId] = true;
+  }
+
   return {
     state: {
       tokens: state.tokens,
@@ -97,6 +123,10 @@ export function normalizeGameState(state: GameState): {
       tokensEarnedThisRun: Math.max(0, state.tokensEarnedThisRun ?? 0),
       rewrites: Math.max(0, state.rewrites ?? 0),
       prestigeOwned,
+      lifetimeTokensEarned: Math.max(0, state.lifetimeTokensEarned ?? 0),
+      lifetimeClicks: Math.max(0, Math.floor(state.lifetimeClicks ?? 0)),
+      lifetimePurchases: Math.max(0, Math.floor(state.lifetimePurchases ?? 0)),
+      achievementsUnlocked,
       lastTickAt: state.lastTickAt,
     },
     warnings,

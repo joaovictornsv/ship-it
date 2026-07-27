@@ -1,4 +1,5 @@
 import { Medal, Save } from 'lucide-react';
+import { AchievementUnlockToast } from '../features/achievements';
 import {
   SaveUntrustedBanner,
   useAutosave,
@@ -72,6 +73,7 @@ export function App() {
       </header>
 
       <SaveUntrustedBanner />
+      <AchievementUnlockToast />
 
       {error ? (
         <div

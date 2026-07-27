@@ -26,6 +26,10 @@ function sampleState(overrides: Partial<GameState> = {}): GameState {
     tokensEarnedThisRun: 100,
     rewrites: 0,
     prestigeOwned: {},
+    lifetimeTokensEarned: 100,
+    lifetimeClicks: 0,
+    lifetimePurchases: 0,
+    achievementsUnlocked: {},
     lastTickAt: 1_700_000_000_000,
     ...overrides,
   };
@@ -124,11 +128,15 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(3);
+    expect(outcome.result.file.v).toBe(4);
     expect(outcome.result.file.state.shipOwned).toEqual({});
     expect(outcome.result.file.state.tokensEarnedThisRun).toBe(0);
     expect(outcome.result.file.state.rewrites).toBe(0);
     expect(outcome.result.file.state.prestigeOwned).toEqual({});
+    expect(outcome.result.file.state.lifetimeTokensEarned).toBe(0);
+    expect(outcome.result.file.state.lifetimeClicks).toBe(0);
+    expect(outcome.result.file.state.lifetimePurchases).toBe(0);
+    expect(outcome.result.file.state.achievementsUnlocked).toEqual({});
     expect(outcome.result.file.state.tokens).toBe(12);
   });
 
@@ -152,10 +160,42 @@ describe('checksum + codec', () => {
       return;
     }
     expect(outcome.result.checksumOk).toBe(true);
-    expect(outcome.result.file.v).toBe(3);
+    expect(outcome.result.file.v).toBe(4);
     expect(outcome.result.file.state.tokensEarnedThisRun).toBe(0);
     expect(outcome.result.file.state.rewrites).toBe(0);
     expect(outcome.result.file.state.prestigeOwned).toEqual({});
+    expect(outcome.result.file.state.lifetimeTokensEarned).toBe(0);
+    expect(outcome.result.file.state.achievementsUnlocked).toEqual({});
+  });
+
+  it('loads a v3 blob (no achievements) with matching checksum then migrates', async () => {
+    const v3State = {
+      tokens: 20,
+      owned: { [ESPRESSO_MACHINE_ID]: 2 },
+      shipOwned: {},
+      tokensEarnedThisRun: 55,
+      rewrites: 1,
+      prestigeOwned: {},
+      lastTickAt: 60,
+    };
+    const checksum = await checksumState(v3State as GameState);
+    const blob = encodeSaveBlob({
+      v: 3,
+      savedAt: 9,
+      state: v3State as GameState,
+      checksum,
+    });
+    const outcome = await parseSaveBlob(blob);
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) {
+      return;
+    }
+    expect(outcome.result.checksumOk).toBe(true);
+    expect(outcome.result.file.v).toBe(4);
+    expect(outcome.result.file.state.lifetimeTokensEarned).toBe(55);
+    expect(outcome.result.file.state.lifetimeClicks).toBe(0);
+    expect(outcome.result.file.state.lifetimePurchases).toBe(0);
+    expect(outcome.result.file.state.achievementsUnlocked).toEqual({});
   });
 
   it('checksum is stable across key order in owned', async () => {
@@ -167,10 +207,14 @@ describe('checksum + codec', () => {
       tokensEarnedThisRun: 0,
       rewrites: 0,
       prestigeOwned: {},
+      lifetimeTokensEarned: 0,
+      lifetimeClicks: 0,
+      lifetimePurchases: 0,
+      achievementsUnlocked: {},
     });
     const b = await checksumState(
       JSON.parse(
-        `{"lastTickAt":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"prestigeOwned":{},"rewrites":0,"shipOwned":{},"tokens":1,"tokensEarnedThisRun":0}`,
+        `{"achievementsUnlocked":{},"lastTickAt":0,"lifetimeClicks":0,"lifetimePurchases":0,"lifetimeTokensEarned":0,"owned":{"${ESPRESSO_MACHINE_ID}":1},"prestigeOwned":{},"rewrites":0,"shipOwned":{},"tokens":1,"tokensEarnedThisRun":0}`,
       ) as GameState,
     );
     expect(a).toBe(b);
@@ -188,7 +232,7 @@ describe('migrateSaveFile', () => {
     expect(migrateSaveFile(file)).toEqual(file);
   });
 
-  it('migrates v1 saves through v2 shipOwned then v3 prestige defaults', () => {
+  it('migrates v1 saves through v2–v4 defaults', () => {
     const v1State = {
       tokens: 10,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -200,16 +244,20 @@ describe('migrateSaveFile', () => {
       state: v1State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(3);
+    expect(migrated.v).toBe(4);
     expect(migrated.state.shipOwned).toEqual({});
     expect(migrated.state.tokensEarnedThisRun).toBe(0);
     expect(migrated.state.rewrites).toBe(0);
     expect(migrated.state.prestigeOwned).toEqual({});
+    expect(migrated.state.lifetimeTokensEarned).toBe(0);
+    expect(migrated.state.lifetimeClicks).toBe(0);
+    expect(migrated.state.lifetimePurchases).toBe(0);
+    expect(migrated.state.achievementsUnlocked).toEqual({});
     expect(migrated.state.tokens).toBe(10);
     expect(migrated.state.owned[ESPRESSO_MACHINE_ID]).toBe(1);
   });
 
-  it('migrates v2 saves by adding prestige fields', () => {
+  it('migrates v2 saves by adding prestige then achievement fields', () => {
     const v2State = {
       tokens: 10,
       owned: { [ESPRESSO_MACHINE_ID]: 1 },
@@ -222,10 +270,34 @@ describe('migrateSaveFile', () => {
       state: v2State,
       checksum: 'abc',
     });
-    expect(migrated.v).toBe(3);
+    expect(migrated.v).toBe(4);
     expect(migrated.state.tokensEarnedThisRun).toBe(0);
     expect(migrated.state.rewrites).toBe(0);
     expect(migrated.state.prestigeOwned).toEqual({});
+    expect(migrated.state.lifetimeTokensEarned).toBe(0);
+    expect(migrated.state.achievementsUnlocked).toEqual({});
+  });
+
+  it('migrates v3 saves by seeding lifetime tokens from this-run earnings', () => {
+    const v3State = {
+      tokens: 10,
+      owned: { [ESPRESSO_MACHINE_ID]: 1 },
+      shipOwned: {},
+      tokensEarnedThisRun: 40,
+      rewrites: 0,
+      prestigeOwned: {},
+      lastTickAt: 99,
+    } as GameState;
+    const migrated = migrateSaveFile({
+      v: 3,
+      savedAt: 1,
+      state: v3State,
+      checksum: 'abc',
+    });
+    expect(migrated.v).toBe(4);
+    expect(migrated.state.lifetimeTokensEarned).toBe(40);
+    expect(migrated.state.lifetimeClicks).toBe(0);
+    expect(migrated.state.achievementsUnlocked).toEqual({});
   });
 
   it('rejects newer-than-supported versions', () => {

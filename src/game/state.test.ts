@@ -18,6 +18,11 @@ describe('useGameStore', () => {
       prestigeOwned: {},
       tokensEarnedThisRun: 0,
       rewrites: 0,
+      lifetimeTokensEarned: 0,
+      lifetimeClicks: 0,
+      lifetimePurchases: 0,
+      achievementsUnlocked: {},
+      achievementToastQueue: [],
       saveUntrusted: false,
     });
   });
@@ -30,6 +35,10 @@ describe('useGameStore', () => {
     expect(state.tokensEarnedThisRun).toBe(0);
     expect(state.rewrites).toBe(0);
     expect(state.prestigeOwned).toEqual({});
+    expect(state.lifetimeTokensEarned).toBe(0);
+    expect(state.lifetimeClicks).toBe(0);
+    expect(state.lifetimePurchases).toBe(0);
+    expect(state.achievementsUnlocked).toEqual({});
   });
 
   it('shipIt adds clickPower tokens and returns the amount earned', () => {
@@ -37,11 +46,20 @@ describe('useGameStore', () => {
     expect(first).toBe(1);
     expect(useGameStore.getState().tokens).toBe(1);
     expect(useGameStore.getState().tokensEarnedThisRun).toBe(1);
+    expect(useGameStore.getState().lifetimeTokensEarned).toBe(1);
+    expect(useGameStore.getState().lifetimeClicks).toBe(1);
+    expect(useGameStore.getState().achievementsUnlocked['first-ship']).toBe(
+      true,
+    );
+    expect(useGameStore.getState().achievementToastQueue).toContain(
+      'first-ship',
+    );
 
     useGameStore.getState().shipIt();
     useGameStore.getState().shipIt();
     expect(useGameStore.getState().tokens).toBe(3);
     expect(useGameStore.getState().tokensEarnedThisRun).toBe(3);
+    expect(useGameStore.getState().lifetimeClicks).toBe(3);
   });
 
   it('shipIt scales with owned Ship upgrades', () => {
@@ -188,6 +206,10 @@ describe('useGameStore', () => {
       tokensEarnedThisRun: REWRITE_K,
       rewrites: 1,
       prestigeOwned: { [POSTMORTEM_ID]: 1, [STUB_REPO_ID]: 1 },
+      lifetimeTokensEarned: 50_000,
+      lifetimeClicks: 40,
+      lifetimePurchases: 12,
+      achievementsUnlocked: { 'espresso-drip': true, 'first-ship': true },
       lastTickAt: 99,
     });
     expect(useGameStore.getState().rewrite()).toBe(1);
@@ -201,6 +223,12 @@ describe('useGameStore', () => {
       [POSTMORTEM_ID]: 1,
       [STUB_REPO_ID]: 1,
     });
+    expect(state.lifetimeTokensEarned).toBe(50_000);
+    expect(state.lifetimeClicks).toBe(40);
+    expect(state.lifetimePurchases).toBe(12);
+    expect(state.achievementsUnlocked['espresso-drip']).toBe(true);
+    expect(state.achievementsUnlocked['first-ship']).toBe(true);
+    expect(state.achievementsUnlocked['rewrite-ready']).toBe(true);
   });
 
   it('rewrite refuses when projected gain is below 1', () => {
@@ -213,6 +241,20 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().tokens).toBe(10);
   });
 
+  it('buyUpgrade unlocks owned + purchase achievements and queues toasts', () => {
+    useGameStore.setState({ tokens: 100 });
+    expect(useGameStore.getState().buyUpgrade(ESPRESSO_MACHINE_ID)).toBe(true);
+    const state = useGameStore.getState();
+    expect(state.lifetimePurchases).toBe(1);
+    expect(state.achievementsUnlocked['espresso-drip']).toBe(true);
+    expect(state.achievementsUnlocked['window-shopper']).toBe(true);
+    expect(state.achievementToastQueue.length).toBeGreaterThan(0);
+    state.dismissAchievementToast();
+    expect(useGameStore.getState().achievementToastQueue.length).toBe(
+      state.achievementToastQueue.length - 1,
+    );
+  });
+
   it('hydrateFromSave restores bank/owned/shipOwned/prestige and marks untrusted when asked', () => {
     useGameStore.getState().hydrateFromSave(
       {
@@ -222,6 +264,10 @@ describe('useGameStore', () => {
         tokensEarnedThisRun: 80,
         rewrites: 4,
         prestigeOwned: { [MUSCLE_MEMORY_ID]: 2 },
+        lifetimeTokensEarned: 200,
+        lifetimeClicks: 5,
+        lifetimePurchases: 3,
+        achievementsUnlocked: { 'first-ship': true },
         lastTickAt: 1,
       },
       { untrusted: true, nowMs: 9_000 },
@@ -233,6 +279,14 @@ describe('useGameStore', () => {
     expect(state.tokensEarnedThisRun).toBe(80);
     expect(state.rewrites).toBe(4);
     expect(state.prestigeOwned[MUSCLE_MEMORY_ID]).toBe(2);
+    expect(state.lifetimeTokensEarned).toBe(200);
+    expect(state.lifetimeClicks).toBe(5);
+    expect(state.lifetimePurchases).toBe(3);
+    expect(state.achievementsUnlocked['first-ship']).toBe(true);
+    expect(state.achievementsUnlocked['espresso-drip']).toBe(true);
+    expect(state.achievementsUnlocked['pocket-change']).toBe(true);
+    expect(state.achievementsUnlocked['rewrite-ready']).toBe(true);
+    expect(state.achievementToastQueue).toEqual([]);
     expect(state.lastTickAt).toBe(9_000);
     expect(state.saveUntrusted).toBe(true);
     state.dismissSaveWarning();

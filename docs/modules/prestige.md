@@ -30,12 +30,13 @@ Track **`tokensEarnedThisRun`** (clicks + passive), not the spendable bank — b
 
 ## Keep vs reset
 
-| Resets                                    | Keeps                                                           |
-| ----------------------------------------- | --------------------------------------------------------------- |
-| Token bank                                | Rewrites bank                                                   |
-| Owned buildings (`owned`)                 | Prestige shop upgrades (Postmortem / Muscle memory / Stub repo) |
-| Ship upgrades (`shipOwned`) — click track | Cosmetics / rooms (when rooms exist)                            |
-| `tokensEarnedThisRun`                     | Banked Rewrites passive tokens/s mult                           |
+| Resets                                    | Keeps                                                                        |
+| ----------------------------------------- | ---------------------------------------------------------------------------- |
+| Token bank                                | Rewrites bank                                                                |
+| Owned buildings (`owned`)                 | Prestige shop upgrades (Postmortem / Muscle memory / Stub repo)              |
+| Ship upgrades (`shipOwned`) — click track | Cosmetics / rooms (when rooms exist)                                         |
+| `tokensEarnedThisRun`                     | Banked Rewrites passive tokens/s mult                                        |
+|                                           | Achievements + lifetime counters (`achievementsUnlocked`, `lifetime*`) — #33 |
 
 **Stub repo:** after Rewrite, `owned` starts with **1 Espresso machine** when owned.
 
@@ -65,4 +66,4 @@ click    = (1 + Σ flat) × Π mult × (1 + Muscle memory %)
 
 ## Save
 
-Schema **v3** adds `tokensEarnedThisRun`, `rewrites`, `prestigeOwned`. See `saves.md`.
+Schema **v3** adds `tokensEarnedThisRun`, `rewrites`, `prestigeOwned`. Achievement keep fields land in **v4** — see `saves.md` / `achievements.md`.
